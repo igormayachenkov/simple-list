@@ -1,12 +1,9 @@
 package ru.igormayachenkov.list;
 
-import android.content.Context;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
 
