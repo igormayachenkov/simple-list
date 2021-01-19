@@ -1,0 +1,60 @@
+<resources>
+    <string name="app_name">Список</string>
+
+    <string name="bytes_saved">байт записано в файл</string>
+    <string name="lists_updated">списков обновлено</string>
+    <string name="load_title">Загрузка данных</string>
+    <string name="load_to_insert">будет добавлено списков:</string>
+    <string name="load_to_update">будет заменено списков:</string>
+    <string name="load_success">Данные загружены успешно</string>
+
+    <!-- MAIN -->
+    <string name="main_title">Все списки</string>
+    <string name="main_empty">У вас нет пока ни одного списка\nНажмите \'+\' чтобы создать новый</string>
+    <string name="main_add_menu">Новый список</string>
+    <string name="main_add_hint">Название списка</string>
+    <string name="main_menu_save">Сохранить всё в файл</string>
+    <string name="main_menu_load">Импорт списков из файла</string>
+    <string name="main_menu_clear">Стереть всё</string>
+    <string name="main_clear_message">Стереть все данные?</string>
+
+    <!-- LIST -->
+    <string name="list_empty">Список пуст\nНажмите \'+\' для добавления нового элемента</string>
+    <string name="list_delete_alert_title">Удаление списка</string>
+    <string name="list_delete_alert_text">Удалить список и все его элементы?</string>
+    <string name="list_menu_add">Добавить элемент</string>
+    <string name="list_menu_rename">Переименовать список</string>
+    <string name="list_menu_delete">Удалить список</string>
+    <string name="list_menu_help">Справка</string>
+    <string name="list_menu_save_json">Сохранить список в файл</string>
+    <string name="list_menu_save_xml">Сохранить как XML</string>
+    <string name="list_save_ok">Список сохранён в файл</string>
+    <string name="list_save_error">Произошла ошибка</string>
+
+    <!-- ITEM -->
+    <string name="item_name_hint">Название</string>
+    <string name="item_descr_hint">Описание</string>
+    <string name="item_error">Название не может быть пустым</string>
+
+    <!-- LIST NAME DIALOG -->
+    <string name="dialog_name_hint">Название списка</string>
+    <string name="dialog_title_new">Новый список</string>
+    <string name="dialog_title_rename">Переименование списка</string>
+    <string name="dialog_title_save">Экспорт данных в </string>
+    <string name="dialog_message_save">Введите имя файла</string>
+    <string name="dialog_error">Имя списка не может быть пустым</string>
+
+    <!-- SAVE/LOAD DIALOGs -->
+    <string name="dlg_save_title">Запись в файл</string>
+    <string name="dlg_save_all_message">Сохранить все списки в JSON-формате. Введите имя файла.</string>
+
+    <!-- HELP -->
+    <string name="help_title">Справка</string>
+    <!--about-->
+    <string name="help_about_title">О программе</string>
+    <string name="help_version_label">Версия:</string>
+    <!--web view-->
+    <string name="help_webview">file:///android_asset/help-ru.html</string>
+
+
+</resources>
