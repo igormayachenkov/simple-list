@@ -69,22 +69,31 @@ class AItem : AppCompatActivity() {
     // HANDLERS
     fun onButtonSave(v: View?) {
         // Validate data
-        val name = txtName!!.text.toString()
+        val name = txtName.text.toString().trim()
         if (name.isEmpty()) {
             txtName!!.error = getString(R.string.item_error)
             return
         }
+        var descr : String? = txtDescr.text.toString().trim()
+        if(descr.isNullOrEmpty()) descr = null
+
+        Log.d(TAG,"onButtonSave '$name' '$descr'")
 
         // Save data
-        val itemId = item?.id
-        if (itemId==null) {
-            // New item
-            list!!.addItem(name, txtDescr.text.toString())
-            setResult(Data.RESULT_INSERTED)
-        } else {
-            // Existed item
-            list!!.updateItemName(itemId, name, txtDescr.text.toString())
-            setResult(Data.RESULT_UPDATED)
+        item?.let { item ->
+            // EXISTED ITEM
+            // Check changes
+            val isNameChanged  = Utils.areNotEqual(name, item.name)
+            val isDescrChanged = Utils.areNotEqual(descr, item.description)
+            if(isNameChanged || isDescrChanged) {
+                // Update
+                list!!.updateItemName(item.id, name, descr)
+                AList.instance?.onItemUpdated(isNameChanged, isDescrChanged)
+            }
+        }?: run{
+            // NEW ITEM
+            list!!.addItem(name, descr)
+            AList.instance?.onItemInserted()
         }
 
         // Return
@@ -96,7 +105,7 @@ class AItem : AppCompatActivity() {
         // Delete item
         item?.id?.let {
             list!!.deleteItem(it)
-            setResult(Data.RESULT_DELETED)
+            AList.instance?.onItemDeleted()
         }
         finish()
     }

@@ -38,11 +38,12 @@ data class List(
 
     fun addItem(name: String?, description: String?) {
         Log.d(TAG, "List.addItem")
-        items?.let { items->
+        val items = items
+        if(items!=null){
             val item = Item.create(id,name,description)
             Database.insertItem(item)
             items.put(item.id, item)
-        }?: kotlin.run {
+        }else{
             Log.e(TAG,"list is not loaded")
         }
     }

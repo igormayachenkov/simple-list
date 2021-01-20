@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -14,19 +13,26 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import ru.igormayachenkov.list.AMain.Companion.doSave
 import ru.igormayachenkov.list.data.Item
 import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.Data
-import java.io.BufferedWriter
-import java.io.File
 import java.io.FileOutputStream
-import java.io.FileWriter
 import kotlinx.android.synthetic.main.a_list.*
 //import kotlinx.android.synthetic.main.item_list.*
 
 class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener {
+    companion object {
+        const val TAG = "myapp.AList"
+        const val ITEM_OPEN_REQUEST = 111
+
+        //    static final int FILE_OPEN_REQUEST      = 222;
+        const val FILE_CREATE_REQUEST = 333
+        const val FILE_CREATE_XML_REQUEST = 444
+
+        var instance : AList? = null
+    }
+
     // Data objects
     private var dataList: List? = null
     private val uiList = ArrayList<Item>()
@@ -36,13 +42,15 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
 //    var viewEmpty: View? = null
 
     // Adapter
-    private var adapter: ListAdapter? = null
+    var adapter: ListAdapter? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.a_list)
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
+
+        instance = this
 
         // Controls
 //        viewList = findViewById<View>(R.id.listView) as ListView
@@ -63,20 +71,24 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
             listView.onItemClickListener = this
             listView.onItemLongClickListener = this
 
-            update()
+            reloadData()
 
         }?: kotlin.run {
             Log.e(TAG, "list #id does not exist")
             finish()
         }
-
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_list, menu)
         return true
+    }
+
+    override fun onDestroy() {
+        Log.d(TAG, "onDestroy")
+        super.onDestroy()
+        instance = null
     }
 
     override fun onStart() {
@@ -90,9 +102,39 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    // UPDATER
-    private fun update() {
-        Log.w(TAG, "UPDATE")
+    // Open Item & UPDATERs
+    fun onItemInserted(){
+        Log.w(TAG, "onItemInserted")
+        reloadData()
+    }
+    fun onItemUpdated(isNameChanged:Boolean,isDescrChanged:Boolean){
+        Log.w(TAG, "onItemUpdated $isNameChanged $isDescrChanged")
+        if(isNameChanged)
+            reloadData()
+        else
+            adapter?.notifyDataSetChanged()
+    }
+    fun onItemDeleted(){
+        Log.w(TAG, "onItemDeleted")
+        openItemPosition?.let {
+            uiList.removeAt(it)
+            adapter?.notifyDataSetChanged()
+        }
+    }
+
+    private var openItemPosition:Int? = null
+    private fun startAItem(position: Int?) {
+        //val itemId:Long?
+        val intent = Intent(this, AItem::class.java)
+        intent.putExtra(Data.LIST_ID, dataList!!.id)
+        position?.let {
+            val item = uiList[it]
+            intent.putExtra(Data.ITEM_ID, item.id)
+        }
+        startActivityForResult(intent, ITEM_OPEN_REQUEST)
+    }
+    private fun reloadData() {
+        Log.w(TAG, "RELOAD DATA")
 
         // Reload UI LIST
         uiList.clear()
@@ -105,13 +147,18 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
             Log.e(TAG, "list is not loaded")
         }
 
+        updateListVisibility()
+
+        adapter?.notifyDataSetChanged()
+    }
+
+    private fun updateListVisibility(){
         if (uiList.size == 0) {
             listView.visibility = View.GONE
             emptyView.visibility = View.VISIBLE
         } else {
             emptyView.visibility = View.GONE
             listView.visibility = View.VISIBLE
-            adapter?.notifyDataSetChanged()
         }
     }
 
@@ -159,20 +206,13 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
 
     override fun onItemLongClick(parent: AdapterView<*>?, view: View, position: Int, id: Long): Boolean {
         // Go to item activity
-        startAItem(uiList[position].id)
+        startAItem(position)
         return true
     }
 
     private fun onMenuAdd() {
         // Go to item activity
         startAItem(null)
-    }
-
-    private fun startAItem(itemId:Long?) {
-        val intent = Intent(this, AItem::class.java)
-        intent.putExtra(Data.LIST_ID, dataList!!.id)
-        itemId?.let {  intent.putExtra(Data.ITEM_ID, it) }
-        startActivityForResult(intent, ITEM_OPEN_REQUEST)
     }
 
     private fun onMenuHelp() {
@@ -242,7 +282,7 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
         Log.d(TAG, "onActivityResult requestCode= $requestCode, resultCode=$resultCode")
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == ITEM_OPEN_REQUEST) {
-            update()
+            //update()
         } else {
             if (resultCode != RESULT_OK) return
             if (data == null) return
@@ -287,7 +327,7 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // List ADAPTER
-    private inner class ListAdapter(var ctx: Context) : BaseAdapter() {
+    inner class ListAdapter(var ctx: Context) : BaseAdapter() {
         var lInflater: LayoutInflater
         var colorChecked: Int
         var colorUnchecked: Int
@@ -404,12 +444,5 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
 //        }
 //    }
 
-    companion object {
-        const val TAG = "myapp.AList"
-        const val ITEM_OPEN_REQUEST = 111
 
-        //    static final int FILE_OPEN_REQUEST      = 222;
-        const val FILE_CREATE_REQUEST = 333
-        const val FILE_CREATE_XML_REQUEST = 444
-    }
 }
