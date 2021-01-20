@@ -149,10 +149,12 @@ object Data {
                         val itemJSON = itemsJSON.optJSONObject(j) ?: continue
                         val itemName = itemJSON.optString("name", null) ?: continue
                         // Update the database only because of the list is not loaded
-                        Database.addItem(
-                                list.id,
-                                itemName,
-                                itemJSON.optString("description", null)
+                        Database.insertItem(
+                                Item.create(
+                                        list.id,
+                                        itemName,
+                                        itemJSON.optString("description", null)
+                                )
                         )
                     }
                 }
@@ -227,7 +229,7 @@ object Data {
     //---------------------------------------------------------------------------------------------
     // GLOBAL CONSTANTS
     const val LIST_ID = "LIST_ID"
-    const val ITEM_INDEX = "ITEM_INDEX"
+    const val ITEM_ID = "ITEM_ID"
     const val ACTIVITY = "ACTIVITY"
     const val RESULT_INSERTED = 10
     const val RESULT_UPDATED = 20

@@ -42,16 +42,18 @@ object Database {
         val rowID = db!!.insert(TABLE_LISTS, null, cv)
     }
 
-    fun addItem(listID: Long, name: String?, description: String?) {
-        Log.d(TAG, "addItem")
+    fun insertItem(item: Item) {
+        Log.d(TAG, "insertItem")
 
         // Prepare values
-        val id = System.currentTimeMillis()
         val cv = ContentValues()
-        cv.put(ITEM_ID, id)
-        cv.put(LIST_ID, listID)
-        cv.put(NAME, name)
-        cv.put(DESCRIPTION, description)
+        with(item) {
+            cv.put(ITEM_ID,     id)
+            cv.put(LIST_ID,     parent_id)
+            cv.put(STATE,       state)
+            cv.put(NAME,        name)
+            cv.put(DESCRIPTION, description)
+        }
         // Insert
         val rowID = db!!.insert(TABLE_ITEMS, null, cv)
     }
@@ -200,12 +202,12 @@ object Database {
         Log.d(TAG, "loadListOfLists. size:" + hashMap.size)
     }
 
-    fun loadListItems(listId:Long):ArrayList<Item> {
+    fun loadListItems(listId:Long):HashMap<Long,Item> {
         // Open database
         //SQLiteDatabase dbRead = dbHelper.getReadableDatabase();
 
         // LOAD ITEMS
-        val items = ArrayList<Item>()
+        val items = HashMap<Long,Item>()
         // Query all rows and get Cursor
         val args = arrayOf(listId.toString())
         val c = db!!.query(
@@ -215,7 +217,7 @@ object Database {
                 args,  // selectionArgs
                 null,  // group by
                 null,  // having
-                NAME // order by
+                null//NAME // order by
         )
         // Loop for all string
         if (c.moveToFirst()) {
@@ -231,13 +233,13 @@ object Database {
                 // Create deta object
                 val item = Item(
                         c.getLong(iID),
-                        // c.getInt(iSyncState)
+                        listId,
                         c.getInt(iState),
                         c.getString(iName),
                         c.getString(iDescription)
                 )
                 // Add to the list
-                items.add(item)
+                items.put(item.id, item)
             } while (c.moveToNext())
         }
         c.close()

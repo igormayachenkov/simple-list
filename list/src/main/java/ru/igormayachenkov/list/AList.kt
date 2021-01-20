@@ -28,7 +28,8 @@ import kotlinx.android.synthetic.main.a_list.*
 
 class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener {
     // Data objects
-    private var list: List? = null
+    private var dataList: List? = null
+    private val uiList = ArrayList<Item>()
 
     // Controls
 //    var viewList: ListView? = null
@@ -49,9 +50,8 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
 
         // Get data objects
         val id = intent.getLongExtra(Data.LIST_ID, 0)
-        list = Data.listOfLists.getList(id)
-        list?.let {
-            // Load data objects
+        dataList = Data.listOfLists.getList(id)
+        dataList?.let {
             it.load()
 
             // Load controls
@@ -93,13 +93,25 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
     // UPDATER
     private fun update() {
         Log.w(TAG, "UPDATE")
-        if (adapter!!.count == 0) {
+
+        // Reload UI LIST
+        uiList.clear()
+        dataList!!.liveItems.value?.let {
+            for(item in it.values){
+                uiList.add(item)
+            }
+            uiList.sortBy { it.name }
+        }?: kotlin.run {
+            Log.e(TAG, "list is not loaded")
+        }
+
+        if (uiList.size == 0) {
             listView.visibility = View.GONE
             emptyView.visibility = View.VISIBLE
         } else {
             emptyView.visibility = View.GONE
             listView.visibility = View.VISIBLE
-            adapter!!.notifyDataSetChanged()
+            adapter?.notifyDataSetChanged()
         }
     }
 
@@ -138,12 +150,9 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
     }
 
     override fun onItemClick(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
-        val items = list?.liveItems?.value
-        if(items==null) return
         // Change item state
-        val item = items[position]
+        val item = uiList[position]
         item.changeState()
-
         // Update row
         adapter?.updateChecked(item, view, null, null)
     }
@@ -161,8 +170,8 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
 
     private fun startAItem(index: Int) {
         val intent = Intent(this, AItem::class.java)
-        intent.putExtra(Data.LIST_ID, list!!.id)
-        intent.putExtra(Data.ITEM_INDEX, index)
+        intent.putExtra(Data.LIST_ID, dataList!!.id)
+        intent.putExtra(Data.ITEM_ID, uiList[index].id)
         startActivityForResult(intent, ITEM_OPEN_REQUEST)
     }
 
@@ -179,7 +188,7 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
                 .setTitle(getString(R.string.list_delete_alert_title))
                 .setMessage(getString(R.string.list_delete_alert_text))
                 .setPositiveButton(android.R.string.yes) { dialog, which -> // continue with delete
-                    Data.listOfLists.deleteList(list!!.id)
+                    Data.listOfLists.deleteList(dataList!!.id)
                     // Go out
                     setResult(Data.RESULT_DELETED)
                     finish()
@@ -196,15 +205,15 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
                 this,
                 R.string.dialog_title_rename,
                 R.string.main_add_hint,
-                list!!.name,
+                dataList!!.name,
                 { text ->
                     if (text.isEmpty()) {
                         Toast.makeText(this@AList, R.string.dialog_error, Toast.LENGTH_SHORT).show()
                     }else {
                         // Rename List
-                        list!!.rename(text)
+                        dataList!!.rename(text)
                         // Update title
-                        title = list!!.name
+                        title = dataList!!.name
                         // Set flag
                         setResult(Data.RESULT_UPDATED)
                     }
@@ -217,7 +226,7 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.type = "*/*"
-        intent.putExtra(Intent.EXTRA_TITLE, list!!.name + ".json")
+        intent.putExtra(Intent.EXTRA_TITLE, dataList!!.name + ".json")
         startActivityForResult(intent, FILE_CREATE_REQUEST)
     }
 
@@ -225,7 +234,7 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.type = "*/*"
-        intent.putExtra(Intent.EXTRA_TITLE, list!!.name + ".xml")
+        intent.putExtra(Intent.EXTRA_TITLE, dataList!!.name + ".xml")
         startActivityForResult(intent, FILE_CREATE_XML_REQUEST)
     }
 
@@ -253,7 +262,7 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
             val fileOutputStream = FileOutputStream(pfd!!.fileDescriptor)
 
             // Write
-            val bytes = list!!.toXML().toByteArray()
+            val bytes = dataList!!.toXML().toByteArray()
             fileOutputStream.write(bytes)
 
             // Close. Let the document provider know you're done by closing the stream.
@@ -269,7 +278,7 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
     }
 
     fun doSave(uri: Uri?) {
-        list?.let {
+        dataList?.let {
             val lists = ArrayList<List>()
             lists.add(it)
             doSave(this, uri, lists)
@@ -291,13 +300,11 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
         }
 
         override fun getCount(): Int {
-            val items = list?.liveItems?.value
-            if(items==null) return 0
-            return items.size
+            return uiList.size
         }
 
         override fun getItem(position: Int): Any {
-            return list!!.liveItems.value!!.get(position)
+            return uiList[position]
         }
 
         override fun getItemId(position: Int): Long {
@@ -311,7 +318,7 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
             else
                 lInflater.inflate(R.layout.item_list, parent, false)
             // Fill View
-            val item = list!!.liveItems.value!!.get(position)
+            val item = uiList[position]
             updateView(item, view)
             return view
         }
@@ -361,8 +368,8 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
             file = File(dir, filename)
             val bw = BufferedWriter(FileWriter(file))
             when (format) {
-                "xml" -> list!!.saveXML(bw)
-                "json" -> bw.write(list!!.toJSON().toString())
+                "xml" -> dataList!!.saveXML(bw)
+                "json" -> bw.write(dataList!!.toJSON().toString())
                 else -> throw Exception("unknown format '$format'")
             }
             bw.close()

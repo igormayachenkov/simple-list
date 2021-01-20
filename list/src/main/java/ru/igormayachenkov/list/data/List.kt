@@ -22,18 +22,19 @@ data class List(
     }
 
     // DATA
-    val liveItems = MutableLiveData<ArrayList<Item>>()
-    //val items = ArrayList<Item>()
-    //var isLoaded: Boolean = false
+    val liveItems = MutableLiveData<HashMap<Long,Item>>()
+
 
     fun load() {
         Log.d(TAG, "load")
-        if (liveItems.value==null)
-            reloadItems()
+        if (liveItems.value==null) {
+            liveItems.value = Database.loadListItems(id)
+        }
     }
 
-    private fun reloadItems(){
-        liveItems.value = Database.loadListItems(id)
+    private fun notifyChanges(){
+        val items = liveItems.value
+        liveItems.value = items
     }
 
     fun rename(newName: String) {
@@ -43,36 +44,44 @@ data class List(
 
     fun addItem(name: String?, description: String?) {
         Log.d(TAG, "List.addItem")
-        Database.addItem(id, name, description)
-        // Reload items
-        reloadItems()
+        liveItems.value?.let { items->
+            val item = Item.create(id,name,description)
+            Database.insertItem(item)
+            items.put(item.id, item)
+            notifyChanges()
+        }?: kotlin.run {
+            Log.e(TAG,"list is not loaded")
+        }
+
     }
 
-    fun updateItemName(itemIndex: Int, name: String?, description: String?) {
-        Log.d(TAG, "List.updateItemName")
+    fun updateItemName(itemId: Long, name: String?, description: String?) {
+        Log.d(TAG, "List.updateItemName #$itemId")
         liveItems.value?.let { items->
-            // Get item
-            val (id1) = items[itemIndex]
-            // Update item
-            Database.updateItemName(id1, name, description)
-            // Reload items
-            reloadItems()
+            items[itemId]?.let {
+                it.name = name
+                Database.updateItemName(itemId, name, description)
+                notifyChanges()
+            }?: run{
+                Log.e(TAG,"item #$itemId not found")
+            }
         }?: run {
-            Log.e(TAG,"updateItemName: list is not loaded")
+            Log.e(TAG,"list is not loaded")
         }
     }
 
-    fun deleteItem(itemIndex: Int) {
+    fun deleteItem(itemId: Long) {
         Log.d(TAG, "List.deleteItem")
         liveItems.value?.let { items ->
-            // Get item
-            val (id1) = items[itemIndex]
-            // Delete item
-            Database.deleteItem(id1)
-            // Reload items
-            items.removeAt(itemIndex)
+            items[itemId]?.let {
+                Database.deleteItem(itemId)
+                items.remove(itemId)
+                notifyChanges()
+            }?: run{
+                Log.e(TAG,"item #$itemId not found")
+            }
         }?: run {
-            Log.e(TAG,"deleteItem: list is not loaded")
+            Log.e(TAG,"list is not loaded")
         }
     }
 
@@ -87,7 +96,7 @@ data class List(
         if (description != null && !description!!.isEmpty()) sb.append("<description>$description</description>\n")
         sb.append("<items>\n")
         liveItems.value?.let { items ->
-            for (item in items) {
+            for (item in items.values) {
                 sb.append("<item>\n")
                 sb.append("""<id>${item.id}</id>""".trimIndent())
                 sb.append("""
@@ -127,7 +136,7 @@ data class List(
         bw.write("<items>")
         bw.newLine()
         liveItems.value?.let { items ->
-            for (item in items) {
+            for (item in items.values) {
                 bw.write("<item>")
                 bw.newLine()
                 bw.write("<id>" + item.id + "</id>")
@@ -159,7 +168,7 @@ data class List(
         load()
         val jsItems = JSONArray()
         liveItems.value?.let { items ->
-            for (item in items) {
+            for (item in items.values) {
                 val js = JSONObject()
                 js.put("id", item.id)
                 js.put("name", item.name)

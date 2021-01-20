@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.Data
 import kotlinx.android.synthetic.main.a_item.*
+import ru.igormayachenkov.list.data.Item
 
 class AItem : AppCompatActivity() {
     companion object {
@@ -16,7 +17,7 @@ class AItem : AppCompatActivity() {
     }
     // Data objects
     private var list: List? = null
-    private var itemIndex = 0
+    private var item: Item? = null
 
     // Controls
 //    var txtName: TextView? = null
@@ -28,33 +29,30 @@ class AItem : AppCompatActivity() {
         setContentView(R.layout.a_item)
 
         // Get data objects
-        val id = intent.getLongExtra(Data.LIST_ID, 0)
-        list = Data.listOfLists.getList(id)
+        val listId = intent.getLongExtra(Data.LIST_ID, 0)
+        list = Data.listOfLists.getList(listId)
         list?.let {
             it.load()
 
-            itemIndex = intent.getIntExtra(Data.ITEM_INDEX, -1)
-            Log.d(TAG, "onCreate $id $itemIndex")
+            val itemId:Long = intent.getLongExtra(Data.ITEM_ID, 0L)
+            Log.d(TAG, "onCreate list#$listId item#$itemId")
 
             // Load data objects
-
-            // Controls
-//            txtName = findViewById<View>(R.id.txtName) as TextView
-//            txtDescr = findViewById<View>(R.id.txtDescr) as TextView
-//            btnDelete = findViewById<View>(R.id.btnDel) as ImageButton
-
-            // LOAD DATA FIELDS
-            if (itemIndex >= 0) {
-                val item = it.liveItems.value!!.get(itemIndex)
-
-                // Load item fialds
-                txtName.setText(item.name)
-                txtDescr.setText(item.description)
+            if (itemId != 0L) {
+                item = it.liveItems.value!!.get(itemId)
+                item?.let {
+                    // Load item fialds
+                    txtName.setText(it.name)
+                    txtDescr.setText(it.description)
+                }?: kotlin.run {
+                    Log.e(AList.TAG, "item #$itemId not found in the list")
+                    finish()
+                }
             } else {
                 btnDel.visibility = View.GONE
             }
         }?: kotlin.run {
-            Log.e(AList.TAG, "list #id does not exist")
+            Log.e(AList.TAG, "list #$listId does not exist")
             finish()
         }
     }
@@ -78,13 +76,14 @@ class AItem : AppCompatActivity() {
         }
 
         // Save data
-        if (itemIndex < 0) {
+        val itemId = item?.id
+        if (itemId==null) {
             // New item
-            list!!.addItem(name, txtDescr!!.text.toString())
+            list!!.addItem(name, txtDescr.text.toString())
             setResult(Data.RESULT_INSERTED)
         } else {
             // Existed item
-            list!!.updateItemName(itemIndex, name, txtDescr!!.text.toString())
+            list!!.updateItemName(itemId, name, txtDescr.text.toString())
             setResult(Data.RESULT_UPDATED)
         }
 
@@ -95,10 +94,10 @@ class AItem : AppCompatActivity() {
     fun onButtonDelete(v: View?) {
         //Toast.makeText(this, "onButtonDelete", Toast.LENGTH_SHORT).show();
         // Delete item
-        list!!.deleteItem(itemIndex)
-
-        // Return
-        setResult(Data.RESULT_DELETED)
+        item?.id?.let {
+            list!!.deleteItem(it)
+            setResult(Data.RESULT_DELETED)
+        }
         finish()
     }
 }
