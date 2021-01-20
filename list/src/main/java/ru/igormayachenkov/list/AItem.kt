@@ -31,15 +31,15 @@ class AItem : AppCompatActivity() {
         // Get data objects
         val listId = intent.getLongExtra(Data.LIST_ID, 0)
         list = Data.listOfLists.getList(listId)
-        list?.let {
-            it.load()
+        list?.let { list->
+            list.load()
 
             val itemId:Long = intent.getLongExtra(Data.ITEM_ID, 0L)
             Log.d(TAG, "onCreate list#$listId item#$itemId")
 
             // Load data objects
             if (itemId != 0L) {
-                item = it.liveItems.value!!.get(itemId)
+                item = list.items!!.get(itemId)
                 item?.let {
                     // Load item fialds
                     txtName.setText(it.name)

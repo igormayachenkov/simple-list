@@ -1,7 +1,6 @@
 package ru.igormayachenkov.list.data
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -22,19 +21,14 @@ data class List(
     }
 
     // DATA
-    val liveItems = MutableLiveData<HashMap<Long,Item>>()
+    var items : HashMap<Long,Item>? = null
 
 
     fun load() {
         Log.d(TAG, "load")
-        if (liveItems.value==null) {
-            liveItems.value = Database.loadListItems(id)
+        if (items==null) {
+            items = Database.loadListItems(id)
         }
-    }
-
-    private fun notifyChanges(){
-        val items = liveItems.value
-        liveItems.value = items
     }
 
     fun rename(newName: String) {
@@ -44,24 +38,22 @@ data class List(
 
     fun addItem(name: String?, description: String?) {
         Log.d(TAG, "List.addItem")
-        liveItems.value?.let { items->
+        items?.let { items->
             val item = Item.create(id,name,description)
             Database.insertItem(item)
             items.put(item.id, item)
-            notifyChanges()
         }?: kotlin.run {
             Log.e(TAG,"list is not loaded")
         }
-
     }
 
     fun updateItemName(itemId: Long, name: String?, description: String?) {
         Log.d(TAG, "List.updateItemName #$itemId")
-        liveItems.value?.let { items->
+        items?.let { items->
             items[itemId]?.let {
                 it.name = name
+                it.description = description
                 Database.updateItemName(itemId, name, description)
-                notifyChanges()
             }?: run{
                 Log.e(TAG,"item #$itemId not found")
             }
@@ -72,11 +64,10 @@ data class List(
 
     fun deleteItem(itemId: Long) {
         Log.d(TAG, "List.deleteItem")
-        liveItems.value?.let { items ->
+        items?.let { items ->
             items[itemId]?.let {
                 Database.deleteItem(itemId)
                 items.remove(itemId)
-                notifyChanges()
             }?: run{
                 Log.e(TAG,"item #$itemId not found")
             }
@@ -95,7 +86,7 @@ data class List(
         sb.append("<name>$name</name>\n")
         if (description != null && !description!!.isEmpty()) sb.append("<description>$description</description>\n")
         sb.append("<items>\n")
-        liveItems.value?.let { items ->
+        items?.let { items ->
             for (item in items.values) {
                 sb.append("<item>\n")
                 sb.append("""<id>${item.id}</id>""".trimIndent())
@@ -135,7 +126,7 @@ data class List(
         bw.newLine()
         bw.write("<items>")
         bw.newLine()
-        liveItems.value?.let { items ->
+        items?.let { items ->
             for (item in items.values) {
                 bw.write("<item>")
                 bw.newLine()
@@ -167,7 +158,7 @@ data class List(
         // ITEMS
         load()
         val jsItems = JSONArray()
-        liveItems.value?.let { items ->
+        items?.let { items ->
             for (item in items.values) {
                 val js = JSONObject()
                 js.put("id", item.id)

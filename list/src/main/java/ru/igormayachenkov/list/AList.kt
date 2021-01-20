@@ -62,9 +62,9 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
             listView.adapter = adapter
             listView.onItemClickListener = this
             listView.onItemLongClickListener = this
-            //update()
 
-            it.liveItems.observe(this, Observer{update()})
+            update()
+
         }?: kotlin.run {
             Log.e(TAG, "list #id does not exist")
             finish()
@@ -96,7 +96,7 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
 
         // Reload UI LIST
         uiList.clear()
-        dataList!!.liveItems.value?.let {
+        dataList!!.items?.let {
             for(item in it.values){
                 uiList.add(item)
             }
@@ -242,7 +242,7 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
         Log.d(TAG, "onActivityResult requestCode= $requestCode, resultCode=$resultCode")
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == ITEM_OPEN_REQUEST) {
-            //update()
+            update()
         } else {
             if (resultCode != RESULT_OK) return
             if (data == null) return
@@ -356,53 +356,53 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
         }
     }
 
-    private fun save(filename: String, format: String) {
-        var filename = filename
-        filename = "$filename.$format"
-        var file: File? = null
-        var error: String? = null
-        try {
-            //File dir = TheApp.context().getExternalFilesDir(null); //Android/data/<package.name>/files
-            val dir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), Data.APP_FOLDER)
-            if (!dir.exists()) if (!dir.mkdirs()) throw Exception("Directory not created")
-            file = File(dir, filename)
-            val bw = BufferedWriter(FileWriter(file))
-            when (format) {
-                "xml" -> dataList!!.saveXML(bw)
-                "json" -> bw.write(dataList!!.toJSON().toString())
-                else -> throw Exception("unknown format '$format'")
-            }
-            bw.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            error = e.message
-        }
-
-        // SHOW RESULT
-        if (error == null) {
-            Log.d(TAG, "save size:" + (file?.usableSpace ?: "0"))
-            AlertDialog.Builder(this) //.setTitle(getString(R.string.dialog_title_save))
-                    .setMessage("""
-    ${getString(R.string.list_save_ok)}
-    Android/Documents/
-    ${Data.APP_FOLDER}/
-    $filename
-    """.trimIndent())
-                    .setPositiveButton("OK", null)
-                    .setIcon(android.R.drawable.ic_dialog_info)
-                    .show()
-        } else {
-            Log.d(TAG, "Save error:$error")
-            AlertDialog.Builder(this) //.setTitle(getString(R.string.dialog_title_save))
-                    .setMessage("""
-    ${getString(R.string.list_save_error)}
-    $error
-    """.trimIndent())
-                    .setPositiveButton("OK", null)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show()
-        }
-    }
+//    private fun save(filename: String, format: String) {
+//        var filename = filename
+//        filename = "$filename.$format"
+//        var file: File? = null
+//        var error: String? = null
+//        try {
+//            //File dir = TheApp.context().getExternalFilesDir(null); //Android/data/<package.name>/files
+//            val dir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), Data.APP_FOLDER)
+//            if (!dir.exists()) if (!dir.mkdirs()) throw Exception("Directory not created")
+//            file = File(dir, filename)
+//            val bw = BufferedWriter(FileWriter(file))
+//            when (format) {
+//                "xml" -> dataList!!.saveXML(bw)
+//                "json" -> bw.write(dataList!!.toJSON().toString())
+//                else -> throw Exception("unknown format '$format'")
+//            }
+//            bw.close()
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            error = e.message
+//        }
+//
+//        // SHOW RESULT
+//        if (error == null) {
+//            Log.d(TAG, "save size:" + (file?.usableSpace ?: "0"))
+//            AlertDialog.Builder(this) //.setTitle(getString(R.string.dialog_title_save))
+//                    .setMessage("""
+//    ${getString(R.string.list_save_ok)}
+//    Android/Documents/
+//    ${Data.APP_FOLDER}/
+//    $filename
+//    """.trimIndent())
+//                    .setPositiveButton("OK", null)
+//                    .setIcon(android.R.drawable.ic_dialog_info)
+//                    .show()
+//        } else {
+//            Log.d(TAG, "Save error:$error")
+//            AlertDialog.Builder(this) //.setTitle(getString(R.string.dialog_title_save))
+//                    .setMessage("""
+//    ${getString(R.string.list_save_error)}
+//    $error
+//    """.trimIndent())
+//                    .setPositiveButton("OK", null)
+//                    .setIcon(android.R.drawable.ic_dialog_alert)
+//                    .show()
+//        }
+//    }
 
     companion object {
         const val TAG = "myapp.AList"
