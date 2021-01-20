@@ -159,19 +159,19 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
 
     override fun onItemLongClick(parent: AdapterView<*>?, view: View, position: Int, id: Long): Boolean {
         // Go to item activity
-        startAItem(position)
+        startAItem(uiList[position].id)
         return true
     }
 
     private fun onMenuAdd() {
         // Go to item activity
-        startAItem(-1)
+        startAItem(null)
     }
 
-    private fun startAItem(index: Int) {
+    private fun startAItem(itemId:Long?) {
         val intent = Intent(this, AItem::class.java)
         intent.putExtra(Data.LIST_ID, dataList!!.id)
-        intent.putExtra(Data.ITEM_ID, uiList[index].id)
+        itemId?.let {  intent.putExtra(Data.ITEM_ID, it) }
         startActivityForResult(intent, ITEM_OPEN_REQUEST)
     }
 
