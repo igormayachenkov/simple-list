@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import org.json.JSONException
 import org.json.JSONObject
-import ru.igormayachenkov.list.data.DList
+import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.Data
 import java.io.BufferedReader
 import java.io.FileOutputStream
@@ -23,8 +23,8 @@ import kotlinx.android.synthetic.main.a_main.*
 
 class AMain : AppCompatActivity(), OnItemClickListener {
     // Data objects
-    private val sortedList = ArrayList<DList>()
-    private val comparatorName = Comparator<DList> { a, b -> a.name.compareTo(b.name) }
+    private val sortedList = ArrayList<List>()
+    private val comparatorName = Comparator<List> { a, b -> a.name.compareTo(b.name) }
 
     // Adapter
     private var adapter: ListAdapter? = null
@@ -120,7 +120,7 @@ class AMain : AppCompatActivity(), OnItemClickListener {
         }
     }
 
-    private fun startAList(list: DList) {
+    private fun startAList(list: List) {
         val intent = Intent(this@AMain, AList::class.java)
         intent.putExtra(Data.LIST_ID, list.id)
         startActivityForResult(intent, LIST_OPEN_REQUEST)
@@ -129,7 +129,7 @@ class AMain : AppCompatActivity(), OnItemClickListener {
     override fun onItemClick(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
         //Toast.makeText(this, "onItemClick", Toast.LENGTH_SHORT).show();
         // Go to list activity
-        startAList(adapter!!.getItem(position) as DList)
+        startAList(adapter!!.getItem(position) as List)
     }
 
     fun onMenuAdd() {
@@ -144,7 +144,11 @@ class AMain : AppCompatActivity(), OnItemClickListener {
                         Toast.makeText(this@AMain, R.string.dialog_error, Toast.LENGTH_SHORT).show()
                     }else {
                         // Create a new list object
-                        val list = DList(System.currentTimeMillis(), text)
+                        val list = List(
+                                System.currentTimeMillis(),
+                                text,
+                        null
+                        )
                         // Add new list
                         Data.listOfLists.addList(list)
                         // Go to list activity
@@ -316,7 +320,7 @@ ${getString(R.string.load_to_update)} ${estimation.toUpdate}"""
         const val FILE_OPEN_REQUEST = 222
         const val FILE_CREATE_REQUEST = 333
         @JvmStatic
-        fun doSave(context: Context, uri: Uri?, lists: Collection<DList>) {
+        fun doSave(context: Context, uri: Uri?, lists: Collection<List>) {
             try {
                 // Open
                 val pfd = context.contentResolver.openFileDescriptor(uri!!, "w")

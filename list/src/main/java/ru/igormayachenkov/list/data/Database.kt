@@ -31,7 +31,7 @@ object Database {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // INSERTERS
-    fun insertList(list: DList) {
+    fun insertList(list: List) {
         Log.d(TAG, "addList")
 
         // Prepare values
@@ -156,7 +156,7 @@ object Database {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // LOADERS
-    fun loadListOfLists(hashMap: HashMap<Long, DList>) {
+    fun loadListOfLists(hashMap: HashMap<Long, List>) {
         // Open database
         //SQLiteDatabase dbRead = dbHelper.getReadableDatabase();
 
@@ -183,11 +183,12 @@ object Database {
             // Load
             do {
                 // Create new data object
-                val list = DList(
+                val list = List(
                         c.getLong(iID),
-                        c.getString(iName))
-                list.syncState = c.getInt(iSyncState)
-                list.description = c.getString(iDescription)
+                        c.getString(iName),
+                        // c.getInt(iSyncState)
+                        c.getString(iDescription)
+                )
                 // Add to the list
                 hashMap[list.id] = list
             } while (c.moveToNext())
@@ -199,14 +200,14 @@ object Database {
         Log.d(TAG, "loadListOfLists. size:" + hashMap.size)
     }
 
-    fun loadListItems(list: DList) {
+    fun loadListItems(listId:Long):ArrayList<Item> {
         // Open database
         //SQLiteDatabase dbRead = dbHelper.getReadableDatabase();
 
         // LOAD ITEMS
-        list.items.clear()
+        val items = ArrayList<Item>()
         // Query all rows and get Cursor
-        val args = arrayOf(list.id.toString())
+        val args = arrayOf(listId.toString())
         val c = db!!.query(
                 TABLE_ITEMS,  // table
                 null,  // columns
@@ -228,22 +229,23 @@ object Database {
             // Load
             do {
                 // Create deta object
-                val item = DItem(
-                        c.getLong(iID)
+                val item = Item(
+                        c.getLong(iID),
+                        // c.getInt(iSyncState)
+                        c.getInt(iState),
+                        c.getString(iName),
+                        c.getString(iDescription)
                 )
-                item.syncState = c.getInt(iSyncState)
-                item.state = c.getInt(iState)
-                item.name = c.getString(iName)
-                item.description = c.getString(iDescription)
                 // Add to the list
-                list.items.add(item)
+                items.add(item)
             } while (c.moveToNext())
         }
         c.close()
 
         // Close database
         //dbHelper.close();
-        Log.d(TAG, "loadListItems. size:" + list.items.size)
+        Log.d(TAG, "loadListItems. size:" + items.size)
+        return  items
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

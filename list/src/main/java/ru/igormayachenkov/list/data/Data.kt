@@ -64,7 +64,7 @@ object Data {
 
     // TO JSON
     @Throws(JSONException::class)
-    fun toJSON(lists: Collection<DList>): JSONObject {
+    fun toJSON(lists: Collection<List>): JSONObject {
         val json = JSONObject()
         // Version
         val pInfo = App.instance()?.packageInfo
@@ -140,7 +140,7 @@ object Data {
                     listOfLists.deleteList(id)
                 }
                 // Insert list
-                list = DList(id, name)
+                list = List(id, name, null)
                 listOfLists.addList(list)
                 // Insert list items
                 val itemsJSON = listJSON.optJSONArray("items")
@@ -170,12 +170,12 @@ object Data {
     // DATA OBJECT: List of lists
     class ListOfLists {
         private var isLoaded = false
-        private val hashMap: HashMap<Long, DList>
-        fun getList(id: Long): DList? {
+        private val hashMap: HashMap<Long, List>
+        fun getList(id: Long): List? {
             return hashMap[id]
         }
 
-        val aLL: Collection<DList>
+        val aLL: Collection<List>
             get() = hashMap.values
 
         fun load() {
@@ -194,7 +194,7 @@ object Data {
         }
 
         // Add a new list
-        fun addList(list: DList): DList {
+        fun addList(list: List): List {
             // Save in the database
             Database.insertList(list)
             // Add to the hashmap

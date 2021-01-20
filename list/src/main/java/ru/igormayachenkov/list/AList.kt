@@ -14,20 +14,21 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import ru.igormayachenkov.list.AMain.Companion.doSave
-import ru.igormayachenkov.list.data.DItem
-import ru.igormayachenkov.list.data.DList
+import ru.igormayachenkov.list.data.Item
+import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.Data
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileOutputStream
 import java.io.FileWriter
-import java.util.*
 import kotlinx.android.synthetic.main.a_list.*
+//import kotlinx.android.synthetic.main.item_list.*
 
 class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener {
     // Data objects
-    private var list: DList? = null
+    private var list: List? = null
 
     // Controls
 //    var viewList: ListView? = null
@@ -49,19 +50,27 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
         // Get data objects
         val id = intent.getLongExtra(Data.LIST_ID, 0)
         list = Data.listOfLists.getList(id)
+        list?.let {
+            // Load data objects
+            it.load()
 
-        // Load data objects
-        list!!.load()
+            // Load controls
+            title = it.name
 
-        // Load controls
-        title = list!!.name
+            // List
+            adapter = ListAdapter(this)
+            listView.adapter = adapter
+            listView.onItemClickListener = this
+            listView.onItemLongClickListener = this
+            //update()
 
-        // List
-        adapter = ListAdapter(this)
-        listView.adapter = adapter
-        listView.onItemClickListener = this
-        listView.onItemLongClickListener = this
-        update()
+            it.liveItems.observe(this, Observer{update()})
+        }?: kotlin.run {
+            Log.e(TAG, "list #id does not exist")
+            finish()
+        }
+
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -83,6 +92,7 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // UPDATER
     private fun update() {
+        Log.w(TAG, "UPDATE")
         if (adapter!!.count == 0) {
             listView.visibility = View.GONE
             emptyView.visibility = View.VISIBLE
@@ -128,12 +138,14 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
     }
 
     override fun onItemClick(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
+        val items = list?.liveItems?.value
+        if(items==null) return
         // Change item state
-        val item = list!!.items[position]
+        val item = items[position]
         item.changeState()
 
         // Update row
-        adapter!!.updateChecked(item, view, null, null)
+        adapter?.updateChecked(item, view, null, null)
     }
 
     override fun onItemLongClick(parent: AdapterView<*>?, view: View, position: Int, id: Long): Boolean {
@@ -221,7 +233,7 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
         Log.d(TAG, "onActivityResult requestCode= $requestCode, resultCode=$resultCode")
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == ITEM_OPEN_REQUEST) {
-            update()
+            //update()
         } else {
             if (resultCode != RESULT_OK) return
             if (data == null) return
@@ -258,7 +270,7 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
 
     fun doSave(uri: Uri?) {
         list?.let {
-            val lists = ArrayList<DList>()
+            val lists = ArrayList<List>()
             lists.add(it)
             doSave(this, uri, lists)
         }
@@ -270,12 +282,22 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
         var lInflater: LayoutInflater
         var colorChecked: Int
         var colorUnchecked: Int
+
+        init {
+            lInflater = ctx
+                    .getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            colorChecked = ContextCompat.getColor(ctx, R.color.colorChecked)
+            colorUnchecked = ContextCompat.getColor(ctx, R.color.colorUnchecked)
+        }
+
         override fun getCount(): Int {
-            return list!!.items.size
+            val items = list?.liveItems?.value
+            if(items==null) return 0
+            return items.size
         }
 
         override fun getItem(position: Int): Any {
-            return list!!.items[position]
+            return list!!.liveItems.value!!.get(position)
         }
 
         override fun getItemId(position: Int): Long {
@@ -289,12 +311,12 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
             else
                 lInflater.inflate(R.layout.item_list, parent, false)
             // Fill View
-            val item = list!!.items[position]
+            val item = list!!.liveItems.value!!.get(position)
             updateView(item, view)
             return view
         }
 
-        fun updateView(item: DItem, view: View) {
+        fun updateView(item: Item, view: View) {
             //Log.d(TAG, "updateItem "+item.name);
 
             // Name
@@ -312,25 +334,18 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
             updateChecked(item, view, txtName, txtDescr)
         }
 
-        fun updateChecked(item: DItem, view: View, txtName: TextView?, txtDescr: TextView?) {
+        fun updateChecked(item: Item, view: View, txtName: TextView?, txtDescr: TextView?) {
             var txtName = txtName
             var txtDescr = txtDescr
             if (txtName == null) txtName = view.findViewById<View>(R.id.txtName) as TextView
             if (txtDescr == null) txtDescr = view.findViewById<View>(R.id.txtDescription) as TextView
-            if (item.state == DItem.ITEM_STATE_CHECKED) {
-                txtName!!.setTextColor(colorChecked)
-                txtDescr!!.setTextColor(colorChecked)
+            if (item.state == Item.ITEM_STATE_CHECKED) {
+                txtName.setTextColor(colorChecked)
+                txtDescr.setTextColor(colorChecked)
             } else {
-                txtName!!.setTextColor(colorUnchecked)
-                txtDescr!!.setTextColor(colorUnchecked)
+                txtName.setTextColor(colorUnchecked)
+                txtDescr.setTextColor(colorUnchecked)
             }
-        }
-
-        init {
-            lInflater = ctx
-                    .getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            colorChecked = ContextCompat.getColor(ctx, R.color.colorChecked)
-            colorUnchecked = ContextCompat.getColor(ctx, R.color.colorUnchecked)
         }
     }
 

@@ -6,21 +6,23 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import ru.igormayachenkov.list.data.DList
+import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.Data
+import kotlinx.android.synthetic.main.a_item.*
 
 class AItem : AppCompatActivity() {
     companion object {
         const val TAG = "myapp.AItem"
     }
     // Data objects
-    private var list: DList? = null
+    private var list: List? = null
     private var itemIndex = 0
 
     // Controls
-    var txtName: TextView? = null
-    var txtDescr: TextView? = null
-    var btnDelete: ImageButton? = null
+//    var txtName: TextView? = null
+//    var txtDescr: TextView? = null
+//    var btnDelete: ImageButton? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.a_item)
@@ -28,27 +30,32 @@ class AItem : AppCompatActivity() {
         // Get data objects
         val id = intent.getLongExtra(Data.LIST_ID, 0)
         list = Data.listOfLists.getList(id)
-        list!!.load()
+        list?.let {
+            it.load()
 
-        itemIndex = intent.getIntExtra(Data.ITEM_INDEX, -1)
-        Log.d(TAG, "onCreate $id $itemIndex")
+            itemIndex = intent.getIntExtra(Data.ITEM_INDEX, -1)
+            Log.d(TAG, "onCreate $id $itemIndex")
 
-        // Load data objects
+            // Load data objects
 
-        // Controls
-        txtName = findViewById<View>(R.id.txtName) as TextView
-        txtDescr = findViewById<View>(R.id.txtDescr) as TextView
-        btnDelete = findViewById<View>(R.id.btnDel) as ImageButton
+            // Controls
+//            txtName = findViewById<View>(R.id.txtName) as TextView
+//            txtDescr = findViewById<View>(R.id.txtDescr) as TextView
+//            btnDelete = findViewById<View>(R.id.btnDel) as ImageButton
 
-        // LOAD DATA FIELDS
-        if (itemIndex >= 0) {
-            val item = list!!.items[itemIndex]
+            // LOAD DATA FIELDS
+            if (itemIndex >= 0) {
+                val item = it.liveItems.value!!.get(itemIndex)
 
-            // Load item fialds
-            txtName!!.text = item.name
-            txtDescr!!.text = item.description
-        } else {
-            btnDelete!!.visibility = View.GONE
+                // Load item fialds
+                txtName.setText(item.name)
+                txtDescr.setText(item.description)
+            } else {
+                btnDel.visibility = View.GONE
+            }
+        }?: kotlin.run {
+            Log.e(AList.TAG, "list #id does not exist")
+            finish()
         }
     }
     override fun onStart() {
