@@ -1,6 +1,7 @@
 package ru.igormayachenkov.list
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
@@ -9,6 +10,9 @@ import ru.igormayachenkov.list.data.DList
 import ru.igormayachenkov.list.data.Data
 
 class AItem : AppCompatActivity() {
+    companion object {
+        const val TAG = "myapp.AItem"
+    }
     // Data objects
     private var list: DList? = null
     private var itemIndex = 0
@@ -24,7 +28,10 @@ class AItem : AppCompatActivity() {
         // Get data objects
         val id = intent.getLongExtra(Data.LIST_ID, 0)
         list = Data.listOfLists.getList(id)
+        list!!.load()
+
         itemIndex = intent.getIntExtra(Data.ITEM_INDEX, -1)
+        Log.d(TAG, "onCreate $id $itemIndex")
 
         // Load data objects
 
@@ -36,6 +43,7 @@ class AItem : AppCompatActivity() {
         // LOAD DATA FIELDS
         if (itemIndex >= 0) {
             val item = list!!.items[itemIndex]
+
             // Load item fialds
             txtName!!.text = item.name
             txtDescr!!.text = item.description
@@ -43,7 +51,15 @@ class AItem : AppCompatActivity() {
             btnDelete!!.visibility = View.GONE
         }
     }
+    override fun onStart() {
+        Log.d(TAG, "onStart")
+        super.onStart()
+    }
 
+    override fun onStop() {
+        Log.d(TAG, "onStop")
+        super.onStop()
+    }
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // HANDLERS
     fun onButtonSave(v: View?) {

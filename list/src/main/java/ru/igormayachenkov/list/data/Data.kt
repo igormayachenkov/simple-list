@@ -24,7 +24,7 @@ object Data {
     //--------------------------------------------------------------------------
     // Data objects
     @JvmField
-    var listOfLists = ListOfLists()
+    val listOfLists = ListOfLists()
     var deviceID //Android device ID
             : Long = 0
 
@@ -39,7 +39,7 @@ object Data {
         // Listern for changes
         val sp = PreferenceManager.getDefaultSharedPreferences(context)
         sp.registerOnSharedPreferenceChangeListener(mPrefChangeListener)
-        Log.d(TAG, "load finished")
+        Log.d(TAG, "load finished, size: ${listOfLists.aLL.size}")
     }
 
     // UNLOAD
