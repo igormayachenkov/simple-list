@@ -21,5 +21,9 @@ object Utils {
         Log.e(TAG, e.message.toString())
         Toast.makeText(App.instance(), e.message, Toast.LENGTH_LONG).show()
     }
+    fun showErrorDialog(e:Exception){
+        e.printStackTrace()
+        DlgError(App.instance()!!, e.message).show()
+    }
 
 }

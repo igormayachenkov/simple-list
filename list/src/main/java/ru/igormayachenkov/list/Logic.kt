@@ -2,12 +2,17 @@ package ru.igormayachenkov.list
 
 import android.app.Activity
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import org.json.JSONObject
 import ru.igormayachenkov.list.data.Data
 import ru.igormayachenkov.list.data.Database
 import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.Item
+import java.io.BufferedReader
+import java.io.FileOutputStream
+import java.io.FileReader
 import kotlin.Exception
 
 object Logic {
@@ -91,4 +96,73 @@ object Logic {
         list.deleteItem(item.id)
         AList.instance?.onItemDeleted(item.id)
     }
+
+    fun deleteALL(){
+        Database.deleteALL()
+        Data.listOfLists.reload()
+        openList = null
+        openItem = null
+        AMain.instance?.onDataUpdated()
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // FILE EXPORT/IMPORT
+    fun saveLists(uri: Uri?, lists: Collection<List>):Int{
+        // Open
+        val pfd = App.instance()!!.contentResolver.openFileDescriptor(uri!!, "w")
+        val fileOutputStream = FileOutputStream(pfd!!.fileDescriptor)
+
+        // Write
+        val bytes = Data.toJSON(lists).toString().toByteArray()
+        fileOutputStream.write(bytes)
+
+        // Close. Let the document provider know you're done by closing the stream.
+        fileOutputStream.close()
+        pfd.close()
+
+        return bytes.size
+    }
+
+    fun saveListToXML(list:List, uri: Uri?):Int{
+        // Open
+        val pfd = App.instance()!!.contentResolver.openFileDescriptor(uri!!, "w")
+        val fileOutputStream = FileOutputStream(pfd!!.fileDescriptor)
+
+        // Write
+        val bytes = list.toXML().toByteArray()
+        fileOutputStream.write(bytes)
+
+        // Close. Let the document provider know you're done by closing the stream.
+        fileOutputStream.close()
+        pfd.close()
+
+        return bytes.size
+    }
+
+    fun readJSON(uri: Uri?):JSONObject{
+        // Open
+        val pfd = App.context()!!.contentResolver.openFileDescriptor(uri!!, "r")
+        val reader = BufferedReader(FileReader(pfd!!.fileDescriptor))
+
+        // Read
+        val sb = StringBuilder()
+        var line: String?
+        while (reader.readLine().also { line = it } != null) {
+            sb.append(line)
+        }
+        val text = sb.toString()
+
+        // Close. Let the document provider know you're done by closing the stream.
+        reader.close()
+        pfd.close()
+
+        // Parce data
+        return JSONObject(text)
+    }
+
+    fun loadFromJSON(json: JSONObject){
+        Data.loadFromJSON(json)
+        AMain.instance?.onDataUpdated()
+    }
+
 }

@@ -20,13 +20,9 @@ object Data {
     // Prefs change listerner
     var mPrefChangeListener: OnSharedPreferenceChangeListener? = null
 
-
     //--------------------------------------------------------------------------
     // Data objects
-    @JvmField
     val listOfLists = ListOfLists()
-    var deviceID //Android device ID
-            : Long = 0
 
     // LOAD
     fun load(context: Context) {
@@ -39,26 +35,6 @@ object Data {
         val sp = PreferenceManager.getDefaultSharedPreferences(context)
         sp.registerOnSharedPreferenceChangeListener(mPrefChangeListener)
         Log.d(TAG, "load finished, size: ${listOfLists.aLL.size}")
-    }
-
-    // UNLOAD
-    fun unload() {
-        Log.d(TAG, "unload started")
-
-        // Close database
-        Database.close()
-        Log.d(TAG, "unload finished")
-    }
-
-    // CLEAR ALL
-    fun clearALL() {
-        Log.d(TAG, "clear ALL")
-
-        // Close database
-        Database.deleteALL()
-
-        // Reloat total list
-        listOfLists.reload()
     }
 
     // TO JSON
@@ -140,6 +116,7 @@ object Data {
                 }
                 // Insert list
                 list = List(id, name, null)
+                Database.insertList(list)
                 listOfLists.addList(list)
                 // Insert list items
                 val itemsJSON = listJSON.optJSONArray("items")
@@ -223,13 +200,6 @@ object Data {
 
     //---------------------------------------------------------------------------------------------
     // GLOBAL CONSTANTS
-    const val LIST_ID = "LIST_ID"
-    const val ITEM_ID = "ITEM_ID"
     const val ACTIVITY = "ACTIVITY"
-    const val RESULT_INSERTED = 10
-    const val RESULT_UPDATED = 20
-    const val RESULT_DELETED = 30
-    const val APP_FOLDER = "Simple List"
-
 
 }

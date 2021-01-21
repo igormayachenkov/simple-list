@@ -14,7 +14,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import ru.igormayachenkov.list.AMain.Companion.doSave
 import ru.igormayachenkov.list.data.Item
 import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.Data
@@ -43,10 +42,6 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
     private var dataList: List? = null
     private val uiList = ArrayList<Item>()
 
-    // Controls
-//    var viewList: ListView? = null
-//    var viewEmpty: View? = null
-
     // Adapter
     var adapter: ListAdapter? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,13 +53,6 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
 
         instance = PublicInterface()
 
-        // Controls
-//        viewList = findViewById<View>(R.id.listView) as ListView
-//        viewEmpty = findViewById(R.id.emptyView)
-
-        // Get data objects
-//        val id = intent.getLongExtra(Data.LIST_ID, 0)
-//        dataList = Data.listOfLists.getList(id)
         dataList = Logic.openList
         dataList?.let {
             it.load()
@@ -182,31 +170,14 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
     // HANDLERS
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_add -> {
-                onMenuAdd()
-                true
-            }
-            R.id.menu_rename -> {
-                onMenuRename()
-                true
-            }
-            R.id.menu_save_json -> {
-                onMenuSave()
-                true
-            }
-            R.id.menu_save_xml -> {
-                onMenuSaveXML()
-                true
-            }
-            R.id.menu_delete -> {
-                onMenuDelete()
-                true
-            }
-            R.id.menu_help -> {
-                onMenuHelp()
-                true
-            }
-            else ->                 // If we got here, the user's action was not recognized.
+            R.id.menu_add       -> { onMenuAdd(); true }
+            R.id.menu_rename    -> { onMenuRename(); true }
+            R.id.menu_save_json -> { onMenuSave();true }
+            R.id.menu_save_xml  -> { onMenuSaveXML();true }
+            R.id.menu_delete    -> { onMenuDelete();true }
+            R.id.menu_help      -> { onMenuHelp();true }
+            else ->
+                // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 super.onOptionsItemSelected(item)
         }
@@ -297,31 +268,19 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
     // DO ACTIONs
     fun doSaveXML(uri: Uri?) {
         try {
-            // Open
-            val pfd = contentResolver.openFileDescriptor(uri!!, "w")
-            val fileOutputStream = FileOutputStream(pfd!!.fileDescriptor)
-
-            // Write
-            val bytes = dataList!!.toXML().toByteArray()
-            fileOutputStream.write(bytes)
-
-            // Close. Let the document provider know you're done by closing the stream.
-            fileOutputStream.close()
-            pfd.close()
-
+            val bytes = Logic.saveListToXML(dataList!!, uri)
             // Show result
-            Toast.makeText(this, bytes.size.toString() + " " + getString(R.string.bytes_saved), Toast.LENGTH_LONG).show()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            DlgError(this, e.message).show()
-        }
+            Toast.makeText(this, bytes.toString() + " " + getString(R.string.bytes_saved), Toast.LENGTH_LONG).show()
+        }catch (e:Exception){ Utils.showErrorDialog(e)}
     }
 
     fun doSave(uri: Uri?) {
         dataList?.let {
             val lists = ArrayList<List>()
             lists.add(it)
-            doSave(this, uri, lists)
+            try {
+                Logic.saveLists( uri, lists)
+            }catch (e:Exception){ Utils.showErrorDialog(e)}
         }
     }
 
