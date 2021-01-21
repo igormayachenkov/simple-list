@@ -1,10 +1,13 @@
 package ru.igormayachenkov.list
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.Data
@@ -14,6 +17,11 @@ import ru.igormayachenkov.list.data.Item
 class AItem : AppCompatActivity() {
     companion object {
         const val TAG = "myapp.AItem"
+
+        fun show(activity: Activity){
+            val intent = Intent(activity, AItem::class.java)
+            activity.startActivity(intent)
+        }
     }
     // Data objects
     private var list: List? = null
@@ -29,30 +37,26 @@ class AItem : AppCompatActivity() {
         setContentView(R.layout.a_item)
 
         // Get data objects
-        val listId = intent.getLongExtra(Data.LIST_ID, 0)
-        list = Data.listOfLists.getList(listId)
+        //val listId = intent.getLongExtra(Data.LIST_ID, 0)
+        //list = Data.listOfLists.getList(listId)
+        list = Logic.openList
+        item = Logic.openItem
         list?.let { list->
             list.load()
 
-            val itemId:Long = intent.getLongExtra(Data.ITEM_ID, 0L)
-            Log.d(TAG, "onCreate list#$listId item#$itemId")
+            Log.d(TAG, "onCreate list#$list.id item#$item?.id")
 
             // Load data objects
-            if (itemId != 0L) {
-                item = list.items!!.get(itemId)
-                item?.let {
-                    // Load item fialds
-                    txtName.setText(it.name)
-                    txtDescr.setText(it.description)
-                }?: kotlin.run {
-                    Log.e(AList.TAG, "item #$itemId not found in the list")
-                    finish()
-                }
-            } else {
+            item?.let {
+                // Load item fialds
+                txtName.setText(it.name)
+                txtDescr.setText(it.description)
+            }?: kotlin.run {
                 btnDel.visibility = View.GONE
             }
+
         }?: kotlin.run {
-            Log.e(AList.TAG, "list #$listId does not exist")
+            Log.e(AList.TAG, "open list does is null")
             finish()
         }
     }
@@ -101,12 +105,18 @@ class AItem : AppCompatActivity() {
     }
 
     fun onButtonDelete(v: View?) {
-        //Toast.makeText(this, "onButtonDelete", Toast.LENGTH_SHORT).show();
-        // Delete item
-        item?.id?.let {
-            list!!.deleteItem(it)
-            AList.instance?.onItemDeleted()
+        try {
+            Logic.deleteItem(item)
+            finish()
+        }catch (e:Exception){
+            Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
+
         }
-        finish()
+
+        // Delete item
+//        item?.id?.let {
+//            list!!.deleteItem(it)
+//            AList.instance?.onItemDeleted()
+//        }
     }
 }

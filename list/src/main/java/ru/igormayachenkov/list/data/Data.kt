@@ -31,7 +31,6 @@ object Data {
     // LOAD
     fun load(context: Context) {
         Log.d(TAG, "load started")
-        Database.open(context)
         listOfLists.load()
 
         // Create OnSharedPreferenceChangeListener
@@ -197,8 +196,6 @@ object Data {
 
         // Add a new list
         fun addList(list: List): List {
-            // Save in the database
-            Database.insertList(list)
             // Add to the hashmap
             hashMap[list.id] = list
             return list
@@ -206,8 +203,6 @@ object Data {
 
         // Delete list
         fun deleteList(id: Long) {
-            // Delete from database
-            Database.deleteList(id)
             // Remove from the hashMap
             hashMap.remove(id)
         }

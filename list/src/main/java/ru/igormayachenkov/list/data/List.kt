@@ -17,7 +17,7 @@ data class List(
         var description: String?
 ) {
     companion object {
-        const val TAG = "myapp.List"
+        private const val TAG = "myapp.List"
     }
 
     // DATA
@@ -29,11 +29,6 @@ data class List(
         if (items==null) {
             items = Database.loadListItems(id)
         }
-    }
-
-    fun rename(newName: String) {
-        Database.updateListName(id, newName)
-        name = newName
     }
 
     fun addItem(name: String?, description: String?) {
@@ -67,7 +62,7 @@ data class List(
         Log.d(TAG, "List.deleteItem")
         items?.let { items ->
             items[itemId]?.let {
-                Database.deleteItem(itemId)
+                //Database.deleteItem(itemId)
                 items.remove(itemId)
             }?: run{
                 Log.e(TAG,"item #$itemId not found")

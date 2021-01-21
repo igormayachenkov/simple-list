@@ -15,8 +15,8 @@ class App : Application() {
         super.onCreate()
         instance = this
 
-        // Load data
-        Data.load(this)
+        // Init Logic
+        Logic.init(this)
     }
 
     val packageInfo: PackageInfo?

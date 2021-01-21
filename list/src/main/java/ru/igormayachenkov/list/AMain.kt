@@ -22,8 +22,40 @@ import java.util.*
 import kotlinx.android.synthetic.main.a_main.*
 
 class AMain : AppCompatActivity(), OnItemClickListener {
+    companion object {
+        private const val TAG = "myapp.AMain"
+        const val LIST_OPEN_REQUEST = 111
+        const val FILE_OPEN_REQUEST = 222
+        const val FILE_CREATE_REQUEST = 333
+
+        var instance : PublicInterface? = null
+
+        @JvmStatic
+        fun doSave(context: Context, uri: Uri?, lists: Collection<List>) {
+            try {
+                // Open
+                val pfd = context.contentResolver.openFileDescriptor(uri!!, "w")
+                val fileOutputStream = FileOutputStream(pfd!!.fileDescriptor)
+
+                // Write
+                val bytes = Data.toJSON(lists).toString().toByteArray()
+                fileOutputStream.write(bytes)
+
+                // Close. Let the document provider know you're done by closing the stream.
+                fileOutputStream.close()
+                pfd.close()
+
+                // Show result
+                Toast.makeText(context, bytes.size.toString() + " " + context.getString(R.string.bytes_saved), Toast.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                DlgError(context, e.message).show()
+            }
+        }
+    }
+
     // Data objects
-    private val sortedList = ArrayList<List>()
+    private val uiList = ArrayList<List>()
     private val comparatorName = Comparator<List> { a, b -> a.name.compareTo(b.name) }
 
     // Adapter
@@ -36,13 +68,15 @@ class AMain : AppCompatActivity(), OnItemClickListener {
         setSupportActionBar(toolbar)
         setTitle(R.string.main_title)
 
+        instance = PublicInterface()
+
         // List
         adapter = ListAdapter(this.layoutInflater)
         listView.adapter = adapter
         listView.onItemClickListener = this
 
         //updateScheduled=false;
-        update()
+        reloadData()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -54,30 +88,42 @@ class AMain : AppCompatActivity(), OnItemClickListener {
     override fun onDestroy() {
         Log.d(TAG, "onDestroy")
         super.onDestroy()
+        instance = null
     }
 
     override fun onStart() {
         Log.d(TAG, "onStart")
         super.onStart()
-
-//        if(updateScheduled) {
-//            listAdapter.notifyDataSetChanged();
-//            updateScheduled = false;
-//        }
     }
 
     override fun onStop() {
         Log.d(TAG, "onStop")
         super.onStop()
     }
+    //----------------------------------------------------------------------------------------------
+    // PUBLIC INTERFACE
+    inner class PublicInterface {
+        fun onListInserted() {
+            Log.w(TAG, "onListInserted")
+            reloadData()
+        }
+        fun onListRenamed() {
+            Log.w(TAG, "onListRenamed")
+            reloadData()
+        }
+        fun onListDeleted(id: Long) {
+            Log.w(TAG, "onListDeleted")
+            reloadData()
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // UPDATER
-    private fun update() {
+    private fun reloadData() {
         // Reload sorted list
-        sortedList.clear()
-        sortedList.addAll(Data.listOfLists.aLL)
-        Collections.sort(sortedList, comparatorName)
+        uiList.clear()
+        uiList.addAll(Data.listOfLists.aLL)
+        Collections.sort(uiList, comparatorName)
 
         // Update controls
         if (adapter!!.count == 0) {
@@ -120,16 +166,11 @@ class AMain : AppCompatActivity(), OnItemClickListener {
         }
     }
 
-    private fun startAList(list: List) {
-        val intent = Intent(this@AMain, AList::class.java)
-        intent.putExtra(Data.LIST_ID, list.id)
-        startActivityForResult(intent, LIST_OPEN_REQUEST)
-    }
-
     override fun onItemClick(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
         //Toast.makeText(this, "onItemClick", Toast.LENGTH_SHORT).show();
         // Go to list activity
-        startAList(adapter!!.getItem(position) as List)
+        val list = uiList[position]
+        Logic.openList(list,this)
     }
 
     fun onMenuAdd() {
@@ -140,20 +181,10 @@ class AMain : AppCompatActivity(), OnItemClickListener {
                 R.string.main_add_hint,
                 null,  // name value
                 { text ->
-                    if (text.isEmpty()) {
-                        Toast.makeText(this@AMain, R.string.dialog_error, Toast.LENGTH_SHORT).show()
-                    }else {
-                        // Create a new list object
-                        val list = List(
-                                System.currentTimeMillis(),
-                                text,
-                        null
-                        )
-                        // Add new list
-                        Data.listOfLists.addList(list)
-                        // Go to list activity
-                        startAList(list)
-                    }
+                    try {
+                        val list = Logic.createList(text)
+                        Logic.openList(list,this)
+                    }catch (e:Exception){ Utils.showError(TAG, e) }
                 }
         )
         dlg.show()
@@ -171,7 +202,7 @@ class AMain : AppCompatActivity(), OnItemClickListener {
         val builder = AlertDialog.Builder(this)
         builder.setMessage(R.string.main_clear_message)
         // Set up the buttons
-        builder.setPositiveButton(android.R.string.ok) { dialog, which -> doClear() }
+        builder.setPositiveButton(android.R.string.ok) { _,_ -> doClear() }
         builder.setNegativeButton(android.R.string.cancel, null)
         builder.show()
     }
@@ -210,26 +241,24 @@ class AMain : AppCompatActivity(), OnItemClickListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Log.d(TAG, "onActivityResult requestCode= $requestCode, resultCode=$resultCode")
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == LIST_OPEN_REQUEST) {
-            update()
-        } else {
-            if (resultCode != RESULT_OK) return
-            if (data == null) return
-            when (requestCode) {
-                FILE_OPEN_REQUEST -> doLoad(data.data)
-                FILE_CREATE_REQUEST -> doSave(this,
-                        data.data,
-                        Data.listOfLists.aLL // all lists
-                )
-            }
+
+        if (resultCode != RESULT_OK) return
+        if (data == null) return
+        when (requestCode) {
+            FILE_OPEN_REQUEST -> doLoad(data.data)
+            FILE_CREATE_REQUEST -> doSave(this,
+                    data.data,
+                    Data.listOfLists.aLL // all lists
+            )
         }
+
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // DO ACTIONs
     fun doClear() {
         Data.clearALL()
-        update()
+        reloadData()
     }
 
     fun doLoad(uri: Uri?) {
@@ -271,7 +300,7 @@ ${getString(R.string.load_to_update)} ${estimation.toUpdate}"""
                 // Update data
                 Data.loadFromJSON(json)
                 // Update UI
-                update()
+                reloadData()
                 // Show result
                 Toast.makeText(this@AMain, R.string.load_success, Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
@@ -287,11 +316,11 @@ ${getString(R.string.load_to_update)} ${estimation.toUpdate}"""
     // List ADAPTER
     inner class ListAdapter(val inflater:LayoutInflater) : BaseAdapter() {
         override fun getCount(): Int {
-            return sortedList.size
+            return uiList.size
         }
 
         override fun getItem(position: Int): Any {
-            return sortedList[position]
+            return uiList[position]
         }
 
         override fun getItemId(position: Int): Long {
@@ -306,7 +335,7 @@ ${getString(R.string.load_to_update)} ${estimation.toUpdate}"""
                 inflater.inflate(R.layout.item_main, parent, false)
 
             // UPDATE View
-            val list = sortedList[position]
+            val list = uiList[position]
             // Name
             (view.findViewById<View>(R.id.txtName) as TextView).text = list.name
             return view
@@ -314,32 +343,4 @@ ${getString(R.string.load_to_update)} ${estimation.toUpdate}"""
 
     }
 
-    companion object {
-        const val TAG = "myapp.AMain"
-        const val LIST_OPEN_REQUEST = 111
-        const val FILE_OPEN_REQUEST = 222
-        const val FILE_CREATE_REQUEST = 333
-        @JvmStatic
-        fun doSave(context: Context, uri: Uri?, lists: Collection<List>) {
-            try {
-                // Open
-                val pfd = context.contentResolver.openFileDescriptor(uri!!, "w")
-                val fileOutputStream = FileOutputStream(pfd!!.fileDescriptor)
-
-                // Write
-                val bytes = Data.toJSON(lists).toString().toByteArray()
-                fileOutputStream.write(bytes)
-
-                // Close. Let the document provider know you're done by closing the stream.
-                fileOutputStream.close()
-                pfd.close()
-
-                // Show result
-                Toast.makeText(context, bytes.size.toString() + " " + context.getString(R.string.bytes_saved), Toast.LENGTH_LONG).show()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                DlgError(context, e.message).show()
-            }
-        }
-    }
 }

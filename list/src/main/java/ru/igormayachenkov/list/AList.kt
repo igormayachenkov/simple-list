@@ -1,5 +1,6 @@
 package ru.igormayachenkov.list
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -30,7 +31,12 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
         const val FILE_CREATE_REQUEST = 333
         const val FILE_CREATE_XML_REQUEST = 444
 
-        var instance : AList? = null
+        fun show(activity: Activity){
+            val intent = Intent(activity, AList::class.java)
+            activity.startActivity(intent)
+        }
+
+        var instance : AList.PublicInterface? = null
     }
 
     // Data objects
@@ -50,15 +56,16 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
 
-        instance = this
+        instance = PublicInterface()
 
         // Controls
 //        viewList = findViewById<View>(R.id.listView) as ListView
 //        viewEmpty = findViewById(R.id.emptyView)
 
         // Get data objects
-        val id = intent.getLongExtra(Data.LIST_ID, 0)
-        dataList = Data.listOfLists.getList(id)
+//        val id = intent.getLongExtra(Data.LIST_ID, 0)
+//        dataList = Data.listOfLists.getList(id)
+        dataList = Logic.openList
         dataList?.let {
             it.load()
 
@@ -102,37 +109,46 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    // Open Item & UPDATERs
-    fun onItemInserted(){
-        Log.w(TAG, "onItemInserted")
-        reloadData()
-    }
-    fun onItemUpdated(isNameChanged:Boolean,isDescrChanged:Boolean){
-        Log.w(TAG, "onItemUpdated $isNameChanged $isDescrChanged")
-        if(isNameChanged)
+    // PUBLIC INTERFACE
+    inner class PublicInterface {
+        fun close(){
+            finish()
+        }
+        fun onListRenamed(){
+            // Update title
+            title = dataList!!.name
+        }
+
+        fun onItemInserted() {
+            Log.w(TAG, "onItemInserted")
             reloadData()
-        else
-            adapter?.notifyDataSetChanged()
-    }
-    fun onItemDeleted(){
-        Log.w(TAG, "onItemDeleted")
-        openItemPosition?.let {
-            uiList.removeAt(it)
-            adapter?.notifyDataSetChanged()
+        }
+
+        fun onItemUpdated(isNameChanged: Boolean, isDescrChanged: Boolean) {
+            Log.w(TAG, "onItemUpdated $isNameChanged $isDescrChanged")
+            if (isNameChanged)
+                reloadData()
+            else
+                adapter?.notifyDataSetChanged()
+        }
+
+        fun onItemDeleted(id: Long) {
+            Log.w(TAG, "onItemDeleted")
+            getItemPosition(id)?.let {
+                uiList.removeAt(it)
+                adapter?.notifyDataSetChanged()
+            }
         }
     }
 
-    private var openItemPosition:Int? = null
-    private fun startAItem(position: Int?) {
-        //val itemId:Long?
-        val intent = Intent(this, AItem::class.java)
-        intent.putExtra(Data.LIST_ID, dataList!!.id)
-        position?.let {
-            val item = uiList[it]
-            intent.putExtra(Data.ITEM_ID, item.id)
+    fun getItemPosition(id:Long):Int?{
+        for(i in 0..uiList.size-1){
+            val item = uiList[i]
+            if(item.id==id) return i
         }
-        startActivityForResult(intent, ITEM_OPEN_REQUEST)
+        return null
     }
+
     private fun reloadData() {
         Log.w(TAG, "RELOAD DATA")
 
@@ -205,14 +221,12 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
     }
 
     override fun onItemLongClick(parent: AdapterView<*>?, view: View, position: Int, id: Long): Boolean {
-        // Go to item activity
-        startAItem(position)
+        Logic.openItem(uiList[position], this)
         return true
     }
 
     private fun onMenuAdd() {
-        // Go to item activity
-        startAItem(null)
+        Logic.openItem(null,this)
     }
 
     private fun onMenuHelp() {
@@ -227,37 +241,27 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
         AlertDialog.Builder(this)
                 .setTitle(getString(R.string.list_delete_alert_title))
                 .setMessage(getString(R.string.list_delete_alert_text))
-                .setPositiveButton(android.R.string.yes) { dialog, which -> // continue with delete
-                    Data.listOfLists.deleteList(dataList!!.id)
-                    // Go out
-                    setResult(Data.RESULT_DELETED)
-                    finish()
-                }
-                .setNegativeButton(android.R.string.no) { dialog, which ->
-                    // do nothing
-                }
                 .setIcon(android.R.drawable.ic_dialog_alert)
+                .setNegativeButton(android.R.string.no, null)
+                .setPositiveButton(android.R.string.yes) { _, _ ->
+                    try{
+                        Logic.deleteOpenList()
+                    }catch (e:Exception){Utils.showError(TAG,e)}
+                }
                 .show()
     }
 
     private fun onMenuRename() {
         val dlg = DlgName(
-                this,
-                R.string.dialog_title_rename,
-                R.string.main_add_hint,
-                dataList!!.name,
-                { text ->
-                    if (text.isEmpty()) {
-                        Toast.makeText(this@AList, R.string.dialog_error, Toast.LENGTH_SHORT).show()
-                    }else {
-                        // Rename List
-                        dataList!!.rename(text)
-                        // Update title
-                        title = dataList!!.name
-                        // Set flag
-                        setResult(Data.RESULT_UPDATED)
-                    }
-                }
+            this,
+            R.string.dialog_title_rename,
+            R.string.main_add_hint,
+            dataList!!.name,
+            { text ->
+                try {
+                    Logic.renameOpenList(text)
+                }catch (e:Exception){ Utils.showError(TAG, e) }
+            }
         )
         dlg.show()
     }
@@ -281,15 +285,11 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Log.d(TAG, "onActivityResult requestCode= $requestCode, resultCode=$resultCode")
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == ITEM_OPEN_REQUEST) {
-            //update()
-        } else {
-            if (resultCode != RESULT_OK) return
-            if (data == null) return
-            when (requestCode) {
-                FILE_CREATE_REQUEST -> doSave(data.data)
-                FILE_CREATE_XML_REQUEST -> doSaveXML(data.data)
-            }
+        if (resultCode != RESULT_OK) return
+        if (data == null) return
+        when (requestCode) {
+            FILE_CREATE_REQUEST -> doSave(data.data)
+            FILE_CREATE_XML_REQUEST -> doSaveXML(data.data)
         }
     }
 
