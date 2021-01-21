@@ -12,6 +12,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import ru.igormayachenkov.list.data.Item
 import ru.igormayachenkov.list.data.List
@@ -65,13 +67,28 @@ class AList : AppCompatActivity() {
             // Load controls
             title = it.name
 
-            // List
-           recyclerView.layoutManager = when {
+            // LIST
+            val manager = when {
                 columnCount <= 1 -> androidx.recyclerview.widget.LinearLayoutManager(this)
                 else -> androidx.recyclerview.widget.GridLayoutManager(this, columnCount)
-            }
+           }
+            recyclerView.layoutManager = manager
+
+            // Divider
+//            val dividerItemDecoration = DividerItemDecoration(this , manager.orientation)
+//            recyclerView.addItemDecoration(dividerItemDecoration)
+
+            // DRAG/SWIPE https://medium.com/@mca.himanshusharma/draggable-recyclerview-in-kotlin-6c8b76af142c
+//            val callback = DragCallback(
+//                    ItemTouchHelper.UP.or(ItemTouchHelper.DOWN),
+//                    ItemTouchHelper.LEFT.or(ItemTouchHelper.RIGHT))
+//            ItemTouchHelper(callback)
+//                    .attachToRecyclerView(recyclerView)
+
+            // Adapter
             recyclerView.adapter = adapter
 
+            // LOAD DATA
             reloadData()
 
         }?: kotlin.run {
@@ -421,6 +438,36 @@ class AList : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             holder.bind(position)
+        }
+
+        fun swapItems(fromPosition: Int, toPosition: Int) {
+            Log.d(TAG,"swapItems $fromPosition $toPosition")
+            if (fromPosition < toPosition) {
+                for (i in fromPosition..toPosition - 1) {
+                    uiList.set(i, uiList.set(i+1, uiList.get(i)));
+                }
+            } else {
+                for (i in fromPosition..toPosition + 1) {
+                    uiList.set(i, uiList.set(i-1, uiList.get(i)));
+                }
+            }
+
+            notifyItemMoved(fromPosition, toPosition)
+        }
+
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // DRAG/SWIPE CALLBACK
+    inner class DragCallback(dragDirs: Int, swipeDirs: Int)
+        : ItemTouchHelper.SimpleCallback(dragDirs, swipeDirs)
+    {
+        override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+            adapter.swapItems(viewHolder.adapterPosition, target.adapterPosition)
+            return true
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         }
 
     }
