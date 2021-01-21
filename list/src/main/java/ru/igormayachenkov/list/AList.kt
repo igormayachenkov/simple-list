@@ -8,20 +8,19 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.*
-import android.widget.AdapterView.OnItemClickListener
-import android.widget.AdapterView.OnItemLongClickListener
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import ru.igormayachenkov.list.data.Item
 import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.Data
-import java.io.FileOutputStream
 import kotlinx.android.synthetic.main.a_list.*
-//import kotlinx.android.synthetic.main.item_list.*
+import kotlinx.android.synthetic.main.item_list.view.*
+import kotlinx.android.synthetic.main.item_list.view.txtName
 
-class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener {
+class AList : AppCompatActivity() {
     companion object {
         const val TAG = "myapp.AList"
         const val ITEM_OPEN_REQUEST = 111
@@ -41,9 +40,15 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
     // Data objects
     private var dataList: List? = null
     private val uiList = ArrayList<Item>()
+    // Colors
+    var colorChecked: Int
+    var colorUnchecked: Int
+    init {
+        colorChecked = ContextCompat.getColor(App.context()!!, R.color.colorChecked)
+        colorUnchecked = ContextCompat.getColor(App.context()!!, R.color.colorUnchecked)
+    }
+    val columnCount = 1
 
-    // Adapter
-    var adapter: ListAdapter? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
@@ -61,10 +66,11 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
             title = it.name
 
             // List
-            adapter = ListAdapter(this)
-            listView.adapter = adapter
-            listView.onItemClickListener = this
-            listView.onItemLongClickListener = this
+           recyclerView.layoutManager = when {
+                columnCount <= 1 -> androidx.recyclerview.widget.LinearLayoutManager(this)
+                else -> androidx.recyclerview.widget.GridLayoutManager(this, columnCount)
+            }
+            recyclerView.adapter = adapter
 
             reloadData()
 
@@ -117,14 +123,15 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
             if (isNameChanged)
                 reloadData()
             else
-                adapter?.notifyDataSetChanged()
+                adapter.notifyDataSetChanged()
+                // TODO replace by notifyItemUpdatecd
         }
 
         fun onItemDeleted(id: Long) {
             Log.w(TAG, "onItemDeleted")
             getItemPosition(id)?.let {
                 uiList.removeAt(it)
-                adapter?.notifyDataSetChanged()
+                adapter.notifyItemRemoved(it)
             }
         }
     }
@@ -153,16 +160,16 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
 
         updateListVisibility()
 
-        adapter?.notifyDataSetChanged()
+        adapter.notifyDataSetChanged()
     }
 
     private fun updateListVisibility(){
         if (uiList.size == 0) {
-            listView.visibility = View.GONE
+            recyclerView.visibility = View.GONE
             emptyView.visibility = View.VISIBLE
         } else {
             emptyView.visibility = View.GONE
-            listView.visibility = View.VISIBLE
+            recyclerView.visibility = View.VISIBLE
         }
     }
 
@@ -183,16 +190,23 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
         }
     }
 
-    override fun onItemClick(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
-        // Change item state
-        val item = uiList[position]
-        item.changeState()
-        // Update row
-        adapter?.updateChecked(item, view, null, null)
+    fun onItemClick(view: View) {
+        val position = view.tag
+        if(position is Int){
+            // Change item state
+            val item = uiList[position]
+            item.changeState()
+            // Update row
+            adapter.notifyItemChanged(position)
+            // TODO move to public interface
+        }
     }
 
-    override fun onItemLongClick(parent: AdapterView<*>?, view: View, position: Int, id: Long): Boolean {
-        Logic.openItem(uiList[position], this)
+    fun onItemLongClick(view: View): Boolean {
+        val position = view.tag
+        if(position is Int) {
+            Logic.openItem(uiList[position], this)
+        }
         return true
     }
 
@@ -354,6 +368,63 @@ class AList : AppCompatActivity(), OnItemClickListener, OnItemLongClickListener 
             }
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+    // VIEW HOLDER
+    inner class MyViewHolder(view:View):RecyclerView.ViewHolder(view){
+        val txtName      : TextView = view.txtName
+        val txtDescr     : TextView = view.txtDescription
+        init {
+            view.setOnClickListener{v->onItemClick(v)}
+            view.setOnLongClickListener { v->onItemLongClick(v)}
+        }
+
+        fun bind(position: Int) {
+            val item = uiList[position]
+            txtName.text  = item.name
+            itemView.tag = position
+
+            if (item.description.isNullOrEmpty()) {
+                txtDescr.visibility = View.GONE
+            } else {
+                txtDescr.visibility = View.VISIBLE
+                txtDescr.text = item.description
+            }
+            // Checked / Category
+            updateChecked(item)
+        }
+
+        fun updateChecked(item:Item){
+            if (item.state == Item.ITEM_STATE_CHECKED) {
+                txtName.setTextColor(colorChecked)
+                txtDescr.setTextColor(colorChecked)
+            } else {
+                txtName.setTextColor(colorUnchecked)
+                txtDescr.setTextColor(colorUnchecked)
+            }
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // LIST ADAPTER
+    val adapter = MyListAdapter()
+
+    inner class MyListAdapter():RecyclerView.Adapter<MyViewHolder>() {
+        override fun getItemCount(): Int {
+            return uiList.size
+        }
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+            return MyViewHolder(
+                    LayoutInflater.from(parent.context)
+                            .inflate(R.layout.item_list, parent, false))
+        }
+
+        override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+            holder.bind(position)
+        }
+
+    }
+
 
 //    private fun save(filename: String, format: String) {
 //        var filename = filename

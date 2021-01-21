@@ -19,11 +19,12 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/listView"
-        android:elevation="8dp" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        />
 
     <RelativeLayout
         android:layout_width="match_parent"

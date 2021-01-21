@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.*
-import android.widget.AdapterView.OnItemClickListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import org.json.JSONObject
@@ -18,7 +17,7 @@ import java.util.*
 import kotlinx.android.synthetic.main.a_main.*
 import kotlinx.android.synthetic.main.item_main.view.*
 
-class AMain : AppCompatActivity(), OnItemClickListener {
+class AMain : AppCompatActivity() {
     companion object {
         private const val TAG = "myapp.AMain"
         const val FILE_OPEN_REQUEST = 222
@@ -142,10 +141,6 @@ class AMain : AppCompatActivity(), OnItemClickListener {
         }
     }
 
-    override fun onItemClick(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
-        val list = uiList[position]
-        Logic.openList(list,this)
-    }
     fun onListItemClick(view: View) {
         Log.d(TAG,"onListItemClick")
         val list = view.tag
