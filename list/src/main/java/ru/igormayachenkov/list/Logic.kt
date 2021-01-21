@@ -59,7 +59,7 @@ object Logic {
         Database.updateListName(list.id, name)
         list.name = name
         AList.instance?.onListRenamed()
-        AMain.instance?.onListRenamed()
+        AMain.instance?.onListRenamed(list.id)
     }
 
     fun deleteOpenList(){

@@ -1,7 +1,6 @@
 package ru.igormayachenkov.list
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -11,15 +10,13 @@ import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import org.json.JSONException
 import org.json.JSONObject
 import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.Data
-import java.io.BufferedReader
-import java.io.FileOutputStream
-import java.io.FileReader
+import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 import kotlinx.android.synthetic.main.a_main.*
+import kotlinx.android.synthetic.main.item_main.view.*
 
 class AMain : AppCompatActivity(), OnItemClickListener {
     companion object {
@@ -35,7 +32,7 @@ class AMain : AppCompatActivity(), OnItemClickListener {
     private val uiList = ArrayList<List>()
     private val comparatorName = Comparator<List> { a, b -> a.name.compareTo(b.name) }
 
-    private var adapter: ListAdapter? = null
+    val columnCount = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
@@ -48,11 +45,12 @@ class AMain : AppCompatActivity(), OnItemClickListener {
         instance = PublicInterface()
 
         // List
-        adapter = ListAdapter(this.layoutInflater)
-        listView.adapter = adapter
-        listView.onItemClickListener = this
+        recyclerView.layoutManager = when {
+            columnCount <= 1 -> androidx.recyclerview.widget.LinearLayoutManager(this)
+            else -> androidx.recyclerview.widget.GridLayoutManager(this, columnCount)
+        }
+        recyclerView.adapter = adapter
 
-        //updateScheduled=false;
         reloadData()
     }
 
@@ -88,33 +86,44 @@ class AMain : AppCompatActivity(), OnItemClickListener {
             Log.w(TAG, "onListInserted")
             reloadData()
         }
-        fun onListRenamed() {
-            Log.w(TAG, "onListRenamed")
+        fun onListRenamed(id:Long) {
+            Log.w(TAG, "onListRenamed #$id")
             reloadData()
         }
         fun onListDeleted(id: Long) {
             Log.w(TAG, "onListDeleted")
-            reloadData()
+            getItemPosition(id)?.let {
+                adapter.notifyItemRemoved(it)
+            }
         }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    // UPDATER
+    // UPDATERs
     private fun reloadData() {
+        Log.w(TAG, "RELOAD DATA")
+
         // Reload sorted list
         uiList.clear()
         uiList.addAll(Data.listOfLists.aLL)
         Collections.sort(uiList, comparatorName)
 
         // Update controls
-        if (adapter!!.count == 0) {
-            listView.visibility = View.GONE
+        if (uiList.size == 0) {
+            recyclerView.visibility = View.GONE
             emptyView.visibility = View.VISIBLE
         } else {
             emptyView.visibility = View.GONE
-            listView.visibility = View.VISIBLE
-            adapter?.notifyDataSetChanged()
+            recyclerView.visibility = View.VISIBLE
+            adapter.notifyDataSetChanged()
         }
+    }
+    fun getItemPosition(id:Long):Int?{
+        for(i in 0..uiList.size-1){
+            val item = uiList[i]
+            if(item.id==id) return i
+        }
+        return null
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -136,6 +145,12 @@ class AMain : AppCompatActivity(), OnItemClickListener {
     override fun onItemClick(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
         val list = uiList[position]
         Logic.openList(list,this)
+    }
+    fun onListItemClick(view: View) {
+        Log.d(TAG,"onListItemClick")
+        val list = view.tag
+        if(list is List)
+            Logic.openList(list,this)
     }
 
     fun onMenuAdd() {
@@ -257,35 +272,38 @@ class AMain : AppCompatActivity(), OnItemClickListener {
         dlg.show()
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // List ADAPTER
-    inner class ListAdapter(val inflater:LayoutInflater) : BaseAdapter() {
-        override fun getCount(): Int {
+    //----------------------------------------------------------------------------------------------
+    // VIEW HOLDER
+    inner class MyViewHolder(view:View):RecyclerView.ViewHolder(view){
+        val txtName      : TextView = view.txtName
+        init {
+            view.setOnClickListener{v->onListItemClick(v)}
+        }
+
+        fun bind(position: Int) {
+            val list = uiList[position]
+            txtName.text = list.name
+            itemView.tag = list
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // LIST ADAPTER
+    val adapter = MyListAdapter()
+
+    inner class MyListAdapter():RecyclerView.Adapter<MyViewHolder>() {
+        override fun getItemCount(): Int {
             return uiList.size
         }
-
-        override fun getItem(position: Int): Any {
-            return uiList[position]
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+            return MyViewHolder(
+                    LayoutInflater.from(parent.context)
+                            .inflate(R.layout.item_main, parent, false))
         }
 
-        override fun getItemId(position: Int): Long {
-            return position.toLong()
-        }
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-            // используем созданные, но не используемые view
-            val view:View = if(convertView!=null)
-                convertView
-            else
-                inflater.inflate(R.layout.item_main, parent, false)
-
-            // UPDATE View
-            val list = uiList[position]
-            // Name
-            (view.findViewById<View>(R.id.txtName) as TextView).text = list.name
-            return view
+        override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+            holder.bind(position)
         }
 
     }
-
 }
