@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:clipToPadding="false"
     tools:context="ru.igormayachenkov.list.AHelp"
-    android:background="@color/colorBackground">
+    android:background="@color/background">
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
