@@ -7,17 +7,27 @@
         app:showAsAction="always"
         android:title="@string/list_menu_add" />
 
-    <item android:id="@+id/menu_save_json"
-        android:title="@string/list_menu_save_json" />
+    <item android:id="@+id/menu_settings"
+        android:title="@string/menu_settings" />
 
-    <item android:id="@+id/menu_save_xml"
-        android:title="@string/list_menu_save_xml" />
 
     <item android:id="@+id/menu_rename"
         android:title="@string/list_menu_rename" />
 
-    <item android:id="@+id/menu_delete"
+    <item
+        android:id="@+id/menu_delete"
         android:title="@string/list_menu_delete" />
+
+    <item android:title="@string/menu_file">
+        <menu>
+            <item
+                android:id="@+id/menu_save_json"
+                android:title="@string/list_menu_save_json" />
+            <item
+                android:id="@+id/menu_save_xml"
+                android:title="@string/list_menu_save_xml" />
+        </menu>
+    </item>
 
     <item android:id="@+id/menu_help"
         android:title="@string/list_menu_help" />

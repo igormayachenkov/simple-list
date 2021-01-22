@@ -4,11 +4,13 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="colorBackground">#eeeeee</color>
-
+    <color name="background">#ddd</color>
+    <color name="itemBody">#ffffff</color>
+    <color name="itemButtonsArea">#eee</color>
+    <color name="itemButton">#bbb</color>
     <color name="pressed">#FEFF93</color>
 
     <!-- Item text colors -->
-    <color name="colorChecked">#bbb</color>
-    <color name="colorUnchecked">#000</color>
+    <color name="textChecked">#bbb</color>
+    <color name="textUnchecked">#000</color>
 </resources>

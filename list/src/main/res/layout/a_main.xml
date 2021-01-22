@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:clipToPadding="false"
     tools:context="ru.igormayachenkov.list.AMain"
-    android:background="@color/colorBackground">
+    android:background="@color/background">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"

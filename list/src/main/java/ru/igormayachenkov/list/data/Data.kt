@@ -26,14 +26,13 @@ object Data {
 
     // LOAD
     fun load(context: Context) {
-        Log.d(TAG, "load started")
         listOfLists.load()
 
         // Create OnSharedPreferenceChangeListener
         mPrefChangeListener = OnSharedPreferenceChangeListener { sp, key -> onSharedPreferenceChanged(sp, key) }
         // Listern for changes
         val sp = PreferenceManager.getDefaultSharedPreferences(context)
-        sp.registerOnSharedPreferenceChangeListener(mPrefChangeListener)
+        //sp.registerOnSharedPreferenceChangeListener(mPrefChangeListener)
         Log.d(TAG, "load finished, size: ${listOfLists.aLL.size}")
     }
 

@@ -97,7 +97,7 @@ class AMain : AppCompatActivity() {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //----------------------------------------------------------------------------------------------
     // UPDATERs
     private fun reloadData() {
         Log.w(TAG, "RELOAD DATA")
@@ -125,15 +125,16 @@ class AMain : AppCompatActivity() {
         return null
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //----------------------------------------------------------------------------------------------
     // HANDLERS
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_add   -> { onMenuAdd(); true }
-            R.id.menu_save  -> { onMenuSave(); true }
-            R.id.menu_clear -> { onMenuClear(); true }
-            R.id.menu_load  -> { onMenuLoad(); true }
-            R.id.menu_help  -> { onMenuHelp(); true }
+            R.id.menu_add       -> { onMenuAdd(); true }
+            R.id.menu_settings  -> { onMenuSettings(); true }
+            R.id.menu_save      -> { onMenuSave(); true }
+            R.id.menu_clear     -> { onMenuClear(); true }
+            R.id.menu_load      -> { onMenuLoad(); true }
+            R.id.menu_help      -> { onMenuHelp(); true }
             else ->
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
@@ -169,6 +170,11 @@ class AMain : AppCompatActivity() {
         // Go to help activity
         val intent = Intent(this, AHelp::class.java)
         intent.putExtra(Data.ACTIVITY, "AMain")
+        startActivity(intent)
+    }
+    fun onMenuSettings() {
+        // Go to Settings activity
+        val intent = Intent(this, ASettings::class.java)
         startActivity(intent)
     }
 

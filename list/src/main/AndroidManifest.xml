@@ -14,7 +14,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity
+            android:name=".ASettings"
+            android:label="@string/title_activity_a_settings"></activity>
         <!-- MAIN -->
         <activity
             android:name=".AMain"
@@ -24,23 +26,17 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- LIST -->
+        </activity> <!-- LIST -->
         <activity
             android:name=".AList"
-            android:theme="@style/AppTheme.NoActionBar" />
-
-        <!-- ITEM -->
+            android:theme="@style/AppTheme.NoActionBar" /> <!-- ITEM -->
         <activity
             android:name=".AItem"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateVisible" />
-
-        <!-- HELP -->
+            android:windowSoftInputMode="stateVisible" /> <!-- HELP -->
         <activity
             android:name=".AHelp"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
