@@ -6,9 +6,9 @@ VERSIONS:
 
 1.3.0
 -----
-Four different list UIs added
-Settings added
-Bug fixed: app crash on Iten screen is open and the app was killed.
+- Four different list UIs added
+- Settings added
+- Bug fixed: app crash on Iten screen is open and the app was killed.
 
 1.2
 ---
