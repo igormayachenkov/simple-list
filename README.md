@@ -6,8 +6,10 @@ VERSIONS:
 
 1.3.0
 -----
-- Four different list UIs added
-- Settings added
+New in this version:
+- New list item UI
+- Settings
+- many columns in the list
 - Bug fixed: app crash on Iten screen is open and the app was killed.
 
 1.2

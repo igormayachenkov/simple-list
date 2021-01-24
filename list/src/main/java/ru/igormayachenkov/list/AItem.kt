@@ -13,6 +13,7 @@ import androidx.preference.PreferenceManager
 import ru.igormayachenkov.list.data.List
 import kotlinx.android.synthetic.main.a_item.*
 import ru.igormayachenkov.list.data.Item
+import ru.igormayachenkov.list.settings.ASettings
 
 class AItem : AppCompatActivity() {
     companion object {
@@ -60,10 +61,12 @@ class AItem : AppCompatActivity() {
         // Set handlers
         btnSave.setOnClickListener { onButtonSave() }
         btnDel.setOnClickListener  { onButtonDelete() }
+        btnSettings.setOnClickListener  { onButtonSettings() }
     }
     override fun onStart() {
         Log.d(TAG, "onStart")
         super.onStart()
+        settings = Settings(this)
     }
 
     override fun onStop() {
@@ -72,6 +75,10 @@ class AItem : AppCompatActivity() {
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // HANDLERS
+    fun onButtonSettings() {
+        // Go to Settings activity
+        ASettings.open(this, R.xml.item_preferences)
+    }
     fun onButtonSave() {
         // Validate data
         val name = txtName.text.toString().trim()

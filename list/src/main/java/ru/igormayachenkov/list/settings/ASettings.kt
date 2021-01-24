@@ -1,32 +1,51 @@
-package ru.igormayachenkov.list
+package ru.igormayachenkov.list.settings
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import ru.igormayachenkov.list.R
+
 
 class ASettings : AppCompatActivity(){
+
+    companion object{
+        private const val TAG = "myapp.ASettings"
+
+        var resourceId:Int?=null
+
+        fun open(activity:AppCompatActivity, rscId:Int){
+            resourceId = rscId
+            val intent = Intent(activity, ASettings::class.java)
+            activity.startActivity(intent)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_activity)
+
+        // Check data
+        if(resourceId ==null){
+            finish()
+            return
+        }
+
         supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.settings, SettingsFragment())
                 .commit()
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        //supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener  {
-        companion object {
-            private const val TAG = "myapp.FSettings"
-        }
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            setPreferencesFromResource(R.xml.root_preferences, rootKey)
+            resourceId?.let {
+                setPreferencesFromResource(it, rootKey)
+            }
         }
 
         override fun onResume() {

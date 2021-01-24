@@ -1,0 +1,43 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="List appearance">
+        <ListPreference
+            app:key="list_columns_number"
+            app:title="Columns number"
+            app:defaultValue="one"
+            app:entries="@array/col_number_entries"
+            app:entryValues="@array/col_number_values"
+            app:useSimpleSummaryProvider="true"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="List item appearance">
+        <SwitchPreferenceCompat
+            app:key="item_check"
+            app:title="Show checkbox"
+            app:defaultValue="true"/>
+
+        <SwitchPreferenceCompat
+            app:key="item_open"
+            app:title="Show open editor button"
+            app:defaultValue="true"/>
+
+        <ListPreference
+            app:key="item_body"
+            app:title="Item body click action"
+            app:defaultValue="open"
+            app:entries="@array/item_body_entries"
+            app:entryValues="@array/item_body_values"
+            app:useSimpleSummaryProvider="true"/>
+
+        <SwitchPreferenceCompat
+            app:key="item_fog"
+            app:title="Show fog on checked"
+            app:defaultValue="true"/>
+
+        <CheckBoxPreference
+            app:key="use_longclick"
+            app:title="Open by long click"
+            app:defaultValue="false"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

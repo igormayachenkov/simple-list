@@ -1,0 +1,11 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <ListPreference
+            app:key="main_columns_number"
+            app:title="Columns number"
+            app:defaultValue="one"
+            app:entries="@array/col_number_entries"
+            app:entryValues="@array/col_number_values"
+            app:useSimpleSummaryProvider="true"/>
+
+</PreferenceScreen>

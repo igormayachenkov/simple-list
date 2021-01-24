@@ -1,6 +1,7 @@
 package ru.igormayachenkov.list
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,6 +10,7 @@ import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.preference.PreferenceManager
 import org.json.JSONObject
 import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.Data
@@ -16,6 +18,9 @@ import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 import kotlinx.android.synthetic.main.a_main.*
 import kotlinx.android.synthetic.main.item_main.view.*
+import ru.igormayachenkov.list.settings.ASettings
+import ru.igormayachenkov.list.settings.BodyAction
+import ru.igormayachenkov.list.settings.ColumnsNumnber
 
 class AMain : AppCompatActivity() {
     companion object {
@@ -43,16 +48,24 @@ class AMain : AppCompatActivity() {
 
         instance = PublicInterface()
 
+        // Settings (Preferences)
+        settings = Settings(this)
+
         // List
-        recyclerView.layoutManager = when {
-            columnCount <= 1 -> androidx.recyclerview.widget.LinearLayoutManager(this)
-            else -> androidx.recyclerview.widget.GridLayoutManager(this, columnCount)
-        }
+        val manager = getListLayoutManager()
+            recyclerView.layoutManager = manager
         recyclerView.adapter = adapter
 
         reloadData()
     }
 
+    fun getListLayoutManager(): RecyclerView.LayoutManager {
+        val columnCount = ColumnsNumnber.getNumber(settings.colNumber)
+        return when {
+            columnCount <= 1 -> androidx.recyclerview.widget.LinearLayoutManager(this)
+            else -> androidx.recyclerview.widget.GridLayoutManager(this, columnCount)
+        }
+    }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_main, menu)
@@ -126,28 +139,27 @@ class AMain : AppCompatActivity() {
     }
 
     //----------------------------------------------------------------------------------------------
-    // HANDLERS
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_add       -> { onMenuAdd(); true }
-            R.id.menu_settings  -> { onMenuSettings(); true }
-            R.id.menu_save      -> { onMenuSave(); true }
-            R.id.menu_clear     -> { onMenuClear(); true }
-            R.id.menu_load      -> { onMenuLoad(); true }
-            R.id.menu_help      -> { onMenuHelp(); true }
-            else ->
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                super.onOptionsItemSelected(item)
-        }
-    }
-
+    // LIST ITEM
     fun onListItemClick(view: View) {
         Log.d(TAG,"onListItemClick")
         val list = view.tag
         if(list is List)
             Logic.openList(list,this)
     }
+
+    //----------------------------------------------------------------------------------------------
+    // SETTINGS (Preferences)
+    class Settings(context: Context?) {
+        var colNumber   : String = ColumnsNumnber.default
+
+        init{
+            context?.let {
+                val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+                colNumber   = prefs.getString ("main_columns_number", BodyAction.default)!!
+            }
+        }
+    }
+    var settings = Settings(null)
 
     fun onMenuAdd() {
         // ALERT DIALOG
@@ -166,6 +178,22 @@ class AMain : AppCompatActivity() {
         dlg.show()
     }
 
+    //----------------------------------------------------------------------------------------------
+    // MENU
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_add       -> { onMenuAdd(); true }
+            R.id.menu_settings  -> { onMenuSettings(); true }
+            R.id.menu_save      -> { onMenuSave(); true }
+            R.id.menu_clear     -> { onMenuClear(); true }
+            R.id.menu_load      -> { onMenuLoad(); true }
+            R.id.menu_help      -> { onMenuHelp(); true }
+            else ->
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                super.onOptionsItemSelected(item)
+        }
+    }
     fun onMenuHelp() {
         // Go to help activity
         val intent = Intent(this, AHelp::class.java)
@@ -174,8 +202,7 @@ class AMain : AppCompatActivity() {
     }
     fun onMenuSettings() {
         // Go to Settings activity
-        val intent = Intent(this, ASettings::class.java)
-        startActivity(intent)
+        ASettings.open(this, R.xml.main_preferences)
     }
 
     fun onMenuClear() {

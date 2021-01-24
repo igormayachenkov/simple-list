@@ -1,5 +1,5 @@
 <resources>
-    <!-- Item UI Preference -->
+    <!-- Item Body Preference -->
     <string-array name="item_body_values">
         <item>open</item>
         <item>check</item>
@@ -11,7 +11,17 @@
         <item>Do nothing</item>
     </string-array>
 
-
+    <!-- List Column Count-->
+    <string-array name="col_number_values">
+        <item>one</item>
+        <item>two</item>
+        <item>three</item>
+    </string-array>
+    <string-array name="col_number_entries">
+        <item>One column</item>
+        <item>Two columns</item>
+        <item>Three columns</item>
+    </string-array>
 
     <!-- Reply Preference -->
     <string-array name="reply_entries">

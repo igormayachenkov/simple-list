@@ -23,6 +23,9 @@ import ru.igormayachenkov.list.data.Data
 import kotlinx.android.synthetic.main.a_list.*
 import kotlinx.android.synthetic.main.item_list.view.*
 import kotlinx.android.synthetic.main.item_list.view.txtName
+import ru.igormayachenkov.list.settings.ASettings
+import ru.igormayachenkov.list.settings.BodyAction
+import ru.igormayachenkov.list.settings.ColumnsNumnber
 
 class AList : AppCompatActivity() {
     companion object {
@@ -53,8 +56,6 @@ class AList : AppCompatActivity() {
         colorUnchecked = ContextCompat.getColor(App.context()!!, R.color.textUnchecked)
     }
 
-    val columnCount = 1
-
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
@@ -75,10 +76,7 @@ class AList : AppCompatActivity() {
             title = it.name
 
             // LIST
-            val manager = when {
-                columnCount <= 1 -> androidx.recyclerview.widget.LinearLayoutManager(this)
-                else -> androidx.recyclerview.widget.GridLayoutManager(this, columnCount)
-           }
+            val manager = getListLayoutManager()
             recyclerView.layoutManager = manager
 
             // Divider
@@ -102,7 +100,14 @@ class AList : AppCompatActivity() {
             Log.e(TAG, "list #id does not exist")
             finish()
         }
+    }
 
+    fun getListLayoutManager(): RecyclerView.LayoutManager {
+        val columnCount = ColumnsNumnber.getNumber(settings.colNumber)
+        return when {
+            columnCount <= 1 -> androidx.recyclerview.widget.LinearLayoutManager(this)
+            else -> androidx.recyclerview.widget.GridLayoutManager(this, columnCount)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -125,13 +130,17 @@ class AList : AppCompatActivity() {
         val old = settings
         settings = Settings(this)
 
-        if(        settings.showCheck!=old.showCheck
-                || settings.showOpen!=old.showOpen
-                || settings.showFog!=old.showFog
-                //|| settings.useLongclick!=old.useLongclick // do not need to refresh list
-                //settings.bodyAction.compareTo(old.bodyAction)!=0 // do not need to refresh list
-        ){
-            adapter.notifyDataSetChanged()
+        if(settings.colNumber.compareTo(old.colNumber)!=0){
+            recyclerView.layoutManager = getListLayoutManager()
+        }else {
+            if (settings.showCheck != old.showCheck
+                    || settings.showOpen != old.showOpen
+                    || settings.showFog != old.showFog
+            //|| settings.useLongclick!=old.useLongclick // do not need to refresh list
+            //settings.bodyAction.compareTo(old.bodyAction)!=0 // do not need to refresh list
+            ) {
+                adapter.notifyDataSetChanged()
+            }
         }
     }
 
@@ -220,15 +229,17 @@ class AList : AppCompatActivity() {
     //----------------------------------------------------------------------------------------------
     // SETTINGS (Preferences)
     class Settings(context:Context?) {
+        var colNumber   : String = ColumnsNumnber.default
+        var bodyAction  : String = BodyAction.default
         var showCheck   : Boolean = true
         var showOpen    : Boolean = true
         var showFog     : Boolean = true
-        var bodyAction  : String = BodyAction.default
         var useLongclick: Boolean = false
 
         init{
             context?.let {
                 val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+                colNumber   = prefs.getString ("list_columns_number", BodyAction.default)!!
                 bodyAction  = prefs.getString ("item_body", BodyAction.default)!!
                 showCheck   = prefs.getBoolean("item_check", true)
                 showOpen    = prefs.getBoolean("item_open", true)
@@ -238,13 +249,6 @@ class AList : AppCompatActivity() {
         }
     }
     var settings = Settings(null)
-
-    object BodyAction{
-        const val OPEN    = "open"
-        const val CHECK   = "check"
-        const val NOTHING = "nothing"
-        const val default = OPEN
-    }
 
     //----------------------------------------------------------------------------------------------
     // LIST ITEM
@@ -418,8 +422,7 @@ class AList : AppCompatActivity() {
     }
     fun onMenuSettings() {
         // Go to Settings activity
-        val intent = Intent(this, ASettings::class.java)
-        startActivity(intent)
+        ASettings.open(this, R.xml.list_preferences)
     }
     private fun onMenuDelete() {
         // Show yes/no dialog

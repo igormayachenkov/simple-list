@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ASettings"
+            android:name=".settings.ASettings"
             android:label="@string/title_activity_a_settings"></activity>
         <!-- MAIN -->
         <activity
