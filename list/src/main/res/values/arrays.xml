@@ -1,25 +1,23 @@
 <resources>
     <!-- Item UI Preference -->
-    <string-array name="item_ui_entries">
-        <item>open by click\ncheck by checkbox</item>
-        <item>open by icon\ncheck by click</item>
-        <item>open by click\ncheck inside editor only</item>
-        <item>open by long click\ncheck by click\n(blocks item dragging)</item>
+    <string-array name="item_body_values">
+        <item>open</item>
+        <item>check</item>
+        <item>nothing</item>
+    </string-array>
+    <string-array name="item_body_entries">
+        <item>Open item editor</item>
+        <item>Check/uncheck the item</item>
+        <item>Do nothing</item>
     </string-array>
 
-    <string-array name="item_ui_values">
-        <item>click_checkbox</item>
-        <item>icon_click</item>
-        <item>click_null</item>
-        <item>longclick_click</item>
-    </string-array>
+
 
     <!-- Reply Preference -->
     <string-array name="reply_entries">
         <item>Reply</item>
         <item>Reply to all</item>
     </string-array>
-
     <string-array name="reply_values">
         <item>reply</item>
         <item>reply_all</item>

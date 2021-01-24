@@ -6,7 +6,7 @@
 
     <color name="background">#ddd</color>
     <color name="itemBody">#ffffff</color>
-    <color name="itemButtonsArea">#eee</color>
+    <color name="itemButtonsArea">#ffffff</color>
     <color name="itemButton">#bbb</color>
     <color name="pressed">#FEFF93</color>
 

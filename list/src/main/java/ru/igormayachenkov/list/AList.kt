@@ -1,6 +1,7 @@
 package ru.igormayachenkov.list
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -23,43 +24,36 @@ import kotlinx.android.synthetic.main.a_list.*
 import kotlinx.android.synthetic.main.item_list.view.*
 import kotlinx.android.synthetic.main.item_list.view.txtName
 
-class AList : AppCompatActivity(){
+class AList : AppCompatActivity() {
     companion object {
         const val TAG = "myapp.AList"
-
-        object ItemUI {
-            const val KEY = "item_ui"
-            const val CLICK_CHECKBOX = "click_checkbox"
-            const val ICON_CLICK     = "icon_click"
-            const val CLICK_NULL     = "click_null"
-            const val LONGCLICK_CLICK= "longclick_click"
-            const val default = CLICK_CHECKBOX
-        }
 
         //    static final int FILE_OPEN_REQUEST      = 222;
         const val FILE_CREATE_REQUEST = 333
         const val FILE_CREATE_XML_REQUEST = 444
 
-        fun show(activity: Activity){
+        fun show(activity: Activity) {
             val intent = Intent(activity, AList::class.java)
             activity.startActivity(intent)
         }
 
-        var instance : AList.PublicInterface? = null
+        var instance: AList.PublicInterface? = null
     }
 
     // Data objects
     private var dataList: List? = null
     private val uiList = ArrayList<Item>()
+
     // Colors
     var colorChecked: Int
     var colorUnchecked: Int
+
     init {
         colorChecked = ContextCompat.getColor(App.context()!!, R.color.textChecked)
         colorUnchecked = ContextCompat.getColor(App.context()!!, R.color.textUnchecked)
     }
+
     val columnCount = 1
-    var itemUI:String = ItemUI.default
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
@@ -71,7 +65,8 @@ class AList : AppCompatActivity(){
         instance = PublicInterface()
 
         // Preferences
-        itemUI = readItemUI()
+        settings = Settings(this)
+        Log.w(TAG,"BODY ACTION: ${settings.bodyAction}")
 
         dataList = Logic.openList
         dataList?.let {
@@ -126,10 +121,18 @@ class AList : AppCompatActivity(){
     override fun onStart() {
         Log.d(TAG, "onStart")
         super.onStart()
-        // Check prefs changed
-        val newItemUI = readItemUI()
-        if(itemUI.compareTo(newItemUI)!=0){
-            itemUI = newItemUI
+
+        // Check settings changed
+        val old = settings
+        settings = Settings(this)
+        Log.w(TAG,"BODY ACTION: ${settings.bodyAction}")
+
+        if(        settings.showCheck!=old.showCheck
+                || settings.showOpen!=old.showOpen
+                || settings.showFog!=old.showFog
+                //|| settings.useLongclick!=old.useLongclick // do not need to refresh list
+                //settings.bodyAction.compareTo(old.bodyAction)!=0 // do not need to refresh list
+        ){
             adapter.notifyDataSetChanged()
         }
     }
@@ -150,6 +153,12 @@ class AList : AppCompatActivity(){
             title = dataList!!.name
         }
 
+        fun onItemCheckChanged(item:Item){
+            // Search item position. Do not keep position in view.tag !!!
+            val position = uiList.indexOfFirst { it.id==item.id }
+            // Update row
+            adapter.notifyItemChanged(position)
+        }
         fun onItemInserted() {
             Log.w(TAG, "onItemInserted")
             reloadData()
@@ -212,50 +221,64 @@ class AList : AppCompatActivity(){
 
     //----------------------------------------------------------------------------------------------
     // SETTINGS (Preferences)
-    fun readItemUI():String{
-        return PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(ItemUI.KEY, ItemUI.default)!!
+    object BodyAction{
+        const val OPEN    = "open"
+        const val CHECK   = "check"
+        const val NOTHING = "nothing"
+        const val default = OPEN
     }
+    class Settings(context:Context?) {
+        var showCheck   : Boolean = true
+        var showOpen    : Boolean = true
+        var showFog     : Boolean = true
+        var bodyAction  : String = BodyAction.default
+        var useLongclick: Boolean = false
+
+        init{
+            context?.let {
+                val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+                bodyAction  = prefs.getString ("item_body", BodyAction.default)!!
+                showCheck   = prefs.getBoolean("item_check", true)
+                showOpen    = prefs.getBoolean("item_open", true)
+                showFog     = prefs.getBoolean("item_fog", true)
+                useLongclick= prefs.getBoolean("use_longclick", true)
+            }
+        }
+    }
+    var settings = Settings(null)
 
     //----------------------------------------------------------------------------------------------
     // LIST ITEM
     fun openItem(view: View){
-        val position = view.tag
-        if(position is Int) {
-            Logic.openItem(uiList[position], this)
+        val item = view.tag
+        if(item is Item) {
+            Logic.openItem(item, this)
         }
     }
     fun checkItem(view: View){
-        val position = view.tag
-        if(position is Int){
-            // Change item state
-            val item = uiList[position]
+        val item = view.tag
+        if(item is Item){
             item.changeState()
-            // Update row
-            adapter.notifyItemChanged(position)
-            // TODO move to public interface
+            instance?.onItemCheckChanged(item)
         }
     }
-    fun onItemClick(view: View) {
-        when(itemUI){
-            ItemUI.CLICK_CHECKBOX -> openItem(view)
-            ItemUI.CLICK_NULL     -> openItem(view)
-            ItemUI.ICON_CLICK     -> checkItem(view)
-            ItemUI.LONGCLICK_CLICK-> checkItem(view)
+    fun onItemBodyClick(view: View) {
+        Log.w(TAG,"onItemBodyClick BODY ACTION: ${settings.bodyAction}")
+
+        when(settings.bodyAction){
+            BodyAction.OPEN  -> openItem(view)
+            BodyAction.CHECK -> checkItem(view)
         }
     }
     fun onItemLongClick(view: View): Boolean {
-        when(itemUI){
-            ItemUI.LONGCLICK_CLICK-> openItem(view)
-        }
+        if(settings.useLongclick)
+            openItem(view)
         return true
     }
-    fun onItemCheckIcon(view: View) {
-        Log.d(TAG, "onItemCheckIcon")
+    fun onItemCheckClick(view: View) {
         checkItem(view)
     }
-    fun onItemOpenIcon(view: View) {
-        Log.d(TAG, "onItemOpenIcon")
+    fun onItemOpenClick(view: View) {
         openItem(view)
     }
 
@@ -267,19 +290,20 @@ class AList : AppCompatActivity(){
         val itemBody     : View = view.itemBody
         val iconOpen     : View = view.iconOpen
         val iconCheck    : View = view.iconCheck
+        val fogView      : View = view.fogView
         init {
-            itemBody.setOnClickListener         { onItemClick(it)}
+            itemBody.setOnClickListener         { onItemBodyClick(it)}
             itemBody.setOnLongClickListener     { onItemLongClick(it)}
-            iconOpen.setOnClickListener         { onItemOpenIcon(it)}
-            iconCheck.setOnClickListener        { onItemCheckIcon(it)}
+            iconOpen.setOnClickListener         { onItemOpenClick(it)}
+            iconCheck.setOnClickListener        { onItemCheckClick(it)}
         }
 
         fun bind(position: Int) {
             val item = uiList[position]
 
-            itemBody.tag = position
-            iconCheck.tag = position
-            iconOpen.tag = position
+            itemBody.tag  = item
+            iconCheck.tag = item
+            iconOpen.tag  = item
 
             txtName.text  = item.name
 
@@ -290,8 +314,8 @@ class AList : AppCompatActivity(){
                 txtDescr.text = item.description
             }
 
-            iconOpen.visibility  = if(itemUI==ItemUI.ICON_CLICK) VISIBLE else GONE
-            iconCheck.visibility = if(itemUI==ItemUI.CLICK_CHECKBOX) VISIBLE else GONE
+            iconOpen.visibility  = if(settings.showOpen)  VISIBLE else GONE
+            iconCheck.visibility = if(settings.showCheck) VISIBLE else GONE
 
             // Checked
             updateChecked(item)
@@ -302,13 +326,19 @@ class AList : AppCompatActivity(){
             val isChecked = item.state == Item.ITEM_STATE_CHECKED
             iconCheck.isActivated = isChecked
 
+            //itemView.alpha = if(isChecked) 0.5F else 1.0F
+            fogView.visibility  =
+                    if(settings.showFog)
+                        if(isChecked) VISIBLE else GONE
+                    else GONE
+
             // Text color
-            val textColor =  when(itemUI) {
-                ItemUI.CLICK_CHECKBOX -> colorUnchecked
-                else -> if (isChecked) colorChecked else colorUnchecked
-            }
-            txtName.setTextColor (textColor)
-            txtDescr.setTextColor(textColor)
+//            val textColor =  when(itemUI) {
+//                ItemUI.CLICK_CHECKBOX -> colorUnchecked
+//                else -> if (isChecked) colorChecked else colorUnchecked
+//            }
+//            txtName.setTextColor (textColor)
+//            txtDescr.setTextColor(textColor)
         }
     }
 
