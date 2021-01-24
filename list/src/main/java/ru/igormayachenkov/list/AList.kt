@@ -64,9 +64,8 @@ class AList : AppCompatActivity() {
 
         instance = PublicInterface()
 
-        // Preferences
+        // Settings (Preferences)
         settings = Settings(this)
-        Log.w(TAG,"BODY ACTION: ${settings.bodyAction}")
 
         dataList = Logic.openList
         dataList?.let {
@@ -125,7 +124,6 @@ class AList : AppCompatActivity() {
         // Check settings changed
         val old = settings
         settings = Settings(this)
-        Log.w(TAG,"BODY ACTION: ${settings.bodyAction}")
 
         if(        settings.showCheck!=old.showCheck
                 || settings.showOpen!=old.showOpen
@@ -221,12 +219,6 @@ class AList : AppCompatActivity() {
 
     //----------------------------------------------------------------------------------------------
     // SETTINGS (Preferences)
-    object BodyAction{
-        const val OPEN    = "open"
-        const val CHECK   = "check"
-        const val NOTHING = "nothing"
-        const val default = OPEN
-    }
     class Settings(context:Context?) {
         var showCheck   : Boolean = true
         var showOpen    : Boolean = true
@@ -246,6 +238,13 @@ class AList : AppCompatActivity() {
         }
     }
     var settings = Settings(null)
+
+    object BodyAction{
+        const val OPEN    = "open"
+        const val CHECK   = "check"
+        const val NOTHING = "nothing"
+        const val default = OPEN
+    }
 
     //----------------------------------------------------------------------------------------------
     // LIST ITEM

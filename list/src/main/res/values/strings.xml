@@ -35,6 +35,7 @@
     <string name="item_name_hint">Name</string>
     <string name="item_descr_hint">Description</string>
     <string name="item_error">The name can\'t be empty</string>
+    <string name="item_confirm_delete">Delete item?</string>
 
     <!-- LIST NAME DIALOG -->
     <string name="dialog_name_hint">List name</string>

@@ -35,6 +35,7 @@
     <string name="item_name_hint">Название</string>
     <string name="item_descr_hint">Описание</string>
     <string name="item_error">Название не может быть пустым</string>
+    <string name="item_confirm_delete">Удалить элемент?</string>
 
     <!-- LIST NAME DIALOG -->
     <string name="dialog_name_hint">Название списка</string>

@@ -31,6 +31,15 @@
             app:defaultValue="false"/>
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="List item editor">
+        <SwitchPreferenceCompat
+            app:key="confirm_delete"
+            app:title="Confirm on delete"
+            app:summaryOn="Show confirmation dialog before delete"
+            app:summaryOff="Delete without any confirmation"
+            app:defaultValue="true"/>
+    </PreferenceCategory>
+
     <PreferenceCategory app:title="@string/messages_header">
 
         <EditTextPreference

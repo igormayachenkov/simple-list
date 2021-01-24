@@ -1,16 +1,16 @@
 package ru.igormayachenkov.list
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.PreferenceManager
 import ru.igormayachenkov.list.data.List
-import ru.igormayachenkov.list.data.Data
 import kotlinx.android.synthetic.main.a_item.*
 import ru.igormayachenkov.list.data.Item
 
@@ -27,14 +27,12 @@ class AItem : AppCompatActivity() {
     private var list: List? = null
     private var item: Item? = null
 
-    // Controls
-//    var txtName: TextView? = null
-//    var txtDescr: TextView? = null
-//    var btnDelete: ImageButton? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.a_item)
+
+        // Settings (Preferences)
+        settings = Settings(this)
 
         // Get data objects
         //val listId = intent.getLongExtra(Data.LIST_ID, 0)
@@ -59,6 +57,9 @@ class AItem : AppCompatActivity() {
             Log.e(AList.TAG, "open list does is null")
             finish()
         }
+        // Set handlers
+        btnSave.setOnClickListener { onButtonSave() }
+        btnDel.setOnClickListener  { onButtonDelete() }
     }
     override fun onStart() {
         Log.d(TAG, "onStart")
@@ -71,7 +72,7 @@ class AItem : AppCompatActivity() {
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // HANDLERS
-    fun onButtonSave(v: View?) {
+    fun onButtonSave() {
         // Validate data
         val name = txtName.text.toString().trim()
         if (name.isEmpty()) {
@@ -104,7 +105,20 @@ class AItem : AppCompatActivity() {
         finish()
     }
 
-    fun onButtonDelete(v: View?) {
+    fun onButtonDelete() {
+        if(settings.confirmDelete) {
+            AlertDialog.Builder(this)
+                    .setMessage(getString(R.string.item_confirm_delete))
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setNegativeButton(android.R.string.no, null)
+                    .setPositiveButton(android.R.string.yes) { _, _ -> doDelete() }
+                    .show()
+        }else{
+            doDelete()
+        }
+    }
+
+    fun doDelete() {
         try {
             Logic.deleteItem(item)
             finish()
@@ -112,11 +126,20 @@ class AItem : AppCompatActivity() {
             Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
 
         }
-
-        // Delete item
-//        item?.id?.let {
-//            list!!.deleteItem(it)
-//            AList.instance?.onItemDeleted()
-//        }
     }
+
+    //----------------------------------------------------------------------------------------------
+    // SETTINGS (Preferences)
+    class Settings(context: Context?) {
+        var confirmDelete   : Boolean = true
+
+        init{
+            context?.let {
+                val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+                confirmDelete = prefs.getBoolean("confirm_delete", true)
+            }
+        }
+    }
+    var settings = Settings(null)
+
 }
