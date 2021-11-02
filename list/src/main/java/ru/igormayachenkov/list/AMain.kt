@@ -105,6 +105,7 @@ class AMain : AppCompatActivity() {
         fun onListDeleted(id: Long) {
             Log.w(TAG, "onListDeleted")
             getItemPosition(id)?.let {
+                uiList.removeAt(it)
                 adapter.notifyItemRemoved(it)
             }
         }
