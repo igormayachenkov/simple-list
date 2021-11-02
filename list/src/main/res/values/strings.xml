@@ -2,7 +2,6 @@
     <string name="app_name">List</string>
 
     <string name="bytes_saved">bytes written into the file</string>
-    <string name="lists_updated">lists updated</string>
     <string name="load_title">Data loading</string>
     <string name="load_to_insert">lists to insert:</string>
     <string name="load_to_update">lists to update:</string>
@@ -28,8 +27,6 @@
     <string name="list_menu_help">Help</string>
     <string name="list_menu_save_json">Save the list to a file</string>
     <string name="list_menu_save_xml">Save as XML</string>
-    <string name="list_save_ok">The list was saved</string>
-    <string name="list_save_error">An error occurred</string>
 
     <!-- ITEM -->
     <string name="item_name_hint">Name</string>
@@ -38,16 +35,10 @@
     <string name="item_confirm_delete">Delete item?</string>
 
     <!-- LIST NAME DIALOG -->
-    <string name="dialog_name_hint">List name</string>
-    <string name="dialog_title_new">New list</string>
     <string name="dialog_title_rename">Rename list</string>
-    <string name="dialog_title_save">Export data to </string>
-    <string name="dialog_message_save">Input filename</string>
     <string name="dialog_error">The name can\'t be empty</string>
 
     <!-- SAVE/LOAD DIALOGs -->
-    <string name="dlg_save_title">Save</string>
-    <string name="dlg_save_all_message">Save all data in JSON format. Input file name.</string>
 
     <!-- HELP -->
     <string name="help_title">Help</string>
@@ -59,19 +50,10 @@
     <string name="title_activity_a_settings">ASettings</string>
 
     <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
 
     <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
 
     <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_file">File</string>
 
