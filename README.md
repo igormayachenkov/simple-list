@@ -12,6 +12,10 @@ New in this version:
 - many columns in the list
 - Bug fixed: app crash on Iten screen is open and the app was killed.
 
+1.2.1
+---
+Bundle-based app, crash bug was fixed
+
 1.2
 ---
 The first successful release existed for a long time in PlayStore
