@@ -13,7 +13,7 @@ import androidx.preference.PreferenceManager
 import ru.igormayachenkov.list.data.List
 import kotlinx.android.synthetic.main.a_item.*
 import ru.igormayachenkov.list.data.Item
-import ru.igormayachenkov.list.settings.ASettings
+import ru.igormayachenkov.list.settings.ASettingsOld
 
 class AItem : AppCompatActivity() {
     companion object {
@@ -77,7 +77,7 @@ class AItem : AppCompatActivity() {
     // HANDLERS
     fun onButtonSettings() {
         // Go to Settings activity
-        ASettings.open(this, R.xml.item_preferences)
+        ASettingsOld.open(this, R.xml.item_preferences)
     }
     fun onButtonSave() {
         // Validate data

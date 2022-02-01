@@ -2,47 +2,45 @@ package ru.igormayachenkov.list
 
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.preference.PreferenceManager
-import ru.igormayachenkov.list.data.Data
+import android.util.Log
+import ru.igormayachenkov.list.settings.Settings
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // THE APPLICATION INSTANCE
 class App : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        instance = this
+    companion object{
+        private val TAG:String="myapp.App"
 
-        // Init Logic
-        Logic.init(this)
-    }
+        // CONTEXT
+        private lateinit var m_context: Context
+        val context:Context
+            get() = m_context
 
-    val packageInfo: PackageInfo?
-        get() {
-            val pInfo: PackageInfo? = null
-            try {
-                return packageManager.getPackageInfo(packageName, 0)
-            } catch (e: PackageManager.NameNotFoundException) {
-                e.printStackTrace()
+        // PACKAGE INFO
+        val packageInfo: PackageInfo?
+            get() {
+                val pInfo: PackageInfo? = null
+                try {
+                    return m_context.packageManager.getPackageInfo(m_context.packageName, 0)
+                } catch (e: PackageManager.NameNotFoundException) {
+                    e.printStackTrace()
+                }
+                return null
             }
-            return null
-        }
 
-    companion object {
-        private var instance: App? = null
-        @JvmStatic
-        fun instance(): App? {
-            return instance
-        }
-
-        fun context(): Context? {
-            return instance //.getApplicationContext();
-        }
-
-        fun prefs(): SharedPreferences {
-            return PreferenceManager.getDefaultSharedPreferences(context())
-        }
     }
+
+    override fun onCreate() {
+        m_context = this
+        Log.d(TAG, "onCreate")
+        super.onCreate()
+
+        // Init object
+        Settings
+        Logic
+    }
+
+
 }

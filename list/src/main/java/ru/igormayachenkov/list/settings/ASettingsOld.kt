@@ -9,16 +9,16 @@ import androidx.preference.PreferenceFragmentCompat
 import ru.igormayachenkov.list.R
 
 
-class ASettings : AppCompatActivity(){
+class ASettingsOld : AppCompatActivity(){
 
     companion object{
-        private const val TAG = "myapp.ASettings"
+        private const val TAG = "myapp.ASettingsOld"
 
         var resourceId:Int?=null
 
         fun open(activity:AppCompatActivity, rscId:Int){
             resourceId = rscId
-            val intent = Intent(activity, ASettings::class.java)
+            val intent = Intent(activity, ASettingsOld::class.java)
             activity.startActivity(intent)
         }
     }
@@ -60,6 +60,10 @@ class ASettings : AppCompatActivity(){
 
         override fun onSharedPreferenceChanged(sp: SharedPreferences?, key: String?) {
             Log.d(TAG,"onSharedPreferenceChanged key:$key")
+            if(key=="main_columns_number"){
+                val v = sp!!.getString(key,null)
+                Settings.set_mainColNumber(ColumnsNumnber.getNumber(v!!))
+            }
             if(key=="item_ui"){
                 val v = sp!!.getString(key,null)
                 Log.d(TAG,"value: $v")

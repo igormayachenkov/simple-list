@@ -41,7 +41,7 @@ object Data {
     fun toJSON(lists: Collection<List>): JSONObject {
         val json = JSONObject()
         // Version
-        val pInfo = App.instance()?.packageInfo
+        val pInfo = App.packageInfo
         if (pInfo != null) {
             json.put("versionCode", pInfo.versionCode)
             json.put("versionName", pInfo.versionName)

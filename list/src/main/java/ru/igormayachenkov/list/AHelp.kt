@@ -5,7 +5,6 @@ import android.view.View
 import android.webkit.WebView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import ru.igormayachenkov.list.App.Companion.instance
 
 class AHelp : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +21,7 @@ class AHelp : AppCompatActivity() {
         //String activity = getIntent().getStringExtra(Data.ACTIVITY);
 
         // Version
-        val pInfo = instance()!!.packageInfo
+        val pInfo = App.packageInfo
         (findViewById<View>(R.id.txtVersion) as TextView).text = if (pInfo == null) "" else pInfo.versionName
     }
 }

@@ -23,7 +23,7 @@ import ru.igormayachenkov.list.data.Data
 import kotlinx.android.synthetic.main.a_list.*
 import kotlinx.android.synthetic.main.item_list.view.*
 import kotlinx.android.synthetic.main.item_list.view.txtName
-import ru.igormayachenkov.list.settings.ASettings
+import ru.igormayachenkov.list.settings.ASettingsOld
 import ru.igormayachenkov.list.settings.BodyAction
 import ru.igormayachenkov.list.settings.ColumnsNumnber
 
@@ -52,8 +52,8 @@ class AList : AppCompatActivity() {
     var colorUnchecked: Int
 
     init {
-        colorChecked = ContextCompat.getColor(App.context()!!, R.color.textChecked)
-        colorUnchecked = ContextCompat.getColor(App.context()!!, R.color.textUnchecked)
+        colorChecked = ContextCompat.getColor(App.context, R.color.textChecked)
+        colorUnchecked = ContextCompat.getColor(App.context, R.color.textUnchecked)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -422,7 +422,7 @@ class AList : AppCompatActivity() {
     }
     fun onMenuSettings() {
         // Go to Settings activity
-        ASettings.open(this, R.xml.list_preferences)
+        ASettingsOld.open(this, R.xml.list_preferences)
     }
     private fun onMenuDelete() {
         // Show yes/no dialog

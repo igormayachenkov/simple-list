@@ -18,9 +18,12 @@ import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 import kotlinx.android.synthetic.main.a_main.*
 import kotlinx.android.synthetic.main.item_main.view.*
-import ru.igormayachenkov.list.settings.ASettings
+import ru.igormayachenkov.list.settings.ASettingsOld
 import ru.igormayachenkov.list.settings.BodyAction
 import ru.igormayachenkov.list.settings.ColumnsNumnber
+import androidx.lifecycle.Observer
+import ru.igormayachenkov.list.settings.Settings
+
 
 class AMain : AppCompatActivity() {
     companion object {
@@ -48,22 +51,22 @@ class AMain : AppCompatActivity() {
 
         instance = PublicInterface()
 
-        // Settings (Preferences)
-        settings = Settings(this)
-
-        // List
-        val manager = getListLayoutManager()
+        // LIST
+        val colnumObserver = Observer<Int> { colnum ->
+            val manager = getListLayoutManager(colnum)
             recyclerView.layoutManager = manager
+        }
+        Settings.mainColNumber.observe(this, colnumObserver)
         recyclerView.adapter = adapter
 
         reloadData()
     }
 
-    fun getListLayoutManager(): RecyclerView.LayoutManager {
-        val columnCount = ColumnsNumnber.getNumber(settings.colNumber)
+    fun getListLayoutManager(colnum:Int): RecyclerView.LayoutManager {
+        //val colnum = ColumnsNumnber.getNumber(settings.colNumber)
         return when {
-            columnCount <= 1 -> androidx.recyclerview.widget.LinearLayoutManager(this)
-            else -> androidx.recyclerview.widget.GridLayoutManager(this, columnCount)
+            colnum <= 1 -> androidx.recyclerview.widget.LinearLayoutManager(this)
+            else -> androidx.recyclerview.widget.GridLayoutManager(this, colnum)
         }
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -148,19 +151,19 @@ class AMain : AppCompatActivity() {
             Logic.openList(list,this)
     }
 
-    //----------------------------------------------------------------------------------------------
-    // SETTINGS (Preferences)
-    class Settings(context: Context?) {
-        var colNumber   : String = ColumnsNumnber.default
-
-        init{
-            context?.let {
-                val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-                colNumber   = prefs.getString ("main_columns_number", BodyAction.default)!!
-            }
-        }
-    }
-    var settings = Settings(null)
+//    //----------------------------------------------------------------------------------------------
+//    // SETTINGS (Preferences)
+//    class Settings(context: Context?) {
+//        var colNumber   : String = ColumnsNumnber.default
+//
+//        init{
+//            context?.let {
+//                val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+//                colNumber   = prefs.getString ("main_columns_number", BodyAction.default)!!
+//            }
+//        }
+//    }
+//    var settings = Settings(null)
 
     fun onMenuAdd() {
         // ALERT DIALOG
@@ -203,7 +206,7 @@ class AMain : AppCompatActivity() {
     }
     fun onMenuSettings() {
         // Go to Settings activity
-        ASettings.open(this, R.xml.main_preferences)
+        ASettingsOld.open(this, R.xml.main_preferences)
     }
 
     fun onMenuClear() {

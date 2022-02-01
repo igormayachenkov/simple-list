@@ -18,11 +18,11 @@ import kotlin.Exception
 object Logic {
     const val TAG = "myapp.Logic"
 
-    fun init(context:Context){
+    init{
         Log.d(TAG, "init")
 
-        Database.open(context)
-        Data.load(context)
+        Database.open(App.context)
+        Data.load(App.context)
 
         // TODO restore open list/item
 
@@ -34,7 +34,7 @@ object Logic {
     var openItem : Item? = null
 
     fun createList(name:String?):List{
-        if (name.isNullOrEmpty()) throw Exception(App.instance()!!.getString(R.string.dialog_error))
+        if (name.isNullOrEmpty()) throw Exception(App.context.getString(R.string.dialog_error))
 
         // Create a new list object
         val list = List(
@@ -53,7 +53,7 @@ object Logic {
     fun renameOpenList(name:String?){
         val list = openList
         if(list==null) throw Exception("open list is null")
-        if (name.isNullOrEmpty()) throw Exception(App.instance()!!.getString(R.string.dialog_error))
+        if (name.isNullOrEmpty()) throw Exception(App.context.getString(R.string.dialog_error))
 
         // Rename List
         Database.updateListName(list.id, name)
@@ -109,7 +109,7 @@ object Logic {
     // FILE EXPORT/IMPORT
     fun saveLists(uri: Uri?, lists: Collection<List>):Int{
         // Open
-        val pfd = App.instance()!!.contentResolver.openFileDescriptor(uri!!, "w")
+        val pfd = App.context.contentResolver.openFileDescriptor(uri!!, "w")
         val fileOutputStream = FileOutputStream(pfd!!.fileDescriptor)
 
         // Write
@@ -125,7 +125,7 @@ object Logic {
 
     fun saveListToXML(list:List, uri: Uri?):Int{
         // Open
-        val pfd = App.instance()!!.contentResolver.openFileDescriptor(uri!!, "w")
+        val pfd = App.context.contentResolver.openFileDescriptor(uri!!, "w")
         val fileOutputStream = FileOutputStream(pfd!!.fileDescriptor)
 
         // Write
@@ -141,7 +141,7 @@ object Logic {
 
     fun readJSON(uri: Uri?):JSONObject{
         // Open
-        val pfd = App.context()!!.contentResolver.openFileDescriptor(uri!!, "r")
+        val pfd = App.context.contentResolver.openFileDescriptor(uri!!, "r")
         val reader = BufferedReader(FileReader(pfd!!.fileDescriptor))
 
         // Read
