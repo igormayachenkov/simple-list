@@ -1,7 +1,6 @@
 package ru.igormayachenkov.list
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,8 +8,8 @@ import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.appcompat.widget.Toolbar
-import androidx.preference.PreferenceManager
 import org.json.JSONObject
 import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.Data
@@ -19,8 +18,6 @@ import java.util.*
 import kotlinx.android.synthetic.main.a_main.*
 import kotlinx.android.synthetic.main.item_main.view.*
 import ru.igormayachenkov.list.settings.ASettingsOld
-import ru.igormayachenkov.list.settings.BodyAction
-import ru.igormayachenkov.list.settings.ColumnsNumnber
 import androidx.lifecycle.Observer
 import ru.igormayachenkov.list.settings.Settings
 
@@ -31,7 +28,7 @@ class AMain : AppCompatActivity() {
         const val FILE_OPEN_REQUEST = 222
         const val FILE_CREATE_REQUEST = 333
 
-        var instance : PublicInterface? = null
+        var publicInterface : PublicInterface? = null
 
     }
 
@@ -42,14 +39,21 @@ class AMain : AppCompatActivity() {
     val columnCount = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate")
+        Log.d(TAG, "onCreate, savedInstanceState ${savedInstanceState} ")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.a_main)
+
+//        if(savedInstanceState == null) {
+//            Log.d(TAG, "cold start")
+//            //create the fragment
+//            openPage(FItem(), FItem.TAG, false)
+//        }
+
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
         setTitle(R.string.main_title)
 
-        instance = PublicInterface()
+        publicInterface = PublicInterface()
 
         // LIST
         val colnumObserver = Observer<Int> { colnum ->
@@ -78,7 +82,7 @@ class AMain : AppCompatActivity() {
     override fun onDestroy() {
         Log.d(TAG, "onDestroy")
         super.onDestroy()
-        instance = null
+        publicInterface = null
     }
 
     override fun onStart() {

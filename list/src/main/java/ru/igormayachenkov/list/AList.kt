@@ -12,6 +12,7 @@ import android.view.View.VISIBLE
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
@@ -40,7 +41,18 @@ class AList : AppCompatActivity() {
             activity.startActivity(intent)
         }
 
-        var instance: AList.PublicInterface? = null
+        var publicInterface: AList.PublicInterface? = null
+
+        lateinit var instance : AList
+        fun openItem(fragment: Fragment, tag:String){
+            instance.let {
+                with(it.supportFragmentManager.beginTransaction()) {
+                    add(R.id.pageContainer, fragment, tag)
+                    addToBackStack(null)
+                    commit()
+                }
+            }
+        }
     }
 
     // Data objects
@@ -52,6 +64,7 @@ class AList : AppCompatActivity() {
     var colorUnchecked: Int
 
     init {
+        instance = this
         colorChecked = ContextCompat.getColor(App.context, R.color.textChecked)
         colorUnchecked = ContextCompat.getColor(App.context, R.color.textUnchecked)
     }
@@ -63,7 +76,7 @@ class AList : AppCompatActivity() {
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
 
-        instance = PublicInterface()
+        publicInterface = PublicInterface()
 
         // Settings (Preferences)
         settings = Settings(this)
@@ -119,7 +132,7 @@ class AList : AppCompatActivity() {
     override fun onDestroy() {
         Log.d(TAG, "onDestroy")
         super.onDestroy()
-        instance = null
+        publicInterface = null
     }
 
     override fun onStart() {
@@ -262,7 +275,7 @@ class AList : AppCompatActivity() {
         val item = view.tag
         if(item is Item){
             item.changeState()
-            instance?.onItemCheckChanged(item)
+            publicInterface?.onItemCheckChanged(item)
         }
     }
     fun onItemBodyClick(view: View) {

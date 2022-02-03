@@ -1,5 +1,6 @@
 package ru.igormayachenkov.list.settings
 
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -16,10 +17,10 @@ class ASettingsOld : AppCompatActivity(){
 
         var resourceId:Int?=null
 
-        fun open(activity:AppCompatActivity, rscId:Int){
+        fun open(context: Context, rscId:Int){
             resourceId = rscId
-            val intent = Intent(activity, ASettingsOld::class.java)
-            activity.startActivity(intent)
+            val intent = Intent(context, ASettingsOld::class.java)
+            context.startActivity(intent)
         }
     }
 

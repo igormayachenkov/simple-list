@@ -9,6 +9,12 @@
     tools:context="ru.igormayachenkov.list.AList"
     android:background="@color/background">
 
+    <!-- PAGE CONTAINER -> place for pages -->
+    <FrameLayout
+        android:id="@+id/pageContainer"
+        android:layout_width="match_parent"
+        android:layout_height="350dp" />
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"

@@ -1,10 +1,8 @@
 package ru.igormayachenkov.list
 
 import android.app.Activity
-import android.content.Context
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import org.json.JSONObject
 import ru.igormayachenkov.list.data.Data
 import ru.igormayachenkov.list.data.Database
@@ -45,7 +43,7 @@ object Logic {
         // Save
         Database.insertList(list)
         Data.listOfLists.addList(list)
-        AMain.instance?.onListInserted()
+        AMain.publicInterface?.onListInserted()
 
         return list
     }
@@ -58,8 +56,8 @@ object Logic {
         // Rename List
         Database.updateListName(list.id, name)
         list.name = name
-        AList.instance?.onListRenamed()
-        AMain.instance?.onListRenamed(list.id)
+        AList.publicInterface?.onListRenamed()
+        AMain.publicInterface?.onListRenamed(list.id)
     }
 
     fun deleteOpenList(){
@@ -70,8 +68,8 @@ object Logic {
         Data.listOfLists.deleteList(list.id)
         openList=null
         openItem=null
-        AMain.instance?.onListDeleted(list.id)
-        AList.instance?.close()
+        AMain.publicInterface?.onListDeleted(list.id)
+        AList.publicInterface?.close()
     }
 
     fun openList(list:List, activity:Activity){
@@ -83,7 +81,8 @@ object Logic {
     fun openItem(item:Item?, activity:Activity){
         openItem = item // null means new
         // TODO save open item id
-        AItem.show(activity)
+        //AItem.show(activity)
+        AList.openItem(FItem(), FItem.TAG)
     }
 
     fun deleteItem(item: Item?){
@@ -94,7 +93,7 @@ object Logic {
 
         Database.deleteItem(item.id)
         list.deleteItem(item.id)
-        AList.instance?.onItemDeleted(item.id)
+        AList.publicInterface?.onItemDeleted(item.id)
     }
 
     fun deleteALL(){
@@ -102,7 +101,7 @@ object Logic {
         Data.listOfLists.reload()
         openList = null
         openItem = null
-        AMain.instance?.onDataUpdated()
+        AMain.publicInterface?.onDataUpdated()
     }
 
     //----------------------------------------------------------------------------------------------
@@ -162,7 +161,7 @@ object Logic {
 
     fun loadFromJSON(json: JSONObject){
         Data.loadFromJSON(json)
-        AMain.instance?.onDataUpdated()
+        AMain.publicInterface?.onDataUpdated()
     }
 
 }

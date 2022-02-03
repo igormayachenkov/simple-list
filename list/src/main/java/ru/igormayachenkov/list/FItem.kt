@@ -1,39 +1,50 @@
 package ru.igormayachenkov.list
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
+import androidx.fragment.app.Fragment
 import android.os.Bundle
-import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import ru.igormayachenkov.list.data.List
-import kotlinx.android.synthetic.main.a_item.*
+import kotlinx.android.synthetic.main.f_item.*
 import ru.igormayachenkov.list.data.Item
 import ru.igormayachenkov.list.settings.ASettingsOld
 
-class AItem : AppCompatActivity() {
-    companion object {
-        const val TAG = "myapp.AItem"
 
-        fun show(activity: Activity){
-            val intent = Intent(activity, AItem::class.java)
-            activity.startActivity(intent)
-        }
+class FItem : Fragment() {
+    // STATIC
+    companion object {
+        val TAG: String = "myapp.FItem"
     }
+
     // Data objects
     private var list: List? = null
     private var item: Item? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.a_item)
+
+    //----------------------------------------------------------------------------------------------
+    // FRAGMENT
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        retainInstance = true// TO PREVENT DESTROY ON SCREEN ROTATION
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.f_item, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "onViewCreated")
 
         // Settings (Preferences)
-        settings = Settings(this)
+        settings = Settings(App.context)
 
         // Get data objects
         //val listId = intent.getLongExtra(Data.LIST_ID, 0)
@@ -63,22 +74,29 @@ class AItem : AppCompatActivity() {
         btnDel.setOnClickListener  { onButtonDelete() }
         btnSettings.setOnClickListener  { onButtonSettings() }
     }
+
     override fun onStart() {
         Log.d(TAG, "onStart")
         super.onStart()
-        settings = Settings(this)
+        settings = Settings(App.context)
     }
 
     override fun onStop() {
         Log.d(TAG, "onStop")
         super.onStop()
     }
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    fun finish(){
+        activity?.supportFragmentManager?.popBackStack()
+    }
+
+    //----------------------------------------------------------------------------------------------
     // HANDLERS
     fun onButtonSettings() {
         // Go to Settings activity
-        ASettingsOld.open(this, R.xml.item_preferences)
+        ASettingsOld.open(AList.instance, R.xml.item_preferences)
     }
+
     fun onButtonSave() {
         // Validate data
         val name = txtName.text.toString().trim()
@@ -100,12 +118,12 @@ class AItem : AppCompatActivity() {
             if(isNameChanged || isDescrChanged) {
                 // Update
                 list!!.updateItemName(item.id, name, descr)
-                AList.instance?.onItemUpdated(isNameChanged, isDescrChanged)
+                AList.publicInterface?.onItemUpdated(isNameChanged, isDescrChanged)
             }
         }?: run{
             // NEW ITEM
             list!!.addItem(name, descr)
-            AList.instance?.onItemInserted()
+            AList.publicInterface?.onItemInserted()
         }
 
         // Return
@@ -114,7 +132,7 @@ class AItem : AppCompatActivity() {
 
     fun onButtonDelete() {
         if(settings.confirmDelete) {
-            AlertDialog.Builder(this)
+            AlertDialog.Builder(App.context)
                     .setMessage(getString(R.string.item_confirm_delete))
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setNegativeButton(android.R.string.no, null)
@@ -125,13 +143,12 @@ class AItem : AppCompatActivity() {
         }
     }
 
-    fun doDelete() {
+    private fun doDelete() {
         try {
             Logic.deleteItem(item)
             finish()
         }catch (e:Exception){
-            Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
-
+            Toast.makeText(activity, e.toString(), Toast.LENGTH_LONG).show();
         }
     }
 
