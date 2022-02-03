@@ -2,6 +2,7 @@ package ru.igormayachenkov.list
 
 import android.app.Activity
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -18,20 +19,35 @@ import kotlin.Exception
 object Logic {
     const val TAG = "myapp.Logic"
 
-    fun init(context:Context){
-        Log.d(TAG, "init")
-
-        Database.open(context)
-        Data.load(context)
-
-        // TODO restore open list/item
-
+    // PREFERENCES
+    lateinit var pref : SharedPreferences
+    const val OPEN_LIST_ID = "open_list_id"
+    const val OPEN_ITEM_ID = "open_item_id"
+    fun saveLong(value:Long?, key:String){
+        with (pref.edit()) {
+            value?.let {
+                putLong(key, it)
+            }?: kotlin.run {
+                remove(key)
+            }
+            apply()
+        }
     }
 
     //----------------------------------------------------------------------------------------------
     // OPEN LIST/ITEM
-    var openList : List? = null
-    var openItem : Item? = null
+    var openList    : List? = null
+        get() = field
+        set(value) {
+            field = value
+            saveLong(value?.id, OPEN_LIST_ID)
+        }
+    var openItem    : Item? = null
+        get() = field
+        set(value) {
+            field = value
+            saveLong(value?.id, OPEN_ITEM_ID)
+        }
 
     fun createList(name:String?):List{
         if (name.isNullOrEmpty()) throw Exception(App.instance()!!.getString(R.string.dialog_error))
@@ -75,14 +91,18 @@ object Logic {
     }
 
     fun openList(list:List, activity:Activity){
-        openList = list
-        // TODO save open list id
+        // Update data
+        openList   = list
+
+        // Update UI
         AList.show(activity)
     }
 
     fun openItem(item:Item?, activity:Activity){
-        openItem = item // null means new
-        // TODO save open item id
+        // Update data
+        openItem   = item // null means new
+
+        // Open UI
         AItem.show(activity)
     }
 
@@ -103,6 +123,31 @@ object Logic {
         openList = null
         openItem = null
         AMain.instance?.onDataUpdated()
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // INIT
+    init{
+        Log.d(TAG, "init")
+
+        pref = App.context.getSharedPreferences("data",Context.MODE_PRIVATE)
+
+        Database.open(App.context)
+        Data.load(App.context)
+
+        // Restore open list/item
+        val openListId = if(pref.contains(OPEN_LIST_ID)) pref.getLong(OPEN_LIST_ID, 0) else null
+        val openItemId = if(pref.contains(OPEN_ITEM_ID)) pref.getLong(OPEN_ITEM_ID, 0) else null
+        Log.d(TAG,"Restore openListId:$openListId   openItemId:$openItemId")
+        // Get list
+        openListId?.let {
+            openList = Data.listOfLists.getList(it)
+        }
+        // Get item
+        openItemId?.let {
+            openItem = openList?.items?.get(it)
+        }
+
     }
 
     //----------------------------------------------------------------------------------------------
@@ -141,7 +186,7 @@ object Logic {
 
     fun readJSON(uri: Uri?):JSONObject{
         // Open
-        val pfd = App.context()!!.contentResolver.openFileDescriptor(uri!!, "r")
+        val pfd = App.context.contentResolver.openFileDescriptor(uri!!, "r")
         val reader = BufferedReader(FileReader(pfd!!.fileDescriptor))
 
         // Read

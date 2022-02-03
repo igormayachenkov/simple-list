@@ -7,16 +7,39 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.preference.PreferenceManager
 import ru.igormayachenkov.list.data.Data
+import android.util.Log
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // THE APPLICATION INSTANCE
 class App : Application() {
+    private val TAG:String="myapp.App"
+
+    companion object {
+
+        // CONTEXT
+        private lateinit var m_context: Context
+        val context: Context
+            get() = m_context
+
+        private var instance: App? = null
+        @JvmStatic
+        fun instance(): App? {
+            return instance
+        }
+
+
+    }
+
     override fun onCreate() {
+        m_context = this
+        Log.d(TAG, "onCreate")
+
         super.onCreate()
         instance = this
 
         // Init Logic
-        Logic.init(this)
+        Logic
     }
 
     val packageInfo: PackageInfo?
@@ -29,20 +52,4 @@ class App : Application() {
             }
             return null
         }
-
-    companion object {
-        private var instance: App? = null
-        @JvmStatic
-        fun instance(): App? {
-            return instance
-        }
-
-        fun context(): Context? {
-            return instance //.getApplicationContext();
-        }
-
-        fun prefs(): SharedPreferences {
-            return PreferenceManager.getDefaultSharedPreferences(context())
-        }
-    }
 }

@@ -44,8 +44,8 @@ class AList : AppCompatActivity() {
     var colorChecked: Int
     var colorUnchecked: Int
     init {
-        colorChecked = ContextCompat.getColor(App.context()!!, R.color.colorChecked)
-        colorUnchecked = ContextCompat.getColor(App.context()!!, R.color.colorUnchecked)
+        colorChecked = ContextCompat.getColor(App.context, R.color.colorChecked)
+        colorUnchecked = ContextCompat.getColor(App.context, R.color.colorUnchecked)
     }
     val columnCount = 1
 
@@ -60,7 +60,7 @@ class AList : AppCompatActivity() {
 
         dataList = Logic.openList
         dataList?.let {
-            it.load()
+            it.loadItems()
 
             // Load controls
             title = it.name

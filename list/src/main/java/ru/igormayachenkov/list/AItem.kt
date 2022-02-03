@@ -5,12 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ru.igormayachenkov.list.data.List
-import ru.igormayachenkov.list.data.Data
 import kotlinx.android.synthetic.main.a_item.*
 import ru.igormayachenkov.list.data.Item
 
@@ -34,6 +31,8 @@ class AItem : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate")
+
         setContentView(R.layout.a_item)
 
         // Get data objects
@@ -42,7 +41,7 @@ class AItem : AppCompatActivity() {
         list = Logic.openList
         item = Logic.openItem
         list?.let { list->
-            list.load()
+            list.loadItems()
 
             Log.d(TAG, "onCreate list#$list.id item#$item?.id")
 
@@ -56,7 +55,7 @@ class AItem : AppCompatActivity() {
             }
 
         }?: kotlin.run {
-            Log.e(AList.TAG, "open list does is null")
+            Log.e(AList.TAG, "open list is null")
             finish()
         }
     }
@@ -68,6 +67,11 @@ class AItem : AppCompatActivity() {
     override fun onStop() {
         Log.d(TAG, "onStop")
         super.onStop()
+    }
+
+    override fun onDestroy() {
+        Log.d(TAG, "onDestroy")
+        super.onDestroy()
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // HANDLERS

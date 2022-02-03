@@ -24,15 +24,15 @@ data class List(
     var items : HashMap<Long,Item>? = null
 
 
-    fun load() {
-        Log.d(TAG, "load")
+    fun loadItems() {
+        Log.d(TAG, "loadItems")
         if (items==null) {
             items = Database.loadListItems(id)
         }
     }
 
     fun addItem(name: String?, description: String?) {
-        Log.d(TAG, "List.addItem")
+        Log.d(TAG, "addItem")
         val items = items
         if(items!=null){
             val item = Item.create(id,name,description)
@@ -44,7 +44,7 @@ data class List(
     }
 
     fun updateItemName(itemId: Long, name: String?, description: String?) {
-        Log.d(TAG, "List.updateItemName #$itemId")
+        Log.d(TAG, "updateItemName #$itemId")
         items?.let { items->
             items[itemId]?.let {
                 it.name = name
@@ -59,7 +59,7 @@ data class List(
     }
 
     fun deleteItem(itemId: Long) {
-        Log.d(TAG, "List.deleteItem")
+        Log.d(TAG, "deleteItem")
         items?.let { items ->
             items[itemId]?.let {
                 //Database.deleteItem(itemId)
@@ -152,7 +152,7 @@ data class List(
         json.put("name", name)
         if (description != null && !description!!.isEmpty()) json.put("description", description)
         // ITEMS
-        load()
+        loadItems()
         val jsItems = JSONArray()
         items?.let { items ->
             for (item in items.values) {
