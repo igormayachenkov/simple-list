@@ -13,8 +13,11 @@ import org.json.JSONObject
 import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.Data
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.a_list.*
 import java.util.*
 import kotlinx.android.synthetic.main.a_main.*
+import kotlinx.android.synthetic.main.a_main.emptyView
+import kotlinx.android.synthetic.main.a_main.recyclerView
 import kotlinx.android.synthetic.main.item_main.view.*
 
 class AMain : AppCompatActivity() {
@@ -143,9 +146,9 @@ class AMain : AppCompatActivity() {
 
     fun onListItemClick(view: View) {
         Log.d(TAG,"onListItemClick")
-        val list = view.tag
-        if(list is List)
-            Logic.openList(list,this)
+        val position = recyclerView.getChildAdapterPosition(view)
+        val list = uiList[position]
+        Logic.openList(list,this)
     }
 
     fun onMenuAdd() {
@@ -277,8 +280,8 @@ class AMain : AppCompatActivity() {
 
         fun bind(position: Int) {
             val list = uiList[position]
+            // Name
             txtName.text = list.name
-            itemView.tag = list
         }
     }
 

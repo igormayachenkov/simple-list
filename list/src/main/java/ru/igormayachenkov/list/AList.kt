@@ -203,22 +203,17 @@ class AList : AppCompatActivity() {
     }
 
     fun onItemClick(view: View) {
-        val position = view.tag
-        if(position is Int){
-            // Change item state
-            val item = uiList[position]
-            item.changeState()
-            // Update row
-            adapter.notifyItemChanged(position)
-            // TODO move to public interface
-        }
+        val position = recyclerView.getChildAdapterPosition(view)
+        // Change item state
+        val item = uiList[position]
+        item.changeState()
+        // Update row
+        adapter.notifyItemChanged(position)
     }
 
     fun onItemLongClick(view: View): Boolean {
-        val position = view.tag
-        if(position is Int) {
-            Logic.setOpenItem(uiList[position])
-        }
+        val position = recyclerView.getChildAdapterPosition(view)
+        Logic.setOpenItem(uiList[position])
         return true
     }
 
@@ -393,16 +388,19 @@ class AList : AppCompatActivity() {
 
         fun bind(position: Int) {
             val item = uiList[position]
-            txtName.text  = item.name
-            itemView.tag = position
 
+            // Name
+            txtName.text  = item.name
+
+            // Description
             if (item.description.isNullOrEmpty()) {
                 txtDescr.visibility = View.GONE
             } else {
                 txtDescr.visibility = View.VISIBLE
                 txtDescr.text = item.description
             }
-            // Checked / Category
+
+            // Checked
             updateChecked(item)
         }
 
