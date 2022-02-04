@@ -3,6 +3,7 @@ package ru.igormayachenkov.list
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.lifecycle.MutableLiveData
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -42,11 +43,13 @@ object Logic {
             field = value
             saveLong(value?.id, OPEN_LIST_ID)
         }
-    var openItem    : Item? = null
-        get() = field
-        set(value) {
-            field = value
-            saveLong(value?.id, OPEN_ITEM_ID)
+
+    var openItem = MutableLiveData<Item?>()
+    fun setOpenItem(item:Item?) {
+            // Save id
+            saveLong(item?.id, OPEN_ITEM_ID)
+            // Update live data
+            openItem.value = item
         }
 
     fun createList(name:String?):List{
@@ -85,7 +88,7 @@ object Logic {
         Database.deleteList(list.id)
         Data.listOfLists.deleteList(list.id)
         openList=null
-        openItem=null
+        setOpenItem(null)
         AMain.instance?.onListDeleted(list.id)
         AList.instance?.close()
     }
@@ -98,22 +101,28 @@ object Logic {
         AList.show(activity)
     }
 
-    fun openItem(item:Item?, activity:Activity){
-        // Update data
-        openItem   = item // null means new
-
-        // Open UI
-        AItem.show(activity)
-    }
-
-    fun deleteItem(item: Item?){
+//    fun deleteItem(item: Item?){
+//        if(item==null) throw Exception("deleteItem: item is null")
+//
+//        val list = Data.listOfLists.getList(item.parent_id)
+//        if(list==null) throw Exception("list #${item.parent_id} not found")
+//
+//        Database.deleteItem(item.id)
+//        list.deleteItem(item.id)
+//        AList.instance?.onItemDeleted(item.id)
+//    }
+    fun deleteOpenItem(){
+        val item = openItem.value
         if(item==null) throw Exception("deleteItem: item is null")
 
         val list = Data.listOfLists.getList(item.parent_id)
         if(list==null) throw Exception("list #${item.parent_id} not found")
 
+        // Update data
         Database.deleteItem(item.id)
         list.deleteItem(item.id)
+        setOpenItem(null)// updates UI too (hides fItem)
+        // Update UI
         AList.instance?.onItemDeleted(item.id)
     }
 
@@ -121,7 +130,7 @@ object Logic {
         Database.deleteALL()
         Data.listOfLists.reload()
         openList = null
-        openItem = null
+        setOpenItem(null)
         AMain.instance?.onDataUpdated()
     }
 
@@ -145,7 +154,7 @@ object Logic {
         }
         // Get item
         openItemId?.let {
-            openItem = openList?.items?.get(it)
+            setOpenItem(openList?.items?.get(it))
         }
 
     }

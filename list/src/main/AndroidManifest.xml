@@ -31,12 +31,6 @@
             android:name=".AList"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <!-- ITEM -->
-        <activity
-            android:name=".AItem"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateVisible" />
-
         <!-- HELP -->
         <activity
             android:name=".AHelp"

@@ -7,6 +7,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +21,7 @@ import ru.igormayachenkov.list.data.Data
 import kotlinx.android.synthetic.main.a_list.*
 import kotlinx.android.synthetic.main.item_list.view.*
 import kotlinx.android.synthetic.main.item_list.view.txtName
+import androidx.lifecycle.Observer
 
 class AList : AppCompatActivity() {
     companion object {
@@ -78,6 +81,10 @@ class AList : AppCompatActivity() {
             Log.e(TAG, "list #id does not exist")
             finish()
         }
+
+        // Observe open item
+        fItem.view?.visibility = GONE
+        Logic.openItem.observe(this, Observer<Item?>{ onOpenItemChanged(it) })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -173,8 +180,13 @@ class AList : AppCompatActivity() {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //----------------------------------------------------------------------------------------------
     // HANDLERS
+    private fun onOpenItemChanged(item:Item?){
+        Log.d(TAG, "updateItemView")
+        //fItem.view?.visibility = if(item!=null) VISIBLE else GONE
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_add       -> { onMenuAdd(); true }
@@ -205,13 +217,13 @@ class AList : AppCompatActivity() {
     fun onItemLongClick(view: View): Boolean {
         val position = view.tag
         if(position is Int) {
-            Logic.openItem(uiList[position], this)
+            Logic.setOpenItem(uiList[position])
         }
         return true
     }
 
     private fun onMenuAdd() {
-        Logic.openItem(null,this)
+       // Logic.openItem(null,this) TODO add new item
     }
 
     private fun onMenuHelp() {

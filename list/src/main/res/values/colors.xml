@@ -5,6 +5,7 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="colorBackground">#eeeeee</color>
+    <color name="fog">#bb888888</color>
 
     <color name="pressed">#FEFF93</color>
 
