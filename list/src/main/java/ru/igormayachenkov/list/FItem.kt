@@ -39,7 +39,7 @@ class FItem : Fragment()  {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
         // Set handlers
-        fog.setOnClickListener     { onButtonCancel() }
+        //fog.setOnClickListener     { onButtonCancel() } TODO add hide-on-fog-click setting
         btnSave.setOnClickListener { onButtonSave() }
         btnDel.setOnClickListener  { onButtonDelete() }
         // Observe open item

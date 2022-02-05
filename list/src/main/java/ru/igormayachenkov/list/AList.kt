@@ -109,6 +109,15 @@ class AList : AppCompatActivity() {
         super.onStop()
     }
 
+    override fun onBackPressed() {
+        Log.d(TAG, "onBackPressed")
+        if(Logic.openItem.value!=null) {
+            Logic.setOpenItem(null)
+        }else {
+            super.onBackPressed()
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // PUBLIC INTERFACE
     inner class PublicInterface {
