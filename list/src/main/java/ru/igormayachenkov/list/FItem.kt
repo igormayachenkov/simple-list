@@ -60,7 +60,6 @@ class FItem : Fragment()  {
             // Hide
             view?.visibility = GONE
         }
-
     }
 
     //----------------------------------------------------------------------------------------------
@@ -82,24 +81,7 @@ class FItem : Fragment()  {
         Log.d(TAG,"onButtonSave '$name' '$descr'")
 
         // Save data
-        Logic.openItem.value?.let { item ->
-            // EXISTED ITEM
-            // Check changes
-            val isNameChanged  = Utils.areNotEqual(name, item.name)
-            val isDescrChanged = Utils.areNotEqual(descr, item.description)
-            if(isNameChanged || isDescrChanged) {
-                // Update
-                Logic.openList!!.updateItemName(item.id, name, descr)
-                AList.instance?.onItemUpdated(isNameChanged, isDescrChanged)
-            }
-        }?: run{
-            // NEW ITEM
-//            Logic.openList!!.addItem(name, descr)
-//            AList.instance?.onItemInserted()
-        }
-
-        // Update data
-        Logic.setOpenItem(null)
+        Logic.updateOpenItem(name, descr)
     }
 
     fun onButtonDelete() {

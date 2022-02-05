@@ -31,38 +31,21 @@ data class List(
         }
     }
 
-    fun addItem(name: String?, description: String?) {
-        Log.d(TAG, "addItem")
+    fun addItem(item:Item) {
+        Log.d(TAG, "addItem #${item.id}")
         val items = items
         if(items!=null){
-            val item = Item.create(id,name,description)
-            Database.insertItem(item)
             items.put(item.id, item)
         }else{
             Log.e(TAG,"list is not loaded")
         }
     }
 
-    fun updateItemName(itemId: Long, name: String?, description: String?) {
-        Log.d(TAG, "updateItemName #$itemId")
-        items?.let { items->
-            items[itemId]?.let {
-                it.name = name
-                it.description = description
-                Database.updateItemName(itemId, name, description)
-            }?: run{
-                Log.e(TAG,"item #$itemId not found")
-            }
-        }?: run {
-            Log.e(TAG,"list is not loaded")
-        }
-    }
 
     fun deleteItem(itemId: Long) {
         Log.d(TAG, "deleteItem")
         items?.let { items ->
             items[itemId]?.let {
-                //Database.deleteItem(itemId)
                 items.remove(itemId)
             }?: run{
                 Log.e(TAG,"item #$itemId not found")

@@ -123,6 +123,7 @@ class AList : AppCompatActivity() {
         fun onItemInserted() {
             Log.w(TAG, "onItemInserted")
             reloadData()
+            // TODO replace by adapter.notifyItemInserted
         }
 
         fun onItemUpdated(isNameChanged: Boolean, isDescrChanged: Boolean) {
@@ -131,7 +132,7 @@ class AList : AppCompatActivity() {
                 reloadData()
             else
                 adapter.notifyDataSetChanged()
-                // TODO replace by notifyItemUpdatecd
+                // TODO replace by adapter.notifyItemUpdatecd
         }
 
         fun onItemDeleted(id: Long) {
@@ -218,7 +219,8 @@ class AList : AppCompatActivity() {
     }
 
     private fun onMenuAdd() {
-       // Logic.openItem(null,this) TODO add new item
+       // Logic.openItem(null,this)
+        Logic.createItem()
     }
 
     private fun onMenuHelp() {

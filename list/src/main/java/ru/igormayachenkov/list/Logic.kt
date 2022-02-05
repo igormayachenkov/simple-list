@@ -36,7 +36,7 @@ object Logic {
     }
 
     //----------------------------------------------------------------------------------------------
-    // OPEN LIST/ITEM
+    // OPEN LIST
     var openList    : List? = null
         get() = field
         set(value) {
@@ -44,13 +44,13 @@ object Logic {
             saveLong(value?.id, OPEN_LIST_ID)
         }
 
-    var openItem = MutableLiveData<Item?>()
-    fun setOpenItem(item:Item?) {
-            // Save id
-            saveLong(item?.id, OPEN_ITEM_ID)
-            // Update live data
-            openItem.value = item
-        }
+    fun openList(list:List, activity:Activity){
+        // Update data
+        openList   = list
+
+        // Update UI
+        AList.show(activity)
+    }
 
     fun createList(name:String?):List{
         if (name.isNullOrEmpty()) throw Exception(App.instance()!!.getString(R.string.dialog_error))
@@ -93,37 +93,83 @@ object Logic {
         AList.instance?.close()
     }
 
-    fun openList(list:List, activity:Activity){
-        // Update data
-        openList   = list
 
-        // Update UI
-        AList.show(activity)
+
+    //----------------------------------------------------------------------------------------------
+    // OPEN ITEM
+    var openItem = MutableLiveData<Item?>()
+
+    fun setOpenItem(item:Item?) {
+        Log.d(TAG, "setOpenItem #${item?.id}")
+        // Save id
+        saveLong(item?.id, OPEN_ITEM_ID)
+        // Update live data
+        openItem.value = item
     }
 
-//    fun deleteItem(item: Item?){
-//        if(item==null) throw Exception("deleteItem: item is null")
-//
-//        val list = Data.listOfLists.getList(item.parent_id)
-//        if(list==null) throw Exception("list #${item.parent_id} not found")
-//
-//        Database.deleteItem(item.id)
-//        list.deleteItem(item.id)
-//        AList.instance?.onItemDeleted(item.id)
-//    }
+    private fun isOpenItemExisted(openItemId:Long):Boolean {
+        return openList?.items?.get(openItemId) != null
+    }
+
+    fun createItem(){
+        Log.d(TAG, "createItem")
+        openList?.id?.let { list_id->
+            val item = Item.create(list_id,null,null)
+            setOpenItem(item)
+        }?:run{ throw Exception("createItem when openList is NULL") }
+    }
+
+    fun updateOpenItem(name:String?, descr:String?){
+        val item = openItem.value
+        if(item==null) throw Exception("deleteOpenItem: open item is null")
+
+        // Check changes
+        val isNameChanged:Boolean = Utils.areNotEqual(name, item.name)
+        val isDescrChanged:Boolean = Utils.areNotEqual(descr, item.description)
+
+        if(isNameChanged || isDescrChanged) {
+            // Update item fields
+            item.name = name
+            item.description = descr
+
+            if (isOpenItemExisted(item.id)) {
+                // EXISTED ITEM
+                Database.updateItemName(item.id, name, descr)
+                // Update UI
+                AList.instance?.onItemUpdated(isNameChanged, isDescrChanged)
+            } else {
+                // NEW ITEM
+                Database.insertItem(item)
+                openList?.addItem(item)
+                // Update UI
+                AList.instance?.onItemInserted()
+            }
+        }
+
+        // Clear open item
+        setOpenItem(null)
+    }
+
     fun deleteOpenItem(){
         val item = openItem.value
-        if(item==null) throw Exception("deleteItem: item is null")
+        if(item==null) throw Exception("deleteOpenItem: open item is null")
 
-        val list = Data.listOfLists.getList(item.parent_id)
-        if(list==null) throw Exception("list #${item.parent_id} not found")
-
-        // Update data
-        Database.deleteItem(item.id)
-        list.deleteItem(item.id)
-        setOpenItem(null)// updates UI too (hides fItem)
-        // Update UI
-        AList.instance?.onItemDeleted(item.id)
+        if(isOpenItemExisted(item.id)) {
+            // EXISTED
+            val list = Data.listOfLists.getList(item.parent_id)
+            if(list==null) throw Exception("list #${item.parent_id} not found")
+            // Update storage
+            Database.deleteItem(item.id)
+            list.deleteItem(item.id)
+            // Clear open item
+            setOpenItem(null)// updates UI too (hides fItem)
+            // Update UI
+            AList.instance?.onItemDeleted(item.id)
+        }else{
+            // NEW
+            // Just clear open item
+            setOpenItem(null)// updates UI too (hides fItem)
+        }
     }
 
     fun deleteALL(){
