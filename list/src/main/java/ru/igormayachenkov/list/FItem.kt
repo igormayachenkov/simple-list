@@ -1,5 +1,6 @@
 package ru.igormayachenkov.list
 
+import android.content.Context
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.util.Log
@@ -50,15 +51,20 @@ class FItem : Fragment()  {
     fun load(item: Item?){
         Log.d(TAG, "load item #${item?.id}")
 
-        if(item!=null) {
-            // Load data
-            txtName.setText(item.name)
-            txtDescr.setText(item.description)
-            // Show
-            view?.visibility = VISIBLE
-        }else{
-            // Hide
-            view?.visibility = GONE
+        view?.let { view ->
+            if (item != null) {
+                // Load data
+                txtName.setText(item.name)
+                txtDescr.setText(item.description)
+                // Show
+                view.visibility = VISIBLE
+            } else {
+                // Hide
+                if (view.visibility == VISIBLE) {
+                    Utils.hideSoftKeyboard(activity)
+                    view.visibility = GONE
+                }
+            }
         }
     }
 
@@ -90,12 +96,7 @@ class FItem : Fragment()  {
         }catch (e:Exception){
             Toast.makeText(this.activity, e.toString(), Toast.LENGTH_LONG).show();
         }
-
-        // Delete item
-//        item?.id?.let {
-//            list!!.deleteItem(it)
-//            AList.instance?.onItemDeleted()
-//        }
     }
+
 }
 
