@@ -60,7 +60,7 @@ class AList : AppCompatActivity() {
 
         instance = PublicInterface()
 
-        dataList = Logic.openList
+        dataList = Logic.openList.value
         dataList?.let {
 
             // Load controls

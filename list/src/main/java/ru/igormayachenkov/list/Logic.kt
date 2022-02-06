@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -46,28 +45,29 @@ object Logic {
 
     //----------------------------------------------------------------------------------------------
     // OPEN LIST
-    var openList    : List? = null
-        get() = field
-        set(value) {
-            saveLong(value?.id, OPEN_LIST_ID)
-            value?.id?.let {
-                openListItems = Database.loadListItems(it)
-            }?: kotlin.run {
-                openListItems = null
-            }
-            field = value
-        }
+    var openList    = MutableLiveData<List?>()
+
     var openListItems : HashMap<Long,Item>? = null
 
-    fun openList(list:List, activity:Activity){
-        // Update data
-        openList   = list
+    fun setOpenList(list:List?){
+        Log.d(TAG, "setOpenList #${list?.id}")
+        // Save id
+        saveLong(list?.id, OPEN_LIST_ID)
+        // Clear open item
+        setOpenItem(null)
+        // Update items
+        list?.id?.let {
+            openListItems = Database.loadListItems(it)
+        }?: kotlin.run {
+            openListItems = null
+        }
 
-        // Update UI
-        AList.show(activity)
+        // Update live data
+        openList.value = list
+
     }
 
-    fun createList(name:String?):List{
+    fun createList(name:String?){
         if (name.isNullOrEmpty()) throw Exception(App.instance()!!.getString(R.string.dialog_error))
 
         // Create a new list object
@@ -81,11 +81,12 @@ object Logic {
         listOfLists.put(list.id, list)
         AMain.instance?.onListInserted()
 
-        return list
+        // Open the list
+        setOpenList(list)
     }
 
     fun renameOpenList(name:String?){
-        val list = openList
+        val list = openList.value
         if(list==null) throw Exception("open list is null")
         if (name.isNullOrEmpty()) throw Exception(App.instance()!!.getString(R.string.dialog_error))
 
@@ -97,13 +98,12 @@ object Logic {
     }
 
     fun deleteOpenList(){
-        val list = openList
+        val list = openList.value
         if(list==null) throw Exception("open list is null")
 
         Database.deleteList(list.id)
         listOfLists.remove(list.id)
-        openList=null
-        setOpenItem(null)
+        setOpenList(null)
         AMain.instance?.onListDeleted(list.id)
         AList.instance?.close()
     }
@@ -128,7 +128,7 @@ object Logic {
 
     fun createItem(){
         Log.d(TAG, "createItem")
-        openList?.id?.let { list_id->
+        openList.value?.id?.let { list_id->
             val item = Item.create(list_id,null,null)
             setOpenItem(item)
         }?:run{ throw Exception("createItem when openList is NULL") }
@@ -190,8 +190,7 @@ object Logic {
     fun deleteALL(){
         Database.deleteALL()
         listOfLists.clear() // reload?
-        openList = null
-        setOpenItem(null)
+        setOpenList(null)
         AMain.instance?.onDataUpdated()
     }
 
@@ -212,7 +211,7 @@ object Logic {
         Log.d(TAG,"Restore openListId:$openListId   openItemId:$openItemId")
         // Get list
         openListId?.let {
-            openList = listOfLists.get(it)
+            setOpenList(listOfLists.get(it))
         }
         // Get item
         openItemId?.let {

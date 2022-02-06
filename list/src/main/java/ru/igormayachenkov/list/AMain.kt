@@ -147,7 +147,8 @@ class AMain : AppCompatActivity() {
         Log.d(TAG,"onListItemClick")
         val position = recyclerView.getChildAdapterPosition(view)
         val list = uiList[position]
-        Logic.openList(list,this)
+        Logic.setOpenList(list)
+        AList.show(this)
     }
 
     fun onMenuAdd() {
@@ -159,8 +160,8 @@ class AMain : AppCompatActivity() {
                 null,  // name value
                 { text ->
                     try {
-                        val list = Logic.createList(text)
-                        Logic.openList(list,this)
+                        Logic.createList(text)
+                        AList.show(this)
                     }catch (e:Exception){ Utils.showError(TAG, e) }
                 }
         )
