@@ -7,18 +7,23 @@ import androidx.lifecycle.MutableLiveData
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
-import ru.igormayachenkov.list.data.Data
 import ru.igormayachenkov.list.data.Database
 import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.Item
 import java.io.BufferedReader
 import java.io.FileOutputStream
 import java.io.FileReader
+import java.util.HashMap
 import kotlin.Exception
 
 object Logic {
     const val TAG = "myapp.Logic"
+
+    const val ACTIVITY = "ACTIVITY"
+
 
     // PREFERENCES
     lateinit var pref : SharedPreferences
@@ -36,13 +41,23 @@ object Logic {
     }
 
     //----------------------------------------------------------------------------------------------
+    // LIST OF LIST
+    val listOfLists = HashMap<Long, List>()
+
+    //----------------------------------------------------------------------------------------------
     // OPEN LIST
     var openList    : List? = null
         get() = field
         set(value) {
-            field = value
             saveLong(value?.id, OPEN_LIST_ID)
+            value?.id?.let {
+                openListItems = Database.loadListItems(it)
+            }?: kotlin.run {
+                openListItems = null
+            }
+            field = value
         }
+    var openListItems : HashMap<Long,Item>? = null
 
     fun openList(list:List, activity:Activity){
         // Update data
@@ -63,7 +78,7 @@ object Logic {
         )
         // Save
         Database.insertList(list)
-        Data.listOfLists.addList(list)
+        listOfLists.put(list.id, list)
         AMain.instance?.onListInserted()
 
         return list
@@ -86,7 +101,7 @@ object Logic {
         if(list==null) throw Exception("open list is null")
 
         Database.deleteList(list.id)
-        Data.listOfLists.deleteList(list.id)
+        listOfLists.remove(list.id)
         openList=null
         setOpenItem(null)
         AMain.instance?.onListDeleted(list.id)
@@ -108,7 +123,7 @@ object Logic {
     }
 
     private fun isOpenItemExisted(openItemId:Long):Boolean {
-        return openList?.items?.get(openItemId) != null
+        return openListItems?.get(openItemId) != null
     }
 
     fun createItem(){
@@ -140,7 +155,7 @@ object Logic {
             } else {
                 // NEW ITEM
                 Database.insertItem(item)
-                openList?.addItem(item)
+                openListItems?.put(item.id, item)
                 // Update UI
                 AList.instance?.onItemInserted()
             }
@@ -156,11 +171,11 @@ object Logic {
 
         if(isOpenItemExisted(item.id)) {
             // EXISTED
-            val list = Data.listOfLists.getList(item.parent_id)
+            val list = listOfLists.get(item.parent_id)
             if(list==null) throw Exception("list #${item.parent_id} not found")
             // Update storage
             Database.deleteItem(item.id)
-            list.deleteItem(item.id)
+            openListItems?.remove(item.id)
             // Clear open item
             setOpenItem(null)// updates UI too (hides fItem)
             // Update UI
@@ -174,21 +189,22 @@ object Logic {
 
     fun deleteALL(){
         Database.deleteALL()
-        Data.listOfLists.reload()
+        listOfLists.clear() // reload?
         openList = null
         setOpenItem(null)
         AMain.instance?.onDataUpdated()
     }
 
     //----------------------------------------------------------------------------------------------
-    // INIT
+    // INIT (RESTORE)
     init{
         Log.d(TAG, "init")
 
         pref = App.context.getSharedPreferences("data",Context.MODE_PRIVATE)
 
         Database.open(App.context)
-        Data.load(App.context)
+        //Data.load(App.context)
+        Database.loadListOfLists(listOfLists)
 
         // Restore open list/item
         val openListId = if(pref.contains(OPEN_LIST_ID)) pref.getLong(OPEN_LIST_ID, 0) else null
@@ -196,11 +212,11 @@ object Logic {
         Log.d(TAG,"Restore openListId:$openListId   openItemId:$openItemId")
         // Get list
         openListId?.let {
-            openList = Data.listOfLists.getList(it)
+            openList = listOfLists.get(it)
         }
         // Get item
         openItemId?.let {
-            setOpenItem(openList?.items?.get(it))
+            setOpenItem(openListItems?.get(it))
         }
 
     }
@@ -213,7 +229,7 @@ object Logic {
         val fileOutputStream = FileOutputStream(pfd!!.fileDescriptor)
 
         // Write
-        val bytes = Data.toJSON(lists).toString().toByteArray()
+        val bytes = dataToJSON(lists).toString().toByteArray()
         fileOutputStream.write(bytes)
 
         // Close. Let the document provider know you're done by closing the stream.
@@ -260,9 +276,112 @@ object Logic {
         return JSONObject(text)
     }
 
-    fun loadFromJSON(json: JSONObject){
-        Data.loadFromJSON(json)
+//    fun loadFromJSON(json: JSONObject){
+//        Data.loadFromJSON(json)
+//        AMain.instance?.onDataUpdated()
+//    }
+
+    // DATA TO JSON
+    @Throws(JSONException::class)
+    fun dataToJSON(lists: Collection<List>): JSONObject {
+        val json = JSONObject()
+        // Version
+        val pInfo = App.instance()?.packageInfo
+        if (pInfo != null) {
+            json.put("versionCode", pInfo.versionCode)
+            json.put("versionName", pInfo.versionName)
+        }
+
+        // LISTS
+        val listsJSON = JSONArray()
+        json.put("lists", listsJSON)
+        for (list in lists) {
+            listsJSON.put(list.toJSON())
+        }
+        return json
+    }
+
+    // LOAD FROM JSON
+    class LoadEstimation {
+        @JvmField
+        var toInsert = 0
+        @JvmField
+        var toUpdate = 0
+    }
+
+    @Throws(JSONException::class)
+    fun estimateLoadingFromJSON(json: JSONObject): LoadEstimation {
+        val estimation = LoadEstimation()
+        // Version
+
+        // LISTS
+        val lists = json.optJSONArray("lists")
+        if (lists != null) {
+            for (i in 0 until lists.length()) {
+                val listJSON = lists.optJSONObject(i) ?: continue
+
+                // Verify list
+                val id = listJSON.optLong("id", 0)
+                val name = listJSON.optString("name", null)
+                if (id == 0L || name == null || name.isEmpty()) continue
+
+                // Search for existed
+                val list = listOfLists.get(id)
+
+                // Update counters
+                if (list != null) estimation.toUpdate++ else estimation.toInsert++
+            }
+        }
+        return estimation
+    }
+
+    @Throws(JSONException::class)
+    fun loadFromJSON(json: JSONObject) {
+        // Version
+
+        // LISTS
+        val listsJSON = json.optJSONArray("lists")
+        if (listsJSON != null) {
+            for (i in 0 until listsJSON.length()) {
+                val listJSON = listsJSON.optJSONObject(i) ?: continue
+
+                // Verify list
+                val id = listJSON.optLong("id", 0)
+                val name = listJSON.optString("name", null)
+                if (id == 0L || name == null || name.isEmpty()) continue
+
+                // Search for existed
+                var list = listOfLists.get(id)
+
+                // UPDATE DATA
+                if (list != null) {
+                    // Remove old list (& items)
+                    listOfLists.remove(id)
+                }
+                // Insert list
+                list = List(id, name, null)
+                Database.insertList(list)
+                listOfLists.put(list.id, list)
+                // Insert list items
+                val itemsJSON = listJSON.optJSONArray("items")
+                if (itemsJSON != null) {
+                    for (j in 0 until itemsJSON.length()) {
+                        val itemJSON = itemsJSON.optJSONObject(j) ?: continue
+                        val itemName = itemJSON.optString("name", null) ?: continue
+                        // Update the database only because of the list is not loaded
+                        Database.insertItem(
+                                Item.create(
+                                        list.id,
+                                        itemName,
+                                        itemJSON.optString("description", null)
+                                )
+                        )
+                    }
+                }
+            }
+        }
         AMain.instance?.onDataUpdated()
     }
+
 
 }

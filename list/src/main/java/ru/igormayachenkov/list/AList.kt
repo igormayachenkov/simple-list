@@ -17,7 +17,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import ru.igormayachenkov.list.data.Item
 import ru.igormayachenkov.list.data.List
-import ru.igormayachenkov.list.data.Data
 import kotlinx.android.synthetic.main.a_list.*
 import kotlinx.android.synthetic.main.item_list.view.*
 import kotlinx.android.synthetic.main.item_list.view.txtName
@@ -63,7 +62,6 @@ class AList : AppCompatActivity() {
 
         dataList = Logic.openList
         dataList?.let {
-            it.loadItems()
 
             // Load controls
             title = it.name
@@ -166,13 +164,13 @@ class AList : AppCompatActivity() {
 
         // Reload UI LIST
         uiList.clear()
-        dataList!!.items?.let {
+        Logic.openListItems?.let {
             for(item in it.values){
                 uiList.add(item)
             }
             uiList.sortBy { it.name }
         }?: kotlin.run {
-            Log.e(TAG, "list is not loaded")
+            Log.e(TAG, "openListItems is not loaded")
         }
 
         updateListVisibility()
@@ -235,7 +233,7 @@ class AList : AppCompatActivity() {
     private fun onMenuHelp() {
         // Go to help activity
         val intent = Intent(this, AHelp::class.java)
-        intent.putExtra(Data.ACTIVITY, "AList")
+        intent.putExtra(Logic.ACTIVITY, "AList")
         startActivity(intent)
     }
 

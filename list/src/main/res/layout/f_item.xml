@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:clickable="true"
+    android:focusable="true"
     android:background="@color/fog"
     android:clipToPadding="false">
 
@@ -18,7 +19,7 @@
          android:layout_height="wrap_content"
          android:paddingVertical="48dp"
          android:paddingHorizontal="@dimen/activity_horizontal_margin">
-         
+
     <!-- WINDOW -->
     <LinearLayout
         android:layout_width="match_parent"

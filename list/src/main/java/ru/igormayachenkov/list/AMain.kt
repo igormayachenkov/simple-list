@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import org.json.JSONObject
 import ru.igormayachenkov.list.data.List
-import ru.igormayachenkov.list.data.Data
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.a_list.*
 import java.util.*
@@ -107,7 +106,7 @@ class AMain : AppCompatActivity() {
 
         // Reload sorted list
         uiList.clear()
-        uiList.addAll(Data.listOfLists.aLL)
+        uiList.addAll(Logic.listOfLists.values)
         Collections.sort(uiList, comparatorName)
 
         // Update controls
@@ -171,7 +170,7 @@ class AMain : AppCompatActivity() {
     fun onMenuHelp() {
         // Go to help activity
         val intent = Intent(this, AHelp::class.java)
-        intent.putExtra(Data.ACTIVITY, "AMain")
+        intent.putExtra(Logic.ACTIVITY, "AMain")
         startActivity(intent)
     }
 
@@ -227,7 +226,7 @@ class AMain : AppCompatActivity() {
         if (data == null) return
         when (requestCode) {
             FILE_OPEN_REQUEST   -> doLoad(data.data)
-            FILE_CREATE_REQUEST -> doSave(data.data, Data.listOfLists.aLL ) // all lists
+            FILE_CREATE_REQUEST -> doSave(data.data, Logic.listOfLists.values ) // all lists
         }
     }
 
@@ -252,7 +251,7 @@ class AMain : AppCompatActivity() {
 
     fun doLoad(json: JSONObject?) {
         // Estimate loading
-        val estimation = Data.estimateLoadingFromJSON(json!!)
+        val estimation = Logic.estimateLoadingFromJSON(json!!)
         val message =   "${getString(R.string.load_to_insert)} ${estimation.toInsert}\n"+
                         "${getString(R.string.load_to_update)} ${estimation.toUpdate}"
         // Ask user for request

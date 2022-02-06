@@ -6,10 +6,9 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.BufferedWriter
 import java.io.IOException
-import java.util.*
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// DATA OBJECT: List
+// DATA OBJECT: List without items
 data class List(
         val id      : Long,
         var name    : String,
@@ -18,41 +17,6 @@ data class List(
 ) {
     companion object {
         private const val TAG = "myapp.List"
-    }
-
-    // DATA
-    var items : HashMap<Long,Item>? = null
-
-
-    fun loadItems() {
-        Log.d(TAG, "loadItems")
-        if (items==null) {
-            items = Database.loadListItems(id)
-        }
-    }
-
-    fun addItem(item:Item) {
-        Log.d(TAG, "addItem #${item.id}")
-        val items = items
-        if(items!=null){
-            items.put(item.id, item)
-        }else{
-            Log.e(TAG,"list is not loaded")
-        }
-    }
-
-
-    fun deleteItem(itemId: Long) {
-        Log.d(TAG, "deleteItem")
-        items?.let { items ->
-            items[itemId]?.let {
-                items.remove(itemId)
-            }?: run{
-                Log.e(TAG,"item #$itemId not found")
-            }
-        }?: run {
-            Log.e(TAG,"list is not loaded")
-        }
     }
 
     // EXPORT TO A FILE
@@ -65,27 +29,25 @@ data class List(
         sb.append("<name>$name</name>\n")
         if (description != null && !description!!.isEmpty()) sb.append("<description>$description</description>\n")
         sb.append("<items>\n")
-        items?.let { items ->
-            for (item in items.values) {
-                sb.append("<item>\n")
-                sb.append("""<id>${item.id}</id>""".trimIndent())
-                sb.append("""
+        val items = Database.loadListItems(id)
+        for (item in items.values) {
+            sb.append("<item>\n")
+            sb.append("""<id>${item.id}</id>""".trimIndent())
+            sb.append("""
     <name>${item.name}</name>
 
     """.trimIndent())
-                if (item.description != null && !item.description!!.isEmpty()) sb.append("""
+            if (item.description != null && !item.description!!.isEmpty()) sb.append("""
     <description>${item.description}</description>
 
     """.trimIndent())
-                sb.append("""
+            sb.append("""
     <state>${item.state}</state>
 
     """.trimIndent())
-                sb.append("</item>\n")
-            }
-        }?: run {
-            Log.e(TAG,"list is not loaded")
+            sb.append("</item>\n")
         }
+
         sb.append("</items>\n")
         sb.append("</list>")
         return sb.toString()
@@ -105,23 +67,20 @@ data class List(
         bw.newLine()
         bw.write("<items>")
         bw.newLine()
-        items?.let { items ->
-            for (item in items.values) {
-                bw.write("<item>")
-                bw.newLine()
-                bw.write("<id>" + item.id + "</id>")
-                bw.newLine()
-                bw.write("<name>" + item.name + "</name>")
-                bw.newLine()
-                if (item.description != null && !item.description!!.isEmpty()) bw.write("<description>" + item.description + "</description>")
-                bw.newLine()
-                bw.write("<state>" + item.state + "</state>")
-                bw.newLine()
-                bw.write("</item>")
-                bw.newLine()
-            }
-        }?: run {
-            Log.e(TAG,"list is not loaded")
+        val items = Database.loadListItems(id)
+        for (item in items.values) {
+            bw.write("<item>")
+            bw.newLine()
+            bw.write("<id>" + item.id + "</id>")
+            bw.newLine()
+            bw.write("<name>" + item.name + "</name>")
+            bw.newLine()
+            if (item.description != null && !item.description!!.isEmpty()) bw.write("<description>" + item.description + "</description>")
+            bw.newLine()
+            bw.write("<state>" + item.state + "</state>")
+            bw.newLine()
+            bw.write("</item>")
+            bw.newLine()
         }
         bw.write("</items>")
         bw.newLine()
@@ -135,19 +94,15 @@ data class List(
         json.put("name", name)
         if (description != null && !description!!.isEmpty()) json.put("description", description)
         // ITEMS
-        loadItems()
+        val items = Database.loadListItems(id)
         val jsItems = JSONArray()
-        items?.let { items ->
-            for (item in items.values) {
-                val js = JSONObject()
-                js.put("id", item.id)
-                js.put("name", item.name)
-                if (item.description != null && !item.description!!.isEmpty()) js.put("description", item.description)
-                js.put("state", item.state)
-                jsItems.put(js)
-            }
-        }?: run {
-            Log.e(TAG,"list is not loaded")
+        for (item in items.values) {
+            val js = JSONObject()
+            js.put("id", item.id)
+            js.put("name", item.name)
+            if (item.description != null && !item.description!!.isEmpty()) js.put("description", item.description)
+            js.put("state", item.state)
+            jsItems.put(js)
         }
         json.put("items", jsItems)
         return json

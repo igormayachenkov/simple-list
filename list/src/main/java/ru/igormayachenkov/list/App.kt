@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.preference.PreferenceManager
-import ru.igormayachenkov.list.data.Data
 import android.util.Log
 
 
