@@ -76,15 +76,17 @@ object Database {
         )
     }
 
-    fun updateItemName(id: Long, name: String?, description: String?) {
-        Log.d(TAG, "updateItemName")
+    fun updateItem(item:Item) {
+        Log.d(TAG, "updateItem $item")
 
         // Prepare values
         val cv = ContentValues()
-        cv.put(NAME, name)
-        cv.put(DESCRIPTION, description)
+        cv.put(NAME,        item.name)
+        cv.put(DESCRIPTION, item.description)
+        cv.put(STATE,       item.state)
+
         // Update
-        val args = arrayOf(id.toString())
+        val args = arrayOf(item.id.toString())
         db!!.update(
                 TABLE_ITEMS,  // table
                 cv,  // values
@@ -93,14 +95,14 @@ object Database {
         )
     }
 
-    fun updateItemState(id: Long, state: Int) {
-        Log.d(TAG, "updateItemState")
+    fun updateItemState(item:Item) {
+        Log.d(TAG, "updateItemState id:${item.id}  state:${item.state}")
 
         // Prepare values
         val cv = ContentValues()
-        cv.put(STATE, state)
+        cv.put(STATE, item.state)
         // Update
-        val args = arrayOf(id.toString())
+        val args = arrayOf(item.id.toString())
         db!!.update(
                 TABLE_ITEMS,  // table
                 cv,  // values

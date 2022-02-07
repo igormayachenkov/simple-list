@@ -34,6 +34,7 @@
     <!-- ITEM -->
     <string name="item_name_hint">Name</string>
     <string name="item_descr_hint">Description</string>
+    <string name="item_checked_text">Done</string>
     <string name="item_error">The name can\'t be empty</string>
 
     <!-- LIST NAME DIALOG -->

@@ -23,12 +23,12 @@ data class Item(
         }
     }
 
+    var isChecked : Boolean
+        get() { return state==ITEM_STATE_CHECKED }
+        set(value)  {  state = if(value) ITEM_STATE_CHECKED else 0 }
 
-    fun changeState() {
-        // Change
+    fun toggleState() {
         state = if (state==ITEM_STATE_CHECKED) 0 else ITEM_STATE_CHECKED
-        // Save
-        Database.updateItemState(id, state)
     }
 
 

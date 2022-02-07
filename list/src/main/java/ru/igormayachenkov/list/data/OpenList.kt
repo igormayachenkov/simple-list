@@ -25,7 +25,7 @@ class OpenList(
 
     fun itemById(itemId:Long):Item?{ return hash.get(itemId) }
 
-    private fun updateItems(){
+    fun updateItems(){
         items.clear()
         items.addAll(hash.values)
         items.sortBy { it.name }

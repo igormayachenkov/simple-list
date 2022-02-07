@@ -119,27 +119,30 @@ class FList : BaseFragment()  {
     inner class PublicInterface {
 
         fun onListRenamed(){
+            Log.d(TAG, "onListRenamed")
             // Update title
             toolbar.title = Logic.openList.value?.name
         }
 
+        fun onAllListUpdated(){
+            Log.d(TAG, "onAllListUpdated")
+            reloadData()
+        }
+
         fun onItemInserted() {
-            Log.w(TAG, "onItemInserted")
+            Log.d(TAG, "onItemInserted")
             reloadData()
             // TODO replace by adapter.notifyItemInserted
         }
 
-        fun onItemUpdated(isNameChanged: Boolean, isDescrChanged: Boolean) {
-            Log.w(TAG, "onItemUpdated $isNameChanged $isDescrChanged")
-            if (isNameChanged)
-                reloadData()
-            else
-                adapter.notifyDataSetChanged()
-                // TODO replace by adapter.notifyItemUpdatecd
+        fun onItemUpdated(pos:Int) {
+            Log.d(TAG, "onItemUpdated pos:$pos")
+            adapter.notifyItemChanged(pos)
         }
 
+
         fun onItemDeleted(pos: Int) {
-            Log.w(TAG, "onItemDeleted pos:$pos")
+            Log.d(TAG, "onItemDeleted pos:$pos")
             adapter.notifyItemRemoved(pos)
         }
     }
@@ -149,9 +152,10 @@ class FList : BaseFragment()  {
     // HANDLERS
     fun onItemClick(view: View) {
         val position = recyclerView.getChildAdapterPosition(view)
-        // Change item state
         val item = uiList[position]
-        item.changeState()
+        Logic.toggleItemState(item, position)
+
+
         // Update row
         adapter.notifyItemChanged(position)
     }

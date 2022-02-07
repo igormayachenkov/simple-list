@@ -123,24 +123,41 @@ object Logic {
         }?:run{ throw Exception("createItem when openList is NULL") }
     }
 
-    fun updateOpenItem(name:String?, descr:String?){
+    fun toggleItemState(item:Item, pos: Int){
+        item.toggleState()
+        Database.updateItemState(item)
+        FList.publicInterface?.onItemUpdated(pos)
+    }
+
+    fun updateOpenItem(name:String?, descr:String?, isChecked:Boolean){
         val item = openItem.value
         if(item==null) throw Exception("deleteOpenItem: open item is null")
 
         // Check changes
-        val isNameChanged:Boolean = Utils.areNotEqual(name, item.name)
-        val isDescrChanged:Boolean = Utils.areNotEqual(descr, item.description)
+        val changes = HashSet<String>()
+        if( Utils.areNotEqual(name, item.name))         changes.add("name")
+        if( Utils.areNotEqual(descr, item.description)) changes.add("descr")
+        if(isChecked!=item.isChecked)                   changes.add("status")
 
-        if(isNameChanged || isDescrChanged) {
+        if(changes.isNotEmpty()) {
             // Update item fields
             item.name = name
             item.description = descr
+            item.isChecked = isChecked
 
             if (isOpenItemExisted(item.id)) {
                 // EXISTED ITEM
-                Database.updateItemName(item.id, name, descr)
+                Database.updateItem(item)
                 // Update UI
-                FList.publicInterface?.onItemUpdated(isNameChanged, isDescrChanged)
+                if (changes.contains("name")) {
+                    // Resorting required
+                    openList.value?.updateItems()
+                    FList.publicInterface?.onAllListUpdated()
+                }else {
+                    openList.value?.getItemListPosition(item)?.let {
+                        FList.publicInterface?.onItemUpdated(it)
+                    }
+                }
             } else {
                 // NEW ITEM
                 Database.insertItem(item)

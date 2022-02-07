@@ -55,6 +55,7 @@
     <string name="help_version_label">Версия:</string>
     <!--web view-->
     <string name="help_webview">file:///android_asset/help-ru.html</string>
+    <string name="item_checked_text">Выполнено</string>
 
 
 </resources>

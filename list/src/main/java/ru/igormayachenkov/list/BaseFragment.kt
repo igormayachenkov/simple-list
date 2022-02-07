@@ -27,7 +27,7 @@ abstract class BaseFragment : Fragment(){
             }
         }
     }
-    
+
     fun hideFragment() {
         view?.apply {
             if(visibility==VISIBLE) {
@@ -39,11 +39,11 @@ abstract class BaseFragment : Fragment(){
                         .setDuration(animationDuration)
                         .setListener(object : AnimatorListenerAdapter() {
                             override fun onAnimationEnd(animation: Animator) {
-                                visibility = View.GONE
+                                visibility = GONE
                             }
                         })
                 } else {
-                    visibility = View.GONE
+                    visibility = GONE
                 }
             }
         }

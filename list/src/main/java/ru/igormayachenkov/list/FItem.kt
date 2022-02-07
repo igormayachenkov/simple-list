@@ -55,6 +55,7 @@ class FItem : BaseFragment()  {
             if (item != null) {
                 txtName.setText(item.name)
                 txtDescr.setText(item.description)
+                chkState.isChecked = item.isChecked
                 showFragment()
             } else {
                 hideFragment()
@@ -81,7 +82,7 @@ class FItem : BaseFragment()  {
         Log.d(TAG,"onButtonSave '$name' '$descr'")
 
         // Save data
-        Logic.updateOpenItem(name, descr)
+        Logic.updateOpenItem(name, descr, chkState.isChecked)
     }
 
     fun onButtonDelete() {
