@@ -1,20 +1,17 @@
 package ru.igormayachenkov.list
 
-import android.content.Context
-import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import ru.igormayachenkov.list.data.Item
 import kotlinx.android.synthetic.main.f_item.*
 
-class FItem : Fragment()  {
+class FItem : BaseFragment()  {
 
     //----------------------------------------------------------------------------------------------
     // STATIC
@@ -56,17 +53,11 @@ class FItem : Fragment()  {
 
         view?.let { view ->
             if (item != null) {
-                // Load data
                 txtName.setText(item.name)
                 txtDescr.setText(item.description)
-                // Show
-                view.visibility = VISIBLE
+                showFragment()
             } else {
-                // Hide
-                if (view.visibility == VISIBLE) {
-                    Utils.hideSoftKeyboard(activity)
-                    view.visibility = GONE
-                }
+                hideFragment()
             }
         }
     }

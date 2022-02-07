@@ -1,31 +1,24 @@
 package ru.igormayachenkov.list
 
-import android.content.Context
 import android.content.Intent
-import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.OpenList
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.f_list.*
 import kotlinx.android.synthetic.main.item_list.view.*
 import ru.igormayachenkov.list.data.Item
 
-class FList : Fragment()  {
+class FList : BaseFragment()  {
 
     //----------------------------------------------------------------------------------------------
     // STATIC
@@ -98,13 +91,10 @@ class FList : Fragment()  {
                 reloadData()
 
                 // SHOW FRAGMENT
-                view.visibility = VISIBLE
+                showFragment()
             } else {
                 // HIDE FRAGMENT
-                if (view.visibility == VISIBLE) {
-                    Utils.hideSoftKeyboard(activity)
-                    view.visibility = GONE
-                }
+                hideFragment()
             }
         }
     }
