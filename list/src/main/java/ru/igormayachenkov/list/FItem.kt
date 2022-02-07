@@ -59,6 +59,7 @@ class FItem : BaseFragment()  {
                 showFragment()
             } else {
                 hideFragment()
+                chkState.isChecked = false // to prevent blinking
             }
         }
     }

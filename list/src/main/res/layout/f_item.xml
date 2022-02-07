@@ -28,26 +28,26 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="16dp">
 
-                <EditText
-                    android:id="@+id/txtName"
+                <EditText android:id="@+id/txtName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textStyle="bold"
                     android:hint="@string/item_name_hint"
                     android:inputType="textPersonName" />
 
-                <EditText
-                    android:id="@+id/txtDescr"
+                <EditText android:id="@+id/txtDescr"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/activity_vertical_margin"
                     android:hint="@string/item_descr_hint" />
 
-                <CheckBox
-                    android:id="@+id/chkState"
+                <CheckBox android:id="@+id/chkState"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:button="@drawable/bg_checkbox"
+                    android:paddingStart="5dp"
                     android:text="@string/item_checked_text" />
 
                 <RelativeLayout
