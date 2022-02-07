@@ -39,9 +39,11 @@ class AMain : AppCompatActivity() {
         Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.a_main)
+
+        // Init Toolbar
+        //  https://developer.android.com/guide/fragments/appbar
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
-        setSupportActionBar(toolbar)
-        setTitle(R.string.main_title)
+        toolbar.setOnMenuItemClickListener { onMenuClick(it); true }
 
         instance = PublicInterface()
 
@@ -55,11 +57,11 @@ class AMain : AppCompatActivity() {
         reloadData()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
+//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        val inflater = menuInflater
+//        inflater.inflate(R.menu.menu_main, menu)
+//        return true
+//    }
 
     override fun onDestroy() {
         Log.d(TAG, "onDestroy")
@@ -129,17 +131,24 @@ class AMain : AppCompatActivity() {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // HANDLERS
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_add   -> { onMenuAdd(); true }
-            R.id.menu_save  -> { onMenuSave(); true }
-            R.id.menu_clear -> { onMenuClear(); true }
-            R.id.menu_load  -> { onMenuLoad(); true }
-            R.id.menu_help  -> { onMenuHelp(); true }
-            else ->
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                super.onOptionsItemSelected(item)
+    override fun onBackPressed() {
+        Log.d(TAG, "onBackPressed")
+        if(Logic.openItem.value!=null) {
+            Logic.setOpenItem(null)
+        }else if(Logic.openList.value!=null) {
+            Logic.setOpenList(null)
+        }else{
+            super.onBackPressed()
+        }
+    }
+
+    fun onMenuClick(item: MenuItem) {
+        when (item.itemId) {
+            R.id.menu_add   -> onMenuAdd()
+            R.id.menu_save  -> onMenuSave()
+            R.id.menu_clear -> onMenuClear()
+            R.id.menu_load  -> onMenuLoad()
+            R.id.menu_help  -> onMenuHelp()
         }
     }
 
@@ -148,7 +157,7 @@ class AMain : AppCompatActivity() {
         val position = recyclerView.getChildAdapterPosition(view)
         val list = uiList[position]
         Logic.setOpenList(list)
-        AList.show(this)
+        //AList.show(this)
     }
 
     fun onMenuAdd() {

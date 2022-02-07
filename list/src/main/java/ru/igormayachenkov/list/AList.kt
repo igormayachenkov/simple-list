@@ -60,7 +60,7 @@ class AList : AppCompatActivity() {
 
         instance = PublicInterface()
 
-        dataList = Logic.openList.value
+        dataList = Logic.openList.value?.list
         dataList?.let {
 
             // Load controls
@@ -164,14 +164,14 @@ class AList : AppCompatActivity() {
 
         // Reload UI LIST
         uiList.clear()
-        Logic.openListItems?.let {
-            for(item in it.values){
-                uiList.add(item)
-            }
-            uiList.sortBy { it.name }
-        }?: kotlin.run {
-            Log.e(TAG, "openListItems is not loaded")
-        }
+//        Logic.openListItems?.let {
+//            for(item in it.values){
+//                uiList.add(item)
+//            }
+//            uiList.sortBy { it.name }
+//        }?: kotlin.run {
+//            Log.e(TAG, "openListItems is not loaded")
+//        }
 
         updateListVisibility()
 

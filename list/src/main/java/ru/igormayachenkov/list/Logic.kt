@@ -12,6 +12,7 @@ import org.json.JSONObject
 import ru.igormayachenkov.list.data.Database
 import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.Item
+import ru.igormayachenkov.list.data.OpenList
 import java.io.BufferedReader
 import java.io.FileOutputStream
 import java.io.FileReader
@@ -45,9 +46,7 @@ object Logic {
 
     //----------------------------------------------------------------------------------------------
     // OPEN LIST
-    var openList    = MutableLiveData<List?>()
-
-    var openListItems : HashMap<Long,Item>? = null
+    var openList    = MutableLiveData<OpenList?>()
 
     fun setOpenList(list:List?){
         Log.d(TAG, "setOpenList #${list?.id}")
@@ -55,16 +54,12 @@ object Logic {
         saveLong(list?.id, OPEN_LIST_ID)
         // Clear open item
         setOpenItem(null)
-        // Update items
-        list?.id?.let {
-            openListItems = Database.loadListItems(it)
-        }?: kotlin.run {
-            openListItems = null
-        }
-
         // Update live data
-        openList.value = list
-
+        openList.value =
+            if(list!=null)
+                OpenList(list, Database.loadListItems(list.id))
+            else
+                null
     }
 
     fun createList(name:String?){
@@ -93,7 +88,7 @@ object Logic {
         // Rename List
         Database.updateListName(list.id, name)
         list.name = name
-        AList.instance?.onListRenamed()
+        FList.publicInterface?.onListRenamed()
         AMain.instance?.onListRenamed(list.id)
     }
 
@@ -105,7 +100,6 @@ object Logic {
         listOfLists.remove(list.id)
         setOpenList(null)
         AMain.instance?.onListDeleted(list.id)
-        AList.instance?.close()
     }
 
 
@@ -123,7 +117,7 @@ object Logic {
     }
 
     private fun isOpenItemExisted(openItemId:Long):Boolean {
-        return openListItems?.get(openItemId) != null
+        return openList.value?.itemById(openItemId) != null
     }
 
     fun createItem(){
@@ -151,13 +145,13 @@ object Logic {
                 // EXISTED ITEM
                 Database.updateItemName(item.id, name, descr)
                 // Update UI
-                AList.instance?.onItemUpdated(isNameChanged, isDescrChanged)
+                FList.publicInterface?.onItemUpdated(isNameChanged, isDescrChanged)
             } else {
                 // NEW ITEM
                 Database.insertItem(item)
-                openListItems?.put(item.id, item)
+                openList.value?.insertItem(item)
                 // Update UI
-                AList.instance?.onItemInserted()
+                FList.publicInterface?.onItemInserted()
             }
         }
 
@@ -175,11 +169,13 @@ object Logic {
             if(list==null) throw Exception("list #${item.parent_id} not found")
             // Update storage
             Database.deleteItem(item.id)
-            openListItems?.remove(item.id)
+            val pos = openList.value?.deleteItem(item)
             // Clear open item
             setOpenItem(null)// updates UI too (hides fItem)
             // Update UI
-            AList.instance?.onItemDeleted(item.id)
+            pos?.let {
+                FList.publicInterface?.onItemDeleted(it)
+            }
         }else{
             // NEW
             // Just clear open item
@@ -215,7 +211,7 @@ object Logic {
         }
         // Get item
         openItemId?.let {
-            setOpenItem(openListItems?.get(it))
+            setOpenItem(openList.value?.itemById(it))
         }
 
     }

@@ -38,6 +38,9 @@ class FItem : Fragment()  {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
+
+        view.visibility = GONE // initial hidden state !!!
+
         // Set handlers
         //fog.setOnClickListener     { onButtonCancel() } TODO add hide-on-fog-click setting
         btnSave.setOnClickListener { onButtonSave() }
