@@ -2,17 +2,14 @@ package ru.igormayachenkov.list
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import org.json.JSONObject
 import ru.igormayachenkov.list.data.List
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.a_list.*
 import java.util.*
 import kotlinx.android.synthetic.main.a_main.*
 import kotlinx.android.synthetic.main.a_main.emptyView
@@ -22,11 +19,7 @@ import kotlinx.android.synthetic.main.item_main.view.*
 class AMain : AppCompatActivity() {
     companion object {
         private const val TAG = "myapp.AMain"
-        const val FILE_OPEN_REQUEST = 222
-        const val FILE_CREATE_REQUEST = 333
-
         var instance : PublicInterface? = null
-
     }
 
     // Data objects
@@ -57,12 +50,6 @@ class AMain : AppCompatActivity() {
         reloadData()
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-//        val inflater = menuInflater
-//        inflater.inflate(R.menu.menu_main, menu)
-//        return true
-//    }
-
     override fun onDestroy() {
         Log.d(TAG, "onDestroy")
         super.onDestroy()
@@ -81,6 +68,10 @@ class AMain : AppCompatActivity() {
     //----------------------------------------------------------------------------------------------
     // PUBLIC INTERFACE
     inner class PublicInterface {
+        fun startExternalActivity(intent:Intent, requestCode:Int){
+            startActivityForResult(intent,requestCode)
+        }
+
         fun onDataUpdated(){
             Log.w(TAG, "onDataUpdated")
             reloadData()
@@ -129,7 +120,7 @@ class AMain : AppCompatActivity() {
         return null
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //----------------------------------------------------------------------------------------------
     // HANDLERS
     override fun onBackPressed() {
         Log.d(TAG, "onBackPressed")
@@ -145,9 +136,9 @@ class AMain : AppCompatActivity() {
     fun onMenuClick(item: MenuItem) {
         when (item.itemId) {
             R.id.menu_add   -> onMenuAdd()
-            R.id.menu_save  -> onMenuSave()
+            R.id.menu_save  -> Converter.saveAll()
             R.id.menu_clear -> onMenuClear()
-            R.id.menu_load  -> onMenuLoad()
+            R.id.menu_load  -> Converter.loadAll()
             R.id.menu_help  -> onMenuHelp()
         }
     }
@@ -170,7 +161,6 @@ class AMain : AppCompatActivity() {
                 { text ->
                     try {
                         Logic.createList(text)
-                        AList.show(this)
                     }catch (e:Exception){ Utils.showError(TAG, e) }
                 }
         )
@@ -198,85 +188,9 @@ class AMain : AppCompatActivity() {
         builder.show()
     }
 
-    fun onMenuLoad() {
-        // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file browser.
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-
-        // Filter to only show results that can be "opened", such as a
-        // file (as opposed to a list of contacts or timezones)
-        intent.addCategory(Intent.CATEGORY_OPENABLE)
-        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-
-        // Filter to show only images, using the image MIME data type.
-        // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
-        // To search for all documents available via installed storage providers, it would be "*/*".
-        intent.type = "*/*"
-
-        startActivityForResult(intent, FILE_OPEN_REQUEST)
-    }
-
-    fun onMenuSave() {
-        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-
-        // Filter to only show results that can be "opened", such as
-        // a file (as opposed to a list of contacts or timezones).
-        intent.addCategory(Intent.CATEGORY_OPENABLE)
-
-        // Create a file with the requested MIME type.
-        intent.type = "*/*"
-        intent.putExtra(Intent.EXTRA_TITLE, "Simple List.json")
-        startActivityForResult(intent, FILE_CREATE_REQUEST)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Log.d(TAG, "onActivityResult requestCode= $requestCode, resultCode=$resultCode")
         super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode != RESULT_OK) return
-        if (data == null) return
-        when (requestCode) {
-            FILE_OPEN_REQUEST   -> doLoad(data.data)
-            FILE_CREATE_REQUEST -> doSave(data.data, Logic.listOfLists.values ) // all lists
-        }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // DO ACTIONs
-    fun doSave(uri: Uri?, lists: Collection<List>) {
-        try {
-            val bytes = Logic.saveLists(uri,lists)
-            // Show result
-            Toast.makeText(this, bytes.toString() + " " + this.getString(R.string.bytes_saved), Toast.LENGTH_LONG).show()
-        } catch (e: Exception) { Utils.showErrorDialog(e) }
-    }
-
-    fun doLoad(uri: Uri?) {
-        try {
-            // Read file
-            val json = Logic.readJSON(uri)
-            // Load
-            doLoad(json)
-        } catch (e: Exception) { Utils.showErrorDialog(e) }
-    }
-
-    fun doLoad(json: JSONObject?) {
-        // Estimate loading
-        val estimation = Logic.estimateLoadingFromJSON(json!!)
-        val message =   "${getString(R.string.load_to_insert)} ${estimation.toInsert}\n"+
-                        "${getString(R.string.load_to_update)} ${estimation.toUpdate}"
-        // Ask user for request
-        val dlg = DlgCommon(this, R.string.load_title, 0, {
-            try {
-                Logic.loadFromJSON(json)
-                // Show result
-                Toast.makeText(this@AMain, R.string.load_success, Toast.LENGTH_LONG).show()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                DlgError(this@AMain, e.message).show()
-            }
-        })
-        dlg.setMessage(message)
-        dlg.show()
+        Converter.onActivityResult(requestCode,resultCode, data)
     }
 
     //----------------------------------------------------------------------------------------------

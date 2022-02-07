@@ -6,16 +6,11 @@ import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import android.net.Uri
 import android.util.Log
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
 import ru.igormayachenkov.list.data.Database
 import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.data.Item
 import ru.igormayachenkov.list.data.OpenList
 import java.io.BufferedReader
-import java.io.FileOutputStream
-import java.io.FileReader
 import java.util.HashMap
 import kotlin.Exception
 
@@ -218,165 +213,16 @@ object Logic {
 
     //----------------------------------------------------------------------------------------------
     // FILE EXPORT/IMPORT
-    fun saveLists(uri: Uri?, lists: Collection<List>):Int{
-        // Open
-        val pfd = App.instance()!!.contentResolver.openFileDescriptor(uri!!, "w")
-        val fileOutputStream = FileOutputStream(pfd!!.fileDescriptor)
 
-        // Write
-        val bytes = dataToJSON(lists).toString().toByteArray()
-        fileOutputStream.write(bytes)
 
-        // Close. Let the document provider know you're done by closing the stream.
-        fileOutputStream.close()
-        pfd.close()
 
-        return bytes.size
-    }
 
-    fun saveListToXML(list:List, uri: Uri?):Int{
-        // Open
-        val pfd = App.instance()!!.contentResolver.openFileDescriptor(uri!!, "w")
-        val fileOutputStream = FileOutputStream(pfd!!.fileDescriptor)
-
-        // Write
-        val bytes = list.toXML().toByteArray()
-        fileOutputStream.write(bytes)
-
-        // Close. Let the document provider know you're done by closing the stream.
-        fileOutputStream.close()
-        pfd.close()
-
-        return bytes.size
-    }
-
-    fun readJSON(uri: Uri?):JSONObject{
-        // Open
-        val pfd = App.context.contentResolver.openFileDescriptor(uri!!, "r")
-        val reader = BufferedReader(FileReader(pfd!!.fileDescriptor))
-
-        // Read
-        val sb = StringBuilder()
-        var line: String?
-        while (reader.readLine().also { line = it } != null) {
-            sb.append(line)
-        }
-        val text = sb.toString()
-
-        // Close. Let the document provider know you're done by closing the stream.
-        reader.close()
-        pfd.close()
-
-        // Parce data
-        return JSONObject(text)
-    }
 
 //    fun loadFromJSON(json: JSONObject){
 //        Data.loadFromJSON(json)
 //        AMain.instance?.onDataUpdated()
 //    }
 
-    // DATA TO JSON
-    @Throws(JSONException::class)
-    fun dataToJSON(lists: Collection<List>): JSONObject {
-        val json = JSONObject()
-        // Version
-        val pInfo = App.instance()?.packageInfo
-        if (pInfo != null) {
-            json.put("versionCode", pInfo.versionCode)
-            json.put("versionName", pInfo.versionName)
-        }
-
-        // LISTS
-        val listsJSON = JSONArray()
-        json.put("lists", listsJSON)
-        for (list in lists) {
-            listsJSON.put(list.toJSON())
-        }
-        return json
-    }
-
-    // LOAD FROM JSON
-    class LoadEstimation {
-        @JvmField
-        var toInsert = 0
-        @JvmField
-        var toUpdate = 0
-    }
-
-    @Throws(JSONException::class)
-    fun estimateLoadingFromJSON(json: JSONObject): LoadEstimation {
-        val estimation = LoadEstimation()
-        // Version
-
-        // LISTS
-        val lists = json.optJSONArray("lists")
-        if (lists != null) {
-            for (i in 0 until lists.length()) {
-                val listJSON = lists.optJSONObject(i) ?: continue
-
-                // Verify list
-                val id = listJSON.optLong("id", 0)
-                val name = listJSON.optString("name", null)
-                if (id == 0L || name == null || name.isEmpty()) continue
-
-                // Search for existed
-                val list = listOfLists.get(id)
-
-                // Update counters
-                if (list != null) estimation.toUpdate++ else estimation.toInsert++
-            }
-        }
-        return estimation
-    }
-
-    @Throws(JSONException::class)
-    fun loadFromJSON(json: JSONObject) {
-        // Version
-
-        // LISTS
-        val listsJSON = json.optJSONArray("lists")
-        if (listsJSON != null) {
-            for (i in 0 until listsJSON.length()) {
-                val listJSON = listsJSON.optJSONObject(i) ?: continue
-
-                // Verify list
-                val id = listJSON.optLong("id", 0)
-                val name = listJSON.optString("name", null)
-                if (id == 0L || name == null || name.isEmpty()) continue
-
-                // Search for existed
-                var list = listOfLists.get(id)
-
-                // UPDATE DATA
-                if (list != null) {
-                    // Remove old list (& items)
-                    listOfLists.remove(id)
-                }
-                // Insert list
-                list = List(id, name, null)
-                Database.insertList(list)
-                listOfLists.put(list.id, list)
-                // Insert list items
-                val itemsJSON = listJSON.optJSONArray("items")
-                if (itemsJSON != null) {
-                    for (j in 0 until itemsJSON.length()) {
-                        val itemJSON = itemsJSON.optJSONObject(j) ?: continue
-                        val itemName = itemJSON.optString("name", null) ?: continue
-                        // Update the database only because of the list is not loaded
-                        Database.insertItem(
-                                Item.create(
-                                        list.id,
-                                        itemName,
-                                        itemJSON.optString("description", null)
-                                )
-                        )
-                    }
-                }
-            }
-        }
-        AMain.instance?.onDataUpdated()
-    }
 
 
 }

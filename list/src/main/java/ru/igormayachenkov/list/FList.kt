@@ -176,10 +176,10 @@ class FList : Fragment()  {
         when (item.itemId) {
             R.id.menu_add       -> onMenuAdd()
             R.id.menu_rename    -> onMenuRename()
-            //R.id.menu_save_json -> onMenuSave()
-            //R.id.menu_save_xml  -> onMenuSaveXML()
             R.id.menu_delete    -> onMenuDelete()
             R.id.menu_help      -> onMenuHelp()
+            R.id.menu_save_json -> Converter.saveOpenList()
+            R.id.menu_save_xml  -> Converter.saveOpenListXML()
         }
     }
 

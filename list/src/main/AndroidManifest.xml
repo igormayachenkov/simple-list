@@ -26,11 +26,6 @@
             </intent-filter>
         </activity>
 
-        <!-- LIST -->
-        <activity
-            android:name=".AList"
-            android:theme="@style/AppTheme.NoActionBar" />
-
         <!-- HELP -->
         <activity
             android:name=".AHelp"

@@ -20,6 +20,8 @@ class App : Application() {
         val context: Context
             get() = m_context
 
+        fun getString(rscId:Int):String {return context.getString(rscId)}
+
         private var instance: App? = null
         @JvmStatic
         fun instance(): App? {
