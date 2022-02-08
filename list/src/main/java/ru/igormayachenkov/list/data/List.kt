@@ -30,7 +30,7 @@ data class List(
         if (description != null && !description!!.isEmpty()) sb.append("<description>$description</description>\n")
         sb.append("<items>\n")
         val items = Database.loadListItems(id)
-        for (item in items.values) {
+        for (item in items) {
             sb.append("<item>\n")
             sb.append("""<id>${item.id}</id>""".trimIndent())
             sb.append("""
@@ -68,7 +68,7 @@ data class List(
         bw.write("<items>")
         bw.newLine()
         val items = Database.loadListItems(id)
-        for (item in items.values) {
+        for (item in items) {
             bw.write("<item>")
             bw.newLine()
             bw.write("<id>" + item.id + "</id>")
@@ -96,7 +96,7 @@ data class List(
         // ITEMS
         val items = Database.loadListItems(id)
         val jsItems = JSONArray()
-        for (item in items.values) {
+        for (item in items) {
             val js = JSONObject()
             js.put("id", item.id)
             js.put("name", item.name)

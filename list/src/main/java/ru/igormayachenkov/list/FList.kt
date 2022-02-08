@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.f_list.*
 import kotlinx.android.synthetic.main.item_list.view.*
 import ru.igormayachenkov.list.data.Item
+import ru.igormayachenkov.list.data.OpenItem
 
 class FList : BaseFragment()  {
 
@@ -31,7 +32,7 @@ class FList : BaseFragment()  {
     }
 
     // DATA
-    var uiList = ArrayList<Item>()
+    lateinit var uiList : List<Item>
     val columnCount = 1
 
     //----------------------------------------------------------------------------------------------
@@ -162,7 +163,7 @@ class FList : BaseFragment()  {
 
     fun onItemLongClick(view: View): Boolean {
         val position = recyclerView.getChildAdapterPosition(view)
-        Logic.setOpenItem(uiList[position])
+        Logic.setOpenItem( OpenItem(uiList[position], position) )
         return true
     }
 

@@ -204,12 +204,12 @@ object Database {
         Log.d(TAG, "loadListOfLists. size:" + hashMap.size)
     }
 
-    fun loadListItems(listId:Long):HashMap<Long,Item> {
+    fun loadListItems(listId:Long):HashSet<Item> {
         // Open database
         //SQLiteDatabase dbRead = dbHelper.getReadableDatabase();
 
         // LOAD ITEMS
-        val items = HashMap<Long,Item>()
+        val items = HashSet<Item>()
         // Query all rows and get Cursor
         val args = arrayOf(listId.toString())
         val c = db!!.query(
@@ -241,7 +241,7 @@ object Database {
                         c.getString(iDescription)
                 )
                 // Add to the list
-                items.put(item.id, item)
+                items.add(item)
             } while (c.moveToNext())
         }
         c.close()

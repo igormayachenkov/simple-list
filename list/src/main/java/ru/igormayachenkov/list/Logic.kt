@@ -1,16 +1,11 @@
 package ru.igormayachenkov.list
 
-import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
-import android.net.Uri
 import android.util.Log
-import ru.igormayachenkov.list.data.Database
+import ru.igormayachenkov.list.data.*
 import ru.igormayachenkov.list.data.List
-import ru.igormayachenkov.list.data.Item
-import ru.igormayachenkov.list.data.OpenList
-import java.io.BufferedReader
 import java.util.HashMap
 import kotlin.Exception
 
@@ -48,7 +43,7 @@ object Logic {
         // Save id
         saveLong(list?.id, OPEN_LIST_ID)
         // Clear open item
-        setOpenItem(null)
+        clearOpenItem()
         // Update live data
         openList.value =
             if(list!=null)
@@ -101,25 +96,28 @@ object Logic {
 
     //----------------------------------------------------------------------------------------------
     // OPEN ITEM
-    var openItem = MutableLiveData<Item?>()
+    var openItem = MutableLiveData<OpenItem?>()
 
-    fun setOpenItem(item:Item?) {
-        Log.d(TAG, "setOpenItem #${item?.id}")
+    fun setOpenItem(openitem:OpenItem) {
+        Log.d(TAG, "setOpenItem #${openitem.pos} pos${openitem.item.id}")
         // Save id
-        saveLong(item?.id, OPEN_ITEM_ID)
+        saveLong(openitem.item.id, OPEN_ITEM_ID)
         // Update live data
-        openItem.value = item
+        openItem.value = openitem
     }
-
-    private fun isOpenItemExisted(openItemId:Long):Boolean {
-        return openList.value?.itemById(openItemId) != null
+    fun clearOpenItem() {
+        Log.d(TAG, "clearOpenItem")
+        // Clear id
+        saveLong(null, OPEN_ITEM_ID)
+        // Update live data
+        openItem.value = null
     }
 
     fun createItem(){
         Log.d(TAG, "createItem")
         openList.value?.id?.let { list_id->
             val item = Item.create(list_id,null,null)
-            setOpenItem(item)
+            setOpenItem(OpenItem(item,null))
         }?:run{ throw Exception("createItem when openList is NULL") }
     }
 
@@ -130,8 +128,9 @@ object Logic {
     }
 
     fun updateOpenItem(name:String?, descr:String?, isChecked:Boolean){
-        val item = openItem.value
-        if(item==null) throw Exception("deleteOpenItem: open item is null")
+        val openitem = openItem.value
+        if(openitem==null) throw Exception("deleteOpenItem: open item is null")
+        val item = openitem.item
 
         // Check changes
         val changes = HashSet<String>()
@@ -145,18 +144,16 @@ object Logic {
             item.description = descr
             item.isChecked = isChecked
 
-            if (isOpenItemExisted(item.id)) {
+            if (openitem.pos!=null) {
                 // EXISTED ITEM
                 Database.updateItem(item)
                 // Update UI
                 if (changes.contains("name")) {
                     // Resorting required
-                    openList.value?.updateItems()
+                    openList.value?.updateSortOrder()
                     FList.publicInterface?.onAllListUpdated()
                 }else {
-                    openList.value?.getItemListPosition(item)?.let {
-                        FList.publicInterface?.onItemUpdated(it)
-                    }
+                    FList.publicInterface?.onItemUpdated(openitem.pos)
                 }
             } else {
                 // NEW ITEM
@@ -168,30 +165,30 @@ object Logic {
         }
 
         // Clear open item
-        setOpenItem(null)
+        clearOpenItem()
     }
 
     fun deleteOpenItem(){
-        val item = openItem.value
-        if(item==null) throw Exception("deleteOpenItem: open item is null")
+        val openitem = openItem.value
+        if(openitem==null) throw Exception("deleteOpenItem: open item is null")
 
-        if(isOpenItemExisted(item.id)) {
+        if(openitem.pos!=null) {
             // EXISTED
+            val item = openitem.item
             val list = listOfLists.get(item.parent_id)
             if(list==null) throw Exception("list #${item.parent_id} not found")
             // Update storage
             Database.deleteItem(item.id)
-            val pos = openList.value?.deleteItem(item)
+            openList.value?.deleteItem(item, openitem.pos)
             // Clear open item
-            setOpenItem(null)// updates UI too (hides fItem)
+            clearOpenItem()// updates UI too (hides fItem)
             // Update UI
-            pos?.let {
-                FList.publicInterface?.onItemDeleted(it)
-            }
+            FList.publicInterface?.onItemDeleted(openitem.pos)
+
         }else{
             // NEW
             // Just clear open item
-            setOpenItem(null)// updates UI too (hides fItem)
+            clearOpenItem()// updates UI too (hides fItem)
         }
     }
 
@@ -223,7 +220,9 @@ object Logic {
         }
         // Get item
         openItemId?.let {
-            setOpenItem(openList.value?.itemById(it))
+            openList.value?.openItemById(it)?.let {
+                setOpenItem(it)
+            }
         }
 
     }

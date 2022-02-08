@@ -10,6 +10,17 @@ data class Item(
         var name        : String?,
         var description : String?
 ) {
+    //-----------------------------------------
+    // COMPARE FUNCTIONS FOR HASH TABLE
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+    override fun equals(other: Any?): Boolean {
+        if(other is Item) return id==other.id
+        return false
+    }
+    //-----------------------------------------
+
     companion object {
         const val ITEM_STATE_CHECKED = 1
         fun create(parent_id:Long, name:String?, descr:String?):Item{

@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import ru.igormayachenkov.list.data.Item
 import kotlinx.android.synthetic.main.f_item.*
+import ru.igormayachenkov.list.data.OpenItem
 
 class FItem : BaseFragment()  {
 
@@ -43,7 +44,7 @@ class FItem : BaseFragment()  {
         btnSave.setOnClickListener { onButtonSave() }
         btnDel.setOnClickListener  { onButtonDelete() }
         // Observe open item
-        Logic.openItem.observe(viewLifecycleOwner, Observer<Item?> { load(it) })
+        Logic.openItem.observe(viewLifecycleOwner, Observer<OpenItem?> { load(it?.item) })
     }
 
     //----------------------------------------------------------------------------------------------
@@ -67,7 +68,7 @@ class FItem : BaseFragment()  {
     //----------------------------------------------------------------------------------------------
     // HANDLERS
     fun onButtonCancel(){
-        Logic.setOpenItem(null)
+        Logic.clearOpenItem()
     }
 
     fun onButtonSave() {

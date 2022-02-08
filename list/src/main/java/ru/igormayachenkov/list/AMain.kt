@@ -128,7 +128,7 @@ class AMain : AppCompatActivity() {
     override fun onBackPressed() {
         Log.d(TAG, "onBackPressed")
         if(Logic.openItem.value!=null) {
-            Logic.setOpenItem(null)
+            Logic.clearOpenItem()
         }else if(Logic.openList.value!=null) {
             Logic.setOpenList(null)
         }else{
