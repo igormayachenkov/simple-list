@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -16,6 +17,7 @@ import ru.igormayachenkov.list.data.OpenList
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.f_list.*
 import kotlinx.android.synthetic.main.item_list.view.*
+import ru.igormayachenkov.list.data.IListAdapter
 import ru.igormayachenkov.list.data.Item
 import ru.igormayachenkov.list.data.OpenItem
 
@@ -89,7 +91,8 @@ class FList : BaseFragment()  {
 
                 // Load item list
                 uiList = list.items.asList
-                reloadItems()
+                updateNoDataLabel()
+                adapter.notifyDataSetChanged()
 
                 // SHOW FRAGMENT
                 showFragment()
@@ -99,25 +102,14 @@ class FList : BaseFragment()  {
             }
         }
     }
-
-    private fun reloadItems(){
-        updateListVisibility()
-        adapter.notifyDataSetChanged()
-    }
-
-    private fun updateListVisibility(){
-        if (uiList.size == 0) {
-            recyclerView.visibility = View.GONE
-            emptyView.visibility = View.VISIBLE
-        } else {
-            emptyView.visibility = View.GONE
-            recyclerView.visibility = View.VISIBLE
-        }
+    fun updateNoDataLabel(){
+        lblEmptyList.visibility =
+                if (uiList.size == 0) VISIBLE else GONE
     }
 
     //----------------------------------------------------------------------------------------------
     // PUBLIC INTERFACE
-    inner class PublicInterface {
+    inner class PublicInterface : IListAdapter {
 
         fun onListRenamed(){
             Log.d(TAG, "onListRenamed")
@@ -125,27 +117,27 @@ class FList : BaseFragment()  {
             toolbar.title = Logic.openList.value?.name
         }
 
-        fun onAllItemsUpdated(){
-            Log.d(TAG, "onAllItemsUpdated")
-            reloadItems()
+        override fun notifyDataSetChanged() {
+            Log.d(TAG, "notifyDataSetChanged")
+            adapter.notifyDataSetChanged()
+            updateNoDataLabel()
         }
 
-        fun onItemInserted(pos:Int) {
-            Log.d(TAG, "onItemInserted pos:$pos")
+        override fun notifyItemInserted(pos: Int) {
+            Log.d(TAG, "notifyItemInserted pos:$pos")
             adapter.notifyItemInserted(pos)
-            if(adapter.itemCount<2) updateListVisibility()
-
+            updateNoDataLabel()
         }
 
-        fun onItemUpdated(pos:Int) {
-            Log.d(TAG, "onItemUpdated pos:$pos")
+        override fun notifyItemChanged(pos: Int) {
+            Log.d(TAG, "notifyItemChanged pos:$pos")
             adapter.notifyItemChanged(pos)
         }
 
-
-        fun onItemDeleted(pos: Int) {
-            Log.d(TAG, "onItemDeleted pos:$pos")
+        override fun notifyItemRemoved(pos: Int) {
+            Log.d(TAG, "notifyItemRemoved pos:$pos")
             adapter.notifyItemRemoved(pos)
+            updateNoDataLabel()
         }
     }
 

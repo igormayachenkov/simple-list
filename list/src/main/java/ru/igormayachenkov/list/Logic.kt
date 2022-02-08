@@ -133,7 +133,7 @@ object Logic {
     fun toggleItemState(item:Item, pos: Int){
         item.toggleState()
         Database.updateItemState(item)
-        FList.publicInterface?.onItemUpdated(pos)
+        openList.value?.items?.update(item, pos)
     }
 
     fun updateOpenItem(name:String?, descr:String?, isChecked:Boolean){
@@ -159,17 +159,11 @@ object Logic {
             if (pos!=null) {
                 // EXISTED ITEM
                 Database.updateItem(item)
-                val posNew = openlist.items.update(item, pos)
-                if (posNew==pos)
-                    FList.publicInterface?.onItemUpdated(pos)
-                else
-                    FList.publicInterface?.onAllItemsUpdated()
+                openlist.items.update(item, pos)
             } else {
                 // NEW ITEM
                 Database.insertItem(item)
-                val posNew = openlist.items.insert(item)
-                // Update UI
-                FList.publicInterface?.onItemInserted(posNew)
+                openlist.items.insert(item)
             }
         }
 
@@ -179,23 +173,21 @@ object Logic {
 
     fun deleteOpenItem(){
         val openitem = openItem.value
+        val openlist = openList.value
         if(openitem==null) throw Exception("deleteOpenItem: open item is null")
+        if(openlist==null) throw Exception("deleteOpenItem: open list is null")
 
         if(openitem.pos!=null) {
             // EXISTED
             // Update storage
             Database.deleteItem(openitem.item.id)
-            openList.value?.items?.removeAt(openitem.pos)
-            // Clear open item
-            clearOpenItem()// updates UI too (hides fItem)
-            // Update UI
-            FList.publicInterface?.onItemDeleted(openitem.pos)
-
+            openlist.items.removeAt(openitem.pos)
         }else{
             // NEW
-            // Just clear open item
-            clearOpenItem()// updates UI too (hides fItem)
+            // Do nothing. Just clear open item
         }
+        // Clear open item
+        clearOpenItem()// updates UI too (hides fItem)
     }
 
     fun deleteALL(){
