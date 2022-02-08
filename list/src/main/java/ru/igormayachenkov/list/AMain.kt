@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -24,7 +26,6 @@ class AMain : AppCompatActivity() {
 
     // Data objects
     private lateinit var uiList : kotlin.collections.List<List>
-    private val comparatorName = Comparator<List> { a, b -> a.name.compareTo(b.name) }
 
     val columnCount = 1
 
@@ -80,8 +81,8 @@ class AMain : AppCompatActivity() {
             Log.d(TAG, "onListInserted")
             reloadData()
         }
-        fun onListRenamed(id:Long) {
-            Log.d(TAG, "onListRenamed #$id")
+        fun onListRenamed() {
+            Log.d(TAG, "onListRenamed")
             reloadData()
         }
         fun onListDeleted(pos: Int) {
@@ -90,22 +91,21 @@ class AMain : AppCompatActivity() {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // UPDATERs
+    //----------------------------------------------------------------------------------------------
+    // LOAD
     private fun reloadData() {
-        Log.w(TAG, "RELOAD DATA")
+        Log.d(TAG, "reloadData")
 
-        // Reload sorted list
+        // Rest link to sorted list
         uiList = Logic.listOfLists.asList
-        Collections.sort(uiList, comparatorName)
 
         // Update controls
         if (uiList.size == 0) {
-            recyclerView.visibility = View.GONE
-            emptyView.visibility = View.VISIBLE
+            recyclerView.visibility = GONE
+            emptyView.visibility = VISIBLE
         } else {
-            emptyView.visibility = View.GONE
-            recyclerView.visibility = View.VISIBLE
+            emptyView.visibility = GONE
+            recyclerView.visibility = VISIBLE
             adapter.notifyDataSetChanged()
         }
     }
@@ -136,8 +136,7 @@ class AMain : AppCompatActivity() {
     fun onListItemClick(view: View) {
         Log.d(TAG,"onListItemClick")
         val position = recyclerView.getChildAdapterPosition(view)
-        Logic.setOpenList(uiList[position], position)
-        //AList.show(this)
+        Logic.setOpenList(uiList[position])
     }
 
     fun onMenuAdd() {

@@ -37,14 +37,14 @@ object Logic {
     // OPEN LIST
     var openList    = MutableLiveData<OpenList?>()
 
-    fun setOpenList(list:List, pos:Int){
+    fun setOpenList(list:List){
         Log.d(TAG, "setOpenList #${list.id}")
         // Save id
         saveLong(list.id, OPEN_LIST_ID)
         // Clear open item
         clearOpenItem()
         // Update live data
-        openList.value = OpenList(list, pos, Database.loadListItems(list.id))
+        openList.value = OpenList(list, Database.loadListItems(list.id))
     }
 
     fun clearOpenList(){
@@ -73,9 +73,7 @@ object Logic {
         AMain.instance?.onListInserted()
 
         // Open the list immediately
-        listOfLists.getPositionById(list.id)?.let { pos->
-            setOpenList(list,pos)
-        }
+        setOpenList(list)
     }
 
     fun renameOpenList(name:String?){
@@ -86,8 +84,9 @@ object Logic {
         // Rename List
         Database.updateListName(list.id, name)
         list.name = name
+        listOfLists.updateSortOrder()
         FList.publicInterface?.onListRenamed()
-        AMain.instance?.onListRenamed(list.id)
+        AMain.instance?.onListRenamed()
     }
 
     fun deleteOpenList(){
@@ -95,9 +94,11 @@ object Logic {
         if(openlist==null) throw Exception("open list is null")
 
         Database.deleteList(openlist.id)
-        listOfLists.removeAt(openlist.pos)
         clearOpenList()
-        AMain.instance?.onListDeleted(openlist.pos)
+        listOfLists.getPositionById(openlist.id)?.let { pos->
+            listOfLists.removeAt(pos)
+            AMain.instance?.onListDeleted(pos)
+        }
     }
 
 
@@ -222,11 +223,8 @@ object Logic {
 
         // Set open list
         openListId?.let { id->
-            listOfLists.asList.forEachIndexed { pos, list ->
-                if (list.id == id) {
-                    setOpenList(list,pos)
-                    return@forEachIndexed
-                }
+            listOfLists.getElementById(id)?.let {
+                setOpenList(it)
             }
         }
         // Set open item
