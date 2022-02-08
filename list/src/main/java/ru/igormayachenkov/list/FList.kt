@@ -130,10 +130,11 @@ class FList : BaseFragment()  {
             reloadItems()
         }
 
-        fun onItemInserted() {
-            Log.d(TAG, "onItemInserted")
-            reloadItems()
-            // TODO replace by adapter.notifyItemInserted
+        fun onItemInserted(pos:Int) {
+            Log.d(TAG, "onItemInserted pos:$pos")
+            adapter.notifyItemInserted(pos)
+            if(adapter.itemCount<2) updateListVisibility()
+
         }
 
         fun onItemUpdated(pos:Int) {

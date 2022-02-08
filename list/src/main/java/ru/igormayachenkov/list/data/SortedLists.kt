@@ -5,12 +5,10 @@ import kotlin.Comparator
 
 class SortedLists : SortedArray<List>(){
 
-    //private val comparatorName = Comparator<List> { a, b -> a.name.compareTo(b.name) }
+    val comparaByName = compareBy<List> { it.name }
 
-    override fun updateSortOrder() {
-        array.sortBy { it.name }
-        //Collections.sort(array, comparatorName)
-    }
+    override val comparator: Comparator<List>
+        get() = comparaByName
 
     fun getElementById(id:Long):List?{
         array.forEach{ element->

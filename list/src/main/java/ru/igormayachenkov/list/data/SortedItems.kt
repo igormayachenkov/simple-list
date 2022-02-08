@@ -1,8 +1,11 @@
 package ru.igormayachenkov.list.data
 
+
 class SortedItems : SortedArray<Item>(){
 
-    override fun updateSortOrder() {
-        array.sortBy { it.name }
-    }
+    val comparaByName = compareBy<Item> { it.name }
+
+    override val comparator: Comparator<Item>
+        get() = comparaByName
+
 }

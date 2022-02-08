@@ -138,8 +138,11 @@ object Logic {
 
     fun updateOpenItem(name:String?, descr:String?, isChecked:Boolean){
         val openitem = openItem.value
-        if(openitem==null) throw Exception("deleteOpenItem: open item is null")
+        val openlist = openList.value
+        if(openitem==null) throw Exception("updateOpenItem: open item is null")
+        if(openlist==null) throw Exception("updateOpenItem: open list is null")
         val item = openitem.item
+        val pos  = openitem.pos
 
         // Check changes
         val changes = HashSet<String>()
@@ -153,23 +156,20 @@ object Logic {
             item.description = descr
             item.isChecked = isChecked
 
-            if (openitem.pos!=null) {
+            if (pos!=null) {
                 // EXISTED ITEM
                 Database.updateItem(item)
-                // Update UI
-                if (changes.contains("name")) {
-                    // Resorting required
-                    openList.value?.items?.updateSortOrder()
+                val posNew = openlist.items.update(item, pos)
+                if (posNew==pos)
+                    FList.publicInterface?.onItemUpdated(pos)
+                else
                     FList.publicInterface?.onAllItemsUpdated()
-                }else {
-                    FList.publicInterface?.onItemUpdated(openitem.pos)
-                }
             } else {
                 // NEW ITEM
                 Database.insertItem(item)
-                openList.value?.items?.insert(item)
+                val posNew = openlist.items.insert(item)
                 // Update UI
-                FList.publicInterface?.onItemInserted()
+                FList.publicInterface?.onItemInserted(posNew)
             }
         }
 
