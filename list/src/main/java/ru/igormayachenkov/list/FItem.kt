@@ -44,25 +44,27 @@ class FItem : BaseFragment()  {
         btnSave.setOnClickListener { onButtonSave() }
         btnDel.setOnClickListener  { onButtonDelete() }
         // Observe open item
-        Logic.openItem.observe(viewLifecycleOwner, Observer<OpenItem?> { load(it?.item) })
+        Logic.openItem.observe(viewLifecycleOwner, Observer<OpenItem?> { openitem->
+            if(openitem!=null) show(openitem.item) else hide()
+        })
     }
 
     //----------------------------------------------------------------------------------------------
-    // LOAD DATA
-    fun load(item: Item?){
-        Log.d(TAG, "load item #${item?.id}")
+    // SHOW (and load) / HIDE
+    fun show(item: Item){
+        Log.d(TAG, "show #${item.id}")
+        // Load data
+        txtName.setText(item.name)
+        txtDescr.setText(item.description)
+        chkState.isChecked = item.isChecked
+        // Show fragment
+        showFragment()
+    }
 
-        view?.let { view ->
-            if (item != null) {
-                txtName.setText(item.name)
-                txtDescr.setText(item.description)
-                chkState.isChecked = item.isChecked
-                showFragment()
-            } else {
-                hideFragment()
-                chkState.isChecked = false // to prevent blinking
-            }
-        }
+    fun hide(){
+        Log.d(TAG, "hide")
+        hideFragment()
+        chkState.isChecked = false // to prevent blinking
     }
 
     //----------------------------------------------------------------------------------------------

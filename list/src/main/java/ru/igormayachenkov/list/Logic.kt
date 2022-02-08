@@ -191,7 +191,6 @@ object Logic {
         Database.deleteALL()
         listOfLists.clear() // reload?
         clearOpenList()
-        AMain.publicInterface?.notifyDataSetChanged()
     }
 
     //----------------------------------------------------------------------------------------------

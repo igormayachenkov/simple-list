@@ -54,7 +54,6 @@ class FList : BaseFragment()  {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
 
-        publicInterface = PublicInterface()
         view.visibility = GONE // initial hidden state !!!
 
         // Set handlers
@@ -68,7 +67,9 @@ class FList : BaseFragment()  {
         recyclerView.adapter = adapter
 
         // Observe open list
-        Logic.openList.observe(viewLifecycleOwner, Observer<OpenList?> { load(it) })
+        Logic.openList.observe(viewLifecycleOwner, Observer<OpenList?> { list->
+            if(list!=null) show(list) else hide()
+        })
     }
 
     override fun onDestroyView() {
@@ -78,31 +79,32 @@ class FList : BaseFragment()  {
     }
 
     //----------------------------------------------------------------------------------------------
-    // LOAD DATA
-    fun load(list: OpenList?){
-        Log.d(TAG, "load list #${list?.id}")
+    // SHOW (and load) / HIDE
+    fun show(list: OpenList){
+        Log.d(TAG, "show #${list.id}")
 
-        view?.let { view ->
-            if (list != null) {
-                Log.d(TAG, "load list data name:${list.name}")
+        publicInterface = PublicInterface()
 
-                // Name
-                toolbar.title = list.name
+        // Name
+        toolbar.title = list.name
 
-                // Load item list
-                uiList = list.items.asList
+        // Set list data
+        uiList = list.items.asList
 
-                // Update UI
-                publicInterface?.notifyDataSetChanged()
+        // Update items
+        publicInterface?.notifyDataSetChanged()
 
-                // SHOW FRAGMENT
-                showFragment()
-            } else {
-                // HIDE FRAGMENT
-                hideFragment()
-            }
-        }
+        // SHOW FRAGMENT
+        showFragment()
     }
+
+    fun hide(){
+        Log.d(TAG, "hide")
+        publicInterface = null
+        // HIDE FRAGMENT
+        hideFragment()
+    }
+
     fun updateNoDataLabel(){
         lblEmptyList.visibility =
                 if (uiList.size == 0) VISIBLE else GONE

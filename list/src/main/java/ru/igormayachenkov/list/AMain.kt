@@ -47,7 +47,11 @@ class AMain : AppCompatActivity() {
         }
         recyclerView.adapter = adapter
 
-        reloadData()
+        // Set link to sorted list
+        uiList = Logic.listOfLists.asList
+
+        // Update list
+        publicInterface?.notifyDataSetChanged()
     }
 
     override fun onDestroy() {
@@ -68,16 +72,6 @@ class AMain : AppCompatActivity() {
 
     //----------------------------------------------------------------------------------------------
     // LOAD
-    private fun reloadData() {
-        Log.d(TAG, "reloadData")
-
-        // Rest link to sorted list
-        uiList = Logic.listOfLists.asList
-
-        // Update controls
-        publicInterface?.notifyDataSetChanged()
-
-    }
     fun updateNoDataLabel(){
         lblEmptyList.visibility =
                 if (uiList.size == 0) VISIBLE else GONE
