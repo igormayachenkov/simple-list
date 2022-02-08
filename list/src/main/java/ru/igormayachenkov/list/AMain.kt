@@ -85,8 +85,8 @@ class AMain : AppCompatActivity() {
             reloadData()
         }
         fun onListDeleted(id: Long) {
-            Log.w(TAG, "onListDeleted")
-            getItemPosition(id)?.let {
+            Log.w(TAG, "onListDeleted #$id")
+            removeFromUiList(id)?.let {
                 adapter.notifyItemRemoved(it)
             }
         }
@@ -112,10 +112,13 @@ class AMain : AppCompatActivity() {
             adapter.notifyDataSetChanged()
         }
     }
-    fun getItemPosition(id:Long):Int?{
-        for(i in 0..uiList.size-1){
-            val item = uiList[i]
-            if(item.id==id) return i
+
+    fun removeFromUiList(id:Long):Int?{
+        uiList.forEachIndexed{ index, element ->
+            if(element.id==id){
+                uiList.removeAt(index)
+                return index
+            }
         }
         return null
     }
