@@ -6,8 +6,13 @@ abstract class SortedArray<TYPE> {
     protected val array = ArrayList<TYPE>()
 
     fun load(elements : Collection<TYPE> ) {
+        array.clear()
         array.addAll(elements)
         updateSortOrder()
+    }
+
+    fun clear(){
+        array.clear()
     }
 
     val asList : kotlin.collections.List<TYPE>

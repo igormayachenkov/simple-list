@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import android.util.Log
 import ru.igormayachenkov.list.data.*
 import ru.igormayachenkov.list.data.List
-import java.util.HashMap
 import kotlin.Exception
 
 object Logic {
@@ -32,25 +31,32 @@ object Logic {
 
     //----------------------------------------------------------------------------------------------
     // LIST OF LIST
-    val listOfLists = HashMap<Long, List>()
+    val listOfLists = SortedLists()
 
     //----------------------------------------------------------------------------------------------
     // OPEN LIST
     var openList    = MutableLiveData<OpenList?>()
 
-    fun setOpenList(list:List?){
-        Log.d(TAG, "setOpenList #${list?.id}")
+    fun setOpenList(list:List, pos:Int){
+        Log.d(TAG, "setOpenList #${list.id}")
         // Save id
-        saveLong(list?.id, OPEN_LIST_ID)
+        saveLong(list.id, OPEN_LIST_ID)
         // Clear open item
         clearOpenItem()
         // Update live data
-        openList.value =
-            if(list!=null)
-                OpenList(list, Database.loadListItems(list.id))
-            else
-                null
+        openList.value = OpenList(list, pos, Database.loadListItems(list.id))
     }
+
+    fun clearOpenList(){
+        Log.d(TAG, "clearOpenList")
+        // Save id
+        saveLong(null, OPEN_LIST_ID)
+        // Clear open item
+        clearOpenItem()
+        // Update live data
+        openList.value = null
+    }
+
 
     fun createList(name:String?){
         if (name.isNullOrEmpty()) throw Exception(App.instance()!!.getString(R.string.dialog_error))
@@ -63,11 +69,13 @@ object Logic {
         )
         // Save
         Database.insertList(list)
-        listOfLists.put(list.id, list)
+        listOfLists.insert(list)
         AMain.instance?.onListInserted()
 
-        // Open the list
-        setOpenList(list)
+        // Open the list immediately
+        listOfLists.getPositionById(list.id)?.let { pos->
+            setOpenList(list,pos)
+        }
     }
 
     fun renameOpenList(name:String?){
@@ -83,13 +91,13 @@ object Logic {
     }
 
     fun deleteOpenList(){
-        val list = openList.value
-        if(list==null) throw Exception("open list is null")
+        val openlist = openList.value
+        if(openlist==null) throw Exception("open list is null")
 
-        Database.deleteList(list.id)
-        listOfLists.remove(list.id)
-        setOpenList(null)
-        AMain.instance?.onListDeleted(list.id)
+        Database.deleteList(openlist.id)
+        listOfLists.removeAt(openlist.pos)
+        clearOpenList()
+        AMain.instance?.onListDeleted(openlist.pos)
     }
 
 
@@ -151,7 +159,7 @@ object Logic {
                 if (changes.contains("name")) {
                     // Resorting required
                     openList.value?.items?.updateSortOrder()
-                    FList.publicInterface?.onAllListUpdated()
+                    FList.publicInterface?.onAllItemsUpdated()
                 }else {
                     FList.publicInterface?.onItemUpdated(openitem.pos)
                 }
@@ -174,11 +182,8 @@ object Logic {
 
         if(openitem.pos!=null) {
             // EXISTED
-            val item = openitem.item
-            val list = listOfLists.get(item.parent_id)
-            if(list==null) throw Exception("list #${item.parent_id} not found")
             // Update storage
-            Database.deleteItem(item.id)
+            Database.deleteItem(openitem.item.id)
             openList.value?.items?.removeAt(openitem.pos)
             // Clear open item
             clearOpenItem()// updates UI too (hides fItem)
@@ -195,7 +200,7 @@ object Logic {
     fun deleteALL(){
         Database.deleteALL()
         listOfLists.clear() // reload?
-        setOpenList(null)
+        clearOpenList()
         AMain.instance?.onDataUpdated()
     }
 
@@ -208,19 +213,25 @@ object Logic {
 
         Database.open(App.context)
         //Data.load(App.context)
-        Database.loadListOfLists(listOfLists)
+        listOfLists.load(Database.loadListOfLists())
 
         // Restore open list/item
         val openListId = if(pref.contains(OPEN_LIST_ID)) pref.getLong(OPEN_LIST_ID, 0) else null
         val openItemId = if(pref.contains(OPEN_ITEM_ID)) pref.getLong(OPEN_ITEM_ID, 0) else null
         Log.d(TAG,"Restore openListId:$openListId   openItemId:$openItemId")
-        // Get list
-        openListId?.let {
-            setOpenList(listOfLists.get(it))
+
+        // Set open list
+        openListId?.let { id->
+            listOfLists.asList.forEachIndexed { pos, list ->
+                if (list.id == id) {
+                    setOpenList(list,pos)
+                    return@forEachIndexed
+                }
+            }
         }
-        // Get item
-        openItemId?.let {
-            openList.value?.openItemById(it)?.let {
+        // Set open item
+        openItemId?.let { id->
+            openList.value?.openItemById(id)?.let {
                 setOpenItem(it)
             }
         }

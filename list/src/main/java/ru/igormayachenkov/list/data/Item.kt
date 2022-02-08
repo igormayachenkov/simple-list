@@ -12,13 +12,13 @@ data class Item(
 ) {
     //-----------------------------------------
     // COMPARE FUNCTIONS FOR HASH TABLE
-    override fun hashCode(): Int {
-        return id.hashCode()
-    }
-    override fun equals(other: Any?): Boolean {
-        if(other is Item) return id==other.id
-        return false
-    }
+//    override fun hashCode(): Int {
+//        return id.hashCode()
+//    }
+//    override fun equals(other: Any?): Boolean {
+//        if(other is Item) return id==other.id
+//        return false
+//    }
     //-----------------------------------------
 
     companion object {

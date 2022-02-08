@@ -3,18 +3,15 @@ package ru.igormayachenkov.list.data
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // DATA OBJECT: List + item hash + item sorted list
 class OpenList(
-    val list:List,
+    val list : List,
+    val pos  : Int,
     itemsCollection : Collection<Item>
 ){
     companion object {
         private const val TAG = "myapp.OpenList"
     }
 
-    class ItemArray : SortedArray<Item>(){
-        override fun updateSortOrder() {
-        array.sortBy { it.name }        }
-    }
-    val items = ItemArray()
+    val items = SortedItems()
 
     init{
         items.load(itemsCollection)

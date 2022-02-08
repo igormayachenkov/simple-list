@@ -23,7 +23,7 @@ class AMain : AppCompatActivity() {
     }
 
     // Data objects
-    private val uiList = ArrayList<List>()
+    private lateinit var uiList : kotlin.collections.List<List>
     private val comparatorName = Comparator<List> { a, b -> a.name.compareTo(b.name) }
 
     val columnCount = 1
@@ -73,22 +73,20 @@ class AMain : AppCompatActivity() {
         }
 
         fun onDataUpdated(){
-            Log.w(TAG, "onDataUpdated")
+            Log.d(TAG, "onDataUpdated")
             reloadData()
         }
         fun onListInserted() {
-            Log.w(TAG, "onListInserted")
+            Log.d(TAG, "onListInserted")
             reloadData()
         }
         fun onListRenamed(id:Long) {
-            Log.w(TAG, "onListRenamed #$id")
+            Log.d(TAG, "onListRenamed #$id")
             reloadData()
         }
-        fun onListDeleted(id: Long) {
-            Log.w(TAG, "onListDeleted #$id")
-            removeFromUiList(id)?.let {
-                adapter.notifyItemRemoved(it)
-            }
+        fun onListDeleted(pos: Int) {
+            Log.d(TAG, "onListDeleted pos:$pos")
+            adapter.notifyItemRemoved(pos)
         }
     }
 
@@ -98,8 +96,7 @@ class AMain : AppCompatActivity() {
         Log.w(TAG, "RELOAD DATA")
 
         // Reload sorted list
-        uiList.clear()
-        uiList.addAll(Logic.listOfLists.values)
+        uiList = Logic.listOfLists.asList
         Collections.sort(uiList, comparatorName)
 
         // Update controls
@@ -113,16 +110,6 @@ class AMain : AppCompatActivity() {
         }
     }
 
-    fun removeFromUiList(id:Long):Int?{
-        uiList.forEachIndexed{ index, element ->
-            if(element.id==id){
-                uiList.removeAt(index)
-                return index
-            }
-        }
-        return null
-    }
-
     //----------------------------------------------------------------------------------------------
     // HANDLERS
     override fun onBackPressed() {
@@ -130,7 +117,7 @@ class AMain : AppCompatActivity() {
         if(Logic.openItem.value!=null) {
             Logic.clearOpenItem()
         }else if(Logic.openList.value!=null) {
-            Logic.setOpenList(null)
+            Logic.clearOpenList()
         }else{
             super.onBackPressed()
         }
@@ -149,8 +136,7 @@ class AMain : AppCompatActivity() {
     fun onListItemClick(view: View) {
         Log.d(TAG,"onListItemClick")
         val position = recyclerView.getChildAdapterPosition(view)
-        val list = uiList[position]
-        Logic.setOpenList(list)
+        Logic.setOpenList(uiList[position], position)
         //AList.show(this)
     }
 

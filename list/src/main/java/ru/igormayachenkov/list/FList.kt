@@ -89,7 +89,7 @@ class FList : BaseFragment()  {
 
                 // Load item list
                 uiList = list.items.asList
-                reloadData()
+                reloadItems()
 
                 // SHOW FRAGMENT
                 showFragment()
@@ -100,7 +100,7 @@ class FList : BaseFragment()  {
         }
     }
 
-    private fun reloadData(){
+    private fun reloadItems(){
         updateListVisibility()
         adapter.notifyDataSetChanged()
     }
@@ -125,14 +125,14 @@ class FList : BaseFragment()  {
             toolbar.title = Logic.openList.value?.name
         }
 
-        fun onAllListUpdated(){
-            Log.d(TAG, "onAllListUpdated")
-            reloadData()
+        fun onAllItemsUpdated(){
+            Log.d(TAG, "onAllItemsUpdated")
+            reloadItems()
         }
 
         fun onItemInserted() {
             Log.d(TAG, "onItemInserted")
-            reloadData()
+            reloadItems()
             // TODO replace by adapter.notifyItemInserted
         }
 

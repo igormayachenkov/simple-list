@@ -119,7 +119,7 @@ object Converter {
 
     private fun doSaveAll(uri: Uri?) {
         try {
-            val bytes = saveLists(uri, Logic.listOfLists.values)
+            val bytes = saveLists(uri, Logic.listOfLists.asList)
             // Show result
             Toast.makeText(App.context, bytes.toString() + " " + getString(R.string.bytes_saved), Toast.LENGTH_LONG).show()
         } catch (e: Exception) { Utils.showErrorDialog(e) }
@@ -246,10 +246,10 @@ object Converter {
                 if (id == 0L || name == null || name.isEmpty()) continue
 
                 // Search for existed
-                val list = Logic.listOfLists.get(id)
+                val pos = Logic.listOfLists.getPositionById(id)
 
                 // Update counters
-                if (list != null) estimation.toUpdate++ else estimation.toInsert++
+                if (pos != null) estimation.toUpdate++ else estimation.toInsert++
             }
         }
         return estimation
@@ -262,6 +262,13 @@ object Converter {
         // LISTS
         val listsJSON = json.optJSONArray("lists")
         if (listsJSON != null) {
+            // Fill existed lists hash
+            val existed = HashSet<Long>()
+            Logic.listOfLists.asList.forEach { list->
+                existed.add(list.id)
+            }
+
+            // LOOP BY INPUT
             for (i in 0 until listsJSON.length()) {
                 val listJSON = listsJSON.optJSONObject(i) ?: continue
 
@@ -271,17 +278,18 @@ object Converter {
                 if (id == 0L || name == null || name.isEmpty()) continue
 
                 // Search for existed
-                var list = Logic.listOfLists.get(id)
+                //var list = Logic.listOfLists.get(id)
+                if(existed.contains(id)) continue
 
-                // UPDATE DATA
-                if (list != null) {
-                    // Remove old list (& items)
-                    Logic.listOfLists.remove(id)
-                }
-                // Insert list
-                list = List(id, name, null)
+//                if (list != null) {
+//                    // Remove old list (& items)
+//                    Logic.listOfLists.remove(id)
+//                }
+
+                // Append list
+                val list = List(id, name, null)
                 Database.insertList(list)
-                Logic.listOfLists.put(list.id, list)
+                //Logic.listOfLists.put(list.id, list)
                 // Insert list items
                 val itemsJSON = listJSON.optJSONArray("items")
                 if (itemsJSON != null) {
@@ -299,7 +307,14 @@ object Converter {
                     }
                 }
             }
+
+            // Reload data
+            Logic.listOfLists.load(
+                Database.loadListOfLists()
+            )
+
+            // Update UI
+            AMain.instance?.onDataUpdated()
         }
-        AMain.instance?.onDataUpdated()
     }
 }
