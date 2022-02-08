@@ -37,7 +37,7 @@ object Converter {
         // To search for all documents available via installed storage providers, it would be "*/*".
         intent.type = "*/*"
 
-        AMain.instance?.startExternalActivity(intent, LOAD_ALL_REQUEST)
+        AMain.publicInterface?.startExternalActivity(intent, LOAD_ALL_REQUEST)
     }
 
     fun saveAll() {
@@ -50,7 +50,7 @@ object Converter {
         // Create a file with the requested MIME type.
         intent.type = "*/*"
         intent.putExtra(Intent.EXTRA_TITLE, "Simple List.json")
-        AMain.instance?.startExternalActivity(intent, SAVE_ALL_REQUEST)
+        AMain.publicInterface?.startExternalActivity(intent, SAVE_ALL_REQUEST)
     }
 
     fun saveOpenList() {
@@ -58,7 +58,7 @@ object Converter {
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.type = "*/*"
         intent.putExtra(Intent.EXTRA_TITLE, Logic.openList.value!!.name + ".json")
-        AMain.instance?.startExternalActivity(intent, SAVE_LIST_REQUEST)
+        AMain.publicInterface?.startExternalActivity(intent, SAVE_LIST_REQUEST)
     }
 
     fun saveOpenListXML() {
@@ -66,7 +66,7 @@ object Converter {
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.type = "*/*"
         intent.putExtra(Intent.EXTRA_TITLE, Logic.openList.value!!.name + ".xml")
-        AMain.instance?.startExternalActivity(intent, SAVE_LIST_XML_REQUEST)
+        AMain.publicInterface?.startExternalActivity(intent, SAVE_LIST_XML_REQUEST)
     }
 
     // TO CALL FROM AMain
@@ -311,7 +311,7 @@ object Converter {
             )
 
             // Update UI
-            AMain.instance?.onDataUpdated()
+            AMain.publicInterface?.notifyDataSetChanged()
         }
     }
 

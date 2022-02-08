@@ -91,8 +91,9 @@ class FList : BaseFragment()  {
 
                 // Load item list
                 uiList = list.items.asList
-                updateNoDataLabel()
-                adapter.notifyDataSetChanged()
+
+                // Update UI
+                publicInterface?.notifyDataSetChanged()
 
                 // SHOW FRAGMENT
                 showFragment()

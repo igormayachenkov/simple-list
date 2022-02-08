@@ -35,24 +35,18 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/emptyView">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/main_empty"
-                android:id="@+id/textView"
-                android:layout_centerInParent="true"
-                android:layout_margin="30dp" />
-        </RelativeLayout>
     </LinearLayout>
 
-    <!-- LIST -->
+    <!-- EMPTY LIST LABEL -->
+    <TextView android:id="@+id/lblEmptyList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/list_empty"
+        android:layout_gravity="center"/>
+
+    <!-- OPEN LIST FRAGMENT-->
     <fragment android:id="@+id/fList"
         android:visibility="gone"
         android:layout_width="match_parent"

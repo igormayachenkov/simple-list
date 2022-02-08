@@ -12,16 +12,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import ru.igormayachenkov.list.data.List
 import androidx.recyclerview.widget.RecyclerView
-import java.util.*
-import kotlinx.android.synthetic.main.a_main.*
-import kotlinx.android.synthetic.main.a_main.emptyView
+import kotlinx.android.synthetic.main.a_main.lblEmptyList
 import kotlinx.android.synthetic.main.a_main.recyclerView
 import kotlinx.android.synthetic.main.item_main.view.*
+import ru.igormayachenkov.list.data.IListAdapter
 
 class AMain : AppCompatActivity() {
     companion object {
         private const val TAG = "myapp.AMain"
-        var instance : PublicInterface? = null
+        var publicInterface : PublicInterface? = null
     }
 
     // Data objects
@@ -39,7 +38,7 @@ class AMain : AppCompatActivity() {
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         toolbar.setOnMenuItemClickListener { onMenuClick(it); true }
 
-        instance = PublicInterface()
+        publicInterface = PublicInterface()
 
         // List
         recyclerView.layoutManager = when {
@@ -54,7 +53,7 @@ class AMain : AppCompatActivity() {
     override fun onDestroy() {
         Log.d(TAG, "onDestroy")
         super.onDestroy()
-        instance = null
+        publicInterface = null
     }
 
     override fun onStart() {
@@ -66,30 +65,6 @@ class AMain : AppCompatActivity() {
         Log.d(TAG, "onStop")
         super.onStop()
     }
-    //----------------------------------------------------------------------------------------------
-    // PUBLIC INTERFACE
-    inner class PublicInterface {
-        fun startExternalActivity(intent:Intent, requestCode:Int){
-            startActivityForResult(intent,requestCode)
-        }
-
-        fun onDataUpdated(){
-            Log.d(TAG, "onDataUpdated")
-            reloadData()
-        }
-        fun onListInserted() {
-            Log.d(TAG, "onListInserted")
-            reloadData()
-        }
-        fun onListRenamed() {
-            Log.d(TAG, "onListRenamed")
-            reloadData()
-        }
-        fun onListDeleted(pos: Int) {
-            Log.d(TAG, "onListDeleted pos:$pos")
-            adapter.notifyItemRemoved(pos)
-        }
-    }
 
     //----------------------------------------------------------------------------------------------
     // LOAD
@@ -100,13 +75,42 @@ class AMain : AppCompatActivity() {
         uiList = Logic.listOfLists.asList
 
         // Update controls
-        if (uiList.size == 0) {
-            recyclerView.visibility = GONE
-            emptyView.visibility = VISIBLE
-        } else {
-            emptyView.visibility = GONE
-            recyclerView.visibility = VISIBLE
+        publicInterface?.notifyDataSetChanged()
+
+    }
+    fun updateNoDataLabel(){
+        lblEmptyList.visibility =
+                if (uiList.size == 0) VISIBLE else GONE
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // PUBLIC INTERFACE
+    inner class PublicInterface : IListAdapter{
+        fun startExternalActivity(intent:Intent, requestCode:Int){
+            startActivityForResult(intent,requestCode)
+        }
+
+        override fun notifyDataSetChanged() {
+            Log.d(TAG, "notifyDataSetChanged")
             adapter.notifyDataSetChanged()
+            updateNoDataLabel()
+        }
+
+        override fun notifyItemInserted(pos: Int) {
+            Log.d(TAG, "notifyItemInserted pos:$pos")
+            adapter.notifyItemInserted(pos)
+            updateNoDataLabel()
+        }
+
+        override fun notifyItemChanged(pos: Int) {
+            Log.d(TAG, "notifyItemChanged pos:$pos")
+            adapter.notifyItemChanged(pos)
+        }
+
+        override fun notifyItemRemoved(pos: Int) {
+            Log.d(TAG, "notifyItemRemoved pos:$pos")
+            adapter.notifyItemRemoved(pos)
+            updateNoDataLabel()
         }
     }
 

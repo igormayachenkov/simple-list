@@ -70,7 +70,6 @@ object Logic {
         // Save
         Database.insertList(list)
         listOfLists.insert(list)
-        AMain.instance?.onListInserted()
 
         // Open the list immediately
         setOpenList(list)
@@ -84,9 +83,8 @@ object Logic {
         // Rename List
         Database.updateListName(list.id, name)
         list.name = name
-        listOfLists.updateSortOrder()
+        listOfLists.updateSortOrder() //TODO listOfLists.update
         FList.publicInterface?.onListRenamed()
-        AMain.instance?.onListRenamed()
     }
 
     fun deleteOpenList(){
@@ -97,7 +95,6 @@ object Logic {
         clearOpenList()
         listOfLists.getPositionById(openlist.id)?.let { pos->
             listOfLists.removeAt(pos)
-            AMain.instance?.onListDeleted(pos)
         }
     }
 
@@ -194,7 +191,7 @@ object Logic {
         Database.deleteALL()
         listOfLists.clear() // reload?
         clearOpenList()
-        AMain.instance?.onDataUpdated()
+        AMain.publicInterface?.notifyDataSetChanged()
     }
 
     //----------------------------------------------------------------------------------------------

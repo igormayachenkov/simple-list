@@ -1,7 +1,6 @@
 package ru.igormayachenkov.list.data
 
 import ru.igormayachenkov.list.AMain
-import java.util.*
 import kotlin.Comparator
 
 class SortedLists : SortedArray<List>(){
@@ -14,7 +13,7 @@ class SortedLists : SortedArray<List>(){
 
     // LIST ADAPTER
     override val adapter: IListAdapter?
-        get() = null//AMain.instance
+        get() = AMain.publicInterface
 
     fun getElementById(id:Long):List?{
         array.forEach{ element->
