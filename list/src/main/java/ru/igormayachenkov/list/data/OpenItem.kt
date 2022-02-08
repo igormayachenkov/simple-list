@@ -5,5 +5,5 @@ package ru.igormayachenkov.list.data
 
 data class OpenItem (
     val item : Item,
-    val pos  : Int?  // null for new items
+    val pos  : Int?  // Null for new items. We can have it here : pos changing after OpenItem closed
 )

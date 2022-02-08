@@ -9,12 +9,9 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import ru.igormayachenkov.list.App.Companion.getString
-import ru.igormayachenkov.list.data.Database
 import ru.igormayachenkov.list.data.Item
 import ru.igormayachenkov.list.data.List
-import java.io.BufferedReader
-import java.io.FileOutputStream
-import java.io.FileReader
+import java.io.*
 
 object Converter {
     private const val TAG = "myapp.Converter"
@@ -169,7 +166,7 @@ object Converter {
         val fileOutputStream = FileOutputStream(pfd!!.fileDescriptor)
 
         // Write
-        val bytes = list.toXML().toByteArray()
+        val bytes = listToXML(list).toByteArray()
         fileOutputStream.write(bytes)
 
         // Close. Let the document provider know you're done by closing the stream.
@@ -216,7 +213,7 @@ object Converter {
         val listsJSON = JSONArray()
         json.put("lists", listsJSON)
         for (list in lists) {
-            listsJSON.put(list.toJSON())
+            listsJSON.put(listToJSON(list))
         }
         return json
     }
@@ -317,4 +314,101 @@ object Converter {
             AMain.instance?.onDataUpdated()
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+    // SINGLE LIST - EXPORT TO A FILE
+    @Throws(IOException::class)
+    fun listToXML(list:List): String {
+        val sb = StringBuilder()
+        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+        with(list) {
+            sb.append("<list>\n")
+            sb.append("<id>$id</id>\n")
+            sb.append("<name>$name</name>\n")
+            if (description != null && !description!!.isEmpty()) sb.append("<description>$description</description>\n")
+            sb.append("<items>\n")
+            val items = Database.loadListItems(id)
+            for (item in items) {
+                sb.append("<item>\n")
+                sb.append("""<id>${item.id}</id>""".trimIndent())
+                sb.append("""
+        <name>${item.name}</name>
+    
+        """.trimIndent())
+                if (item.description != null && !item.description!!.isEmpty()) sb.append("""
+        <description>${item.description}</description>
+    
+        """.trimIndent())
+                sb.append("""
+        <state>${item.state}</state>
+    
+        """.trimIndent())
+                sb.append("</item>\n")
+            }
+
+            sb.append("</items>\n")
+            sb.append("</list>")
+        }
+        return sb.toString()
+    }
+
+    @Throws(IOException::class)
+    fun listSaveXML(list:List, bw: BufferedWriter) {
+        bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+        bw.newLine()
+        with(list) {
+            bw.write("<list>")
+            bw.newLine()
+            bw.write("<id>$id</id>")
+            bw.newLine()
+            bw.write("<name>$name</name>")
+            bw.newLine()
+            if (description != null && !description!!.isEmpty()) bw.write("<description>$description</description>")
+            bw.newLine()
+            bw.write("<items>")
+            bw.newLine()
+            val items = Database.loadListItems(id)
+            for (item in items) {
+                bw.write("<item>")
+                bw.newLine()
+                bw.write("<id>" + item.id + "</id>")
+                bw.newLine()
+                bw.write("<name>" + item.name + "</name>")
+                bw.newLine()
+                if (item.description != null && !item.description!!.isEmpty()) bw.write("<description>" + item.description + "</description>")
+                bw.newLine()
+                bw.write("<state>" + item.state + "</state>")
+                bw.newLine()
+                bw.write("</item>")
+                bw.newLine()
+            }
+            bw.write("</items>")
+            bw.newLine()
+            bw.write("</list>")
+        }
+    }
+
+    @Throws(JSONException::class)
+    fun listToJSON(list:List): JSONObject {
+        val json = JSONObject()
+        with(list) {
+            json.put("id", id)
+            json.put("name", name)
+            if (description != null && !description!!.isEmpty()) json.put("description", description)
+            // ITEMS
+            val items = Database.loadListItems(id)
+            val jsItems = JSONArray()
+            for (item in items) {
+                val js = JSONObject()
+                js.put("id", item.id)
+                js.put("name", item.name)
+                if (item.description != null && !item.description!!.isEmpty()) js.put("description", item.description)
+                js.put("state", item.state)
+                jsItems.put(js)
+            }
+            json.put("items", jsItems)
+        }
+        return json
+    }
+
 }

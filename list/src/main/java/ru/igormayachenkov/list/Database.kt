@@ -1,10 +1,12 @@
-package ru.igormayachenkov.list.data
+package ru.igormayachenkov.list
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import ru.igormayachenkov.list.data.Item
+import ru.igormayachenkov.list.data.List
 import java.util.*
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +78,7 @@ object Database {
         )
     }
 
-    fun updateItem(item:Item) {
+    fun updateItem(item: Item) {
         Log.d(TAG, "updateItem $item")
 
         // Prepare values
@@ -95,7 +97,7 @@ object Database {
         )
     }
 
-    fun updateItemState(item:Item) {
+    fun updateItemState(item: Item) {
         Log.d(TAG, "updateItemState id:${item.id}  state:${item.state}")
 
         // Prepare values
