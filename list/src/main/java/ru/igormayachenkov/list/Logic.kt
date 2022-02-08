@@ -150,7 +150,7 @@ object Logic {
                 // Update UI
                 if (changes.contains("name")) {
                     // Resorting required
-                    openList.value?.updateSortOrder()
+                    openList.value?.items?.updateSortOrder()
                     FList.publicInterface?.onAllListUpdated()
                 }else {
                     FList.publicInterface?.onItemUpdated(openitem.pos)
@@ -158,7 +158,7 @@ object Logic {
             } else {
                 // NEW ITEM
                 Database.insertItem(item)
-                openList.value?.insertItem(item)
+                openList.value?.items?.insert(item)
                 // Update UI
                 FList.publicInterface?.onItemInserted()
             }
@@ -179,7 +179,7 @@ object Logic {
             if(list==null) throw Exception("list #${item.parent_id} not found")
             // Update storage
             Database.deleteItem(item.id)
-            openList.value?.deleteItem(item, openitem.pos)
+            openList.value?.items?.removeAt(openitem.pos)
             // Clear open item
             clearOpenItem()// updates UI too (hides fItem)
             // Update UI

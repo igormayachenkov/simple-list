@@ -88,7 +88,7 @@ class FList : BaseFragment()  {
                 toolbar.title = list.name
 
                 // Load item list
-                uiList = list.items
+                uiList = list.items.asList
                 reloadData()
 
                 // SHOW FRAGMENT
