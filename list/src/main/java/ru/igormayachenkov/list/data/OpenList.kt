@@ -21,6 +21,7 @@ class OpenList(
     val id   : Long     get() = list.id
     var name : String   get() = list.name
                         set(value) {list.name = value}
+
     fun openItemById(itemId:Long):OpenItem?{
         items.asList.forEachIndexed { pos, item->
             if(item.id==itemId) return OpenItem(item,pos)

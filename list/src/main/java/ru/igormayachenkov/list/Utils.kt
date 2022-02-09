@@ -11,6 +11,7 @@ import ru.igormayachenkov.list.App.Companion.context
 
 object Utils {
     fun areEqual(a: String?, b: String?): Boolean {
+        if(a.isNullOrEmpty() and b.isNullOrEmpty()) return true
         if (a != null && b != null)
             return a.compareTo(b) == 0
         if (a == null && b == null)

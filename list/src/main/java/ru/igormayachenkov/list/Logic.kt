@@ -1,9 +1,10 @@
 package ru.igormayachenkov.list
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import android.util.Log
+import ru.igormayachenkov.list.Prefs.Companion.OPEN_ITEM_ID
+import ru.igormayachenkov.list.Prefs.Companion.OPEN_LIST_ID
 import ru.igormayachenkov.list.data.*
 import ru.igormayachenkov.list.data.List
 import kotlin.Exception
@@ -13,21 +14,7 @@ object Logic {
 
     const val ACTIVITY = "ACTIVITY"
 
-
-    // PREFERENCES
-    lateinit var pref : SharedPreferences
-    const val OPEN_LIST_ID = "open_list_id"
-    const val OPEN_ITEM_ID = "open_item_id"
-    fun saveLong(value:Long?, key:String){
-        with (pref.edit()) {
-            value?.let {
-                putLong(key, it)
-            }?: kotlin.run {
-                remove(key)
-            }
-            apply()
-        }
-    }
+    val pref : Prefs = Prefs("data")
 
     //----------------------------------------------------------------------------------------------
     // LIST OF LIST
@@ -38,11 +25,10 @@ object Logic {
     var openList    = MutableLiveData<OpenList?>()
 
     fun setOpenList(list:List){
+        // !!! DO NOT Clear open item
         Log.d(TAG, "setOpenList #${list.id}")
         // Save id
-        saveLong(list.id, OPEN_LIST_ID)
-        // Clear open item
-        clearOpenItem()
+        pref.saveLong(OPEN_LIST_ID, list.id)
         // Update live data
         openList.value = OpenList(list, Database.loadListItems(list.id))
     }
@@ -50,13 +36,10 @@ object Logic {
     fun clearOpenList(){
         Log.d(TAG, "clearOpenList")
         // Save id
-        saveLong(null, OPEN_LIST_ID)
-        // Clear open item
-        clearOpenItem()
+        pref.remove(OPEN_LIST_ID)
         // Update live data
         openList.value = null
     }
-
 
     fun createList(name:String?){
         if (name.isNullOrEmpty()) throw Exception(App.instance()!!.getString(R.string.dialog_error))
@@ -105,16 +88,16 @@ object Logic {
     var openItem = MutableLiveData<OpenItem?>()
 
     fun setOpenItem(openitem:OpenItem) {
-        Log.d(TAG, "setOpenItem #${openitem.pos} pos${openitem.item.id}")
+        Log.d(TAG, "setOpenItem #${openitem.item.id} pos${openitem.pos}")
         // Save id
-        saveLong(openitem.item.id, OPEN_ITEM_ID)
+        pref.saveLong(OPEN_ITEM_ID, openitem.item.id)
         // Update live data
         openItem.value = openitem
     }
     fun clearOpenItem() {
         Log.d(TAG, "clearOpenItem")
         // Clear id
-        saveLong(null, OPEN_ITEM_ID)
+        pref.remove(OPEN_ITEM_ID)
         // Update live data
         openItem.value = null
     }
@@ -133,7 +116,7 @@ object Logic {
         openList.value?.items?.update(item, pos)
     }
 
-    fun updateOpenItem(name:String?, descr:String?, isChecked:Boolean){
+    fun updateOpenItem(input:FItem.DataInput){
         val openitem = openItem.value
         val openlist = openList.value
         if(openitem==null) throw Exception("updateOpenItem: open item is null")
@@ -143,15 +126,16 @@ object Logic {
 
         // Check changes
         val changes = HashSet<String>()
-        if( Utils.areNotEqual(name, item.name))         changes.add("name")
-        if( Utils.areNotEqual(descr, item.description)) changes.add("descr")
-        if(isChecked!=item.isChecked)                   changes.add("status")
+        if( Utils.areNotEqual(input.name,        item.name))        changes.add("name")
+        if( Utils.areNotEqual(input.description, item.description)) changes.add("descr")
+        if(input.isChecked!=item.isChecked)                         changes.add("status")
 
         if(changes.isNotEmpty()) {
             // Update item fields
-            item.name = name
-            item.description = descr
-            item.isChecked = isChecked
+            item.name        = input.name
+            item.description = input.description
+            item.isChecked   = input.isChecked
+            if(item.description.isNullOrEmpty()) item.description = null
 
             if (pos!=null) {
                 // EXISTED ITEM
@@ -197,15 +181,13 @@ object Logic {
     init{
         Log.d(TAG, "init")
 
-        pref = App.context.getSharedPreferences("data",Context.MODE_PRIVATE)
-
         Database.open(App.context)
         //Data.load(App.context)
         listOfLists.load(Database.loadListOfLists())
 
         // Restore open list/item
-        val openListId = if(pref.contains(OPEN_LIST_ID)) pref.getLong(OPEN_LIST_ID, 0) else null
-        val openItemId = if(pref.contains(OPEN_ITEM_ID)) pref.getLong(OPEN_ITEM_ID, 0) else null
+        val openListId = pref.loadLong(OPEN_LIST_ID)
+        val openItemId = pref.loadLong(OPEN_ITEM_ID)
         Log.d(TAG,"Restore openListId:$openListId   openItemId:$openItemId")
 
         // Set open list
