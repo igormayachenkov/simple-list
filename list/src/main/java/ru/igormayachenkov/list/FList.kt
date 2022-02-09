@@ -259,7 +259,7 @@ class FList : BaseFragment()  {
     // LIST ADAPTER
     val adapter = MyListAdapter()
 
-    inner class MyListAdapter():RecyclerView.Adapter<MyViewHolder>() {
+    inner class MyListAdapter :RecyclerView.Adapter<MyViewHolder>() {
         override fun getItemCount(): Int {
             return uiList.size
         }

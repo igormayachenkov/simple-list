@@ -31,7 +31,7 @@ class DlgName(
     init {
 
         // Create builder
-        val builder = AlertDialog.Builder((context)!!)
+        val builder = AlertDialog.Builder((context))
         if (idTitle != 0) builder.setTitle(idTitle)
 
         // Set up the input

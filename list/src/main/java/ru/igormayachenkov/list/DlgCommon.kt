@@ -29,7 +29,7 @@ class DlgCommon(
     init {
 
         // Create builder
-        val builder = AlertDialog.Builder(context!!)
+        val builder = AlertDialog.Builder(context)
         if (idTitle != 0) builder.setTitle(idTitle)
         if (idMessage != 0) builder.setMessage(idMessage)
 

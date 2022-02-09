@@ -179,10 +179,9 @@ object Logic {
             // Update storage
             Database.deleteItem(openitem.item.id)
             openlist.items.removeAt(openitem.pos)
-        }else{
-            // NEW
-            // Do nothing. Just clear open item
-        }
+        }//else{
+            // NEW : Do nothing. Just clear open item
+        //}
         // Clear open item
         clearOpenItem()// updates UI too (hides fItem)
     }

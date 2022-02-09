@@ -93,7 +93,7 @@ class FItem : BaseFragment()  {
         try {
             Logic.deleteOpenItem()
         }catch (e:Exception){
-            Toast.makeText(this.activity, e.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this.activity, e.toString(), Toast.LENGTH_LONG).show()
         }
     }
 
