@@ -60,7 +60,8 @@
             android:layout_marginRight="20dp"
             android:background="#aaa"
             android:elevation="5dp"
-            android:padding="5dp" />
+            android:padding="5dp"
+            android:contentDescription="Logo" />
 
         <TextView
             android:layout_width="wrap_content"
