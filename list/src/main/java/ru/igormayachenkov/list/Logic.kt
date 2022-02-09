@@ -113,7 +113,7 @@ object Logic {
     fun createItem(){
         Log.d(TAG, "createItem")
         openList.value?.id?.let { list_id->
-            val item = Item.create(list_id,null,null)
+            val item = Item.create(list_id)
             setOpenItem(OpenItem(item,null))
         }?:run{ throw Exception("createItem when openList is NULL") }
     }
@@ -206,17 +206,22 @@ object Logic {
         }
         // Set open item
         openItemId?.let { id->
-            openList.value?.findItemAndPositionById(id)?.let {
-                // Init
-                val openitem = OpenItem(it.first, it.second)
-                // Get saved changes - ONLY HERE ON APP START!!!
+            openList.value?.let { openlist ->
+                val pos = openlist.findPositionById(id)
+                val openitem =
+                        if (pos != null)
+                            OpenItem(openlist.items.asList.get(pos), pos) // Existed
+                        else
+                            OpenItem(Item.create(openlist.id), null) // New
+
+                // Load saved changes - ONLY HERE ON APP START!!!
                 openitem.changes = ItemChanges.load()
                 Log.d(TAG, "*** restored open item changes ${openitem.changes}")
+
                 // Set and open window
                 setOpenItem(openitem)
             }
         }
-
     }
 
     //----------------------------------------------------------------------------------------------

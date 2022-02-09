@@ -23,7 +23,7 @@ data class Item(
 
     companion object {
         const val ITEM_STATE_CHECKED = 1
-        fun create(parent_id:Long, name:String?, descr:String?):Item{
+        fun create(parent_id:Long, name:String?=null, descr:String?=null):Item{
             return Item(
                     System.currentTimeMillis(),
                     parent_id,

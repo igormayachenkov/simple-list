@@ -106,8 +106,7 @@ object Converter {
                 // Show result
                 Toast.makeText(App.context, R.string.load_success, Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
-                e.printStackTrace()
-                DlgError(App.context, e.message).show()
+                Utils.showErrorDialog(e)
             }
         })
         dlg.setMessage(message)

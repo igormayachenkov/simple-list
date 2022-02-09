@@ -7,7 +7,7 @@ import android.content.Context
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // AlertDialog-BASED DIALOG
 // FOR ERROR MESSAGE SHOW
-class DlgError(context: Context, message: String?) {
+class DlgError(message: String?) {
     // DATA
     var alert: AlertDialog
 
@@ -18,7 +18,7 @@ class DlgError(context: Context, message: String?) {
 
     init {
         // Create builder
-        val builder = AlertDialog.Builder(context)
+        val builder = AlertDialog.Builder(App.context)
         builder.setIcon(R.drawable.ic_dialog_alert)
         builder.setTitle(R.string.dialog_alert_title)
         builder.setMessage(message)

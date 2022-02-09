@@ -30,7 +30,7 @@ object Utils {
     }
     fun showErrorDialog(e:Exception){
         e.printStackTrace()
-        DlgError(App.instance()!!, e.message).show()
+        DlgError( e.message).show()
     }
 
     //----------------------------------------------------------------------------------------------
