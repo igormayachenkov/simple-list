@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.item_list.view.*
 import ru.igormayachenkov.list.data.IListAdapter
 import ru.igormayachenkov.list.data.Item
 import ru.igormayachenkov.list.data.OpenItem
+import ru.igormayachenkov.list.dialogs.DlgName
 
 class FList : BaseFragment()  {
 
@@ -186,8 +187,7 @@ class FList : BaseFragment()  {
     }
 
     private fun onMenuRename() {
-        val dlg = DlgName(
-            requireContext(),
+        DlgName.show(
             R.string.dialog_title_rename,
             R.string.main_add_hint,
             toolbar.title.toString(),
@@ -197,7 +197,6 @@ class FList : BaseFragment()  {
                 }catch (e:Exception){ Utils.showError(TAG, e) }
             }
         )
-        dlg.show()
     }
 
     private fun onMenuDelete() {

@@ -11,6 +11,8 @@ import org.json.JSONObject
 import ru.igormayachenkov.list.App.Companion.getString
 import ru.igormayachenkov.list.data.Item
 import ru.igormayachenkov.list.data.List
+import ru.igormayachenkov.list.dialogs.DlgCommon
+import ru.igormayachenkov.list.dialogs.DlgError
 import java.io.*
 
 object Converter {
@@ -86,31 +88,32 @@ object Converter {
     //----------------------------------------------------------------------------------------------
     // HANDLERS after external activity call
     private fun doLoad(uri: Uri?) {
+        Log.d(TAG,"doLoad uri: $uri")
         try {
             // Read file
             val json = readJSON(uri)
             // Load
             doLoad(json)
-        } catch (e: Exception) { Utils.showErrorDialog(e) }
+        } catch (e: Exception) { DlgError.show(e) }
     }
 
     private fun doLoad(json: JSONObject?) {
+        Log.d(TAG,"doLoad json")
+
         // Estimate loading
         val estimation = estimateLoadingFromJSON(json!!)
         val message =   "${getString(R.string.load_to_insert)} ${estimation.toInsert}\n"+
                         "${getString(R.string.load_to_update)} ${estimation.toUpdate}"
         // Ask user for request
-        val dlg = DlgCommon(App.context, R.string.load_title, 0, {
+        val dlg = DlgCommon.show(R.string.load_title, message, {
             try {
                 loadFromJSON(json)
                 // Show result
                 Toast.makeText(App.context, R.string.load_success, Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
-                Utils.showErrorDialog(e)
+                DlgError.show(e)
             }
         })
-        dlg.setMessage(message)
-        dlg.show()
     }
 
     private fun doSaveAll(uri: Uri?) {
@@ -118,7 +121,7 @@ object Converter {
             val bytes = saveLists(uri, Logic.listOfLists.asList)
             // Show result
             Toast.makeText(App.context, bytes.toString() + " " + getString(R.string.bytes_saved), Toast.LENGTH_LONG).show()
-        } catch (e: Exception) { Utils.showErrorDialog(e) }
+        } catch (e: Exception) { DlgError.show(e) }
     }
 
     private fun doSaveOpenList(uri: Uri?) {
@@ -129,7 +132,7 @@ object Converter {
                 val bytes = saveLists( uri, lists)
                 // Show result
                 Toast.makeText(App.context, bytes.toString() + " " + getString(R.string.bytes_saved), Toast.LENGTH_LONG).show()
-            }catch (e:Exception){ Utils.showErrorDialog(e)}
+            }catch (e:Exception){ DlgError.show(e)}
         }
     }
 
@@ -138,7 +141,7 @@ object Converter {
             val bytes = saveListToXML(Logic.openList.value!!.list, uri)
             // Show result
             Toast.makeText(App.context, bytes.toString() + " " + getString(R.string.bytes_saved), Toast.LENGTH_LONG).show()
-        }catch (e:Exception){ Utils.showErrorDialog(e)}
+        }catch (e:Exception){ DlgError.show(e)}
     }
 
     //----------------------------------------------------------------------------------------------

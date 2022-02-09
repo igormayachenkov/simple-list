@@ -16,11 +16,13 @@ import kotlinx.android.synthetic.main.a_main.lblEmptyList
 import kotlinx.android.synthetic.main.a_main.recyclerView
 import kotlinx.android.synthetic.main.item_main.view.*
 import ru.igormayachenkov.list.data.IListAdapter
+import ru.igormayachenkov.list.dialogs.DlgName
 
 class AMain : AppCompatActivity() {
     companion object {
         private const val TAG = "myapp.AMain"
         var publicInterface : PublicInterface? = null
+        var instance : AppCompatActivity? = null
     }
 
     // Data objects
@@ -38,6 +40,7 @@ class AMain : AppCompatActivity() {
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         toolbar.setOnMenuItemClickListener { onMenuClick(it); true }
 
+        instance = this
         publicInterface = PublicInterface()
 
         // List
@@ -58,6 +61,7 @@ class AMain : AppCompatActivity() {
         Log.d(TAG, "onDestroy")
         super.onDestroy()
         publicInterface = null
+        instance = null
     }
 
     override fun onStart() {
@@ -138,9 +142,8 @@ class AMain : AppCompatActivity() {
     }
 
     fun onMenuAdd() {
-        // ALERT DIALOG
-        val dlg = DlgName(
-                this,
+        // Name DIALOG
+        DlgName.show(
                 R.string.main_add_menu,
                 R.string.main_add_hint,
                 null,  // name value
@@ -150,7 +153,7 @@ class AMain : AppCompatActivity() {
                     }catch (e:Exception){ Utils.showError(TAG, e) }
                 }
         )
-        dlg.show()
+
     }
 
     fun onMenuHelp() {
