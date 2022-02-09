@@ -22,9 +22,9 @@ class OpenList(
     var name : String   get() = list.name
                         set(value) {list.name = value}
 
-    fun openItemById(itemId:Long):OpenItem?{
+    fun findItemAndPositionById(itemId:Long):Pair<Item,Int>?{
         items.asList.forEachIndexed { pos, item->
-            if(item.id==itemId) return OpenItem(item,pos)
+            if(item.id==itemId) return Pair(item,pos)
         }
         return null
     }

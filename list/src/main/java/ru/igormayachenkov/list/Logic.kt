@@ -94,10 +94,18 @@ object Logic {
         // Update live data
         openItem.value = openitem
     }
+    fun saveOpenItemChanges(changes:ItemChanges){
+        openItem.value?.let {
+            it.changes = changes
+            ItemChanges.save(changes)
+            Log.d(ItemChanges.TAG, "*** save $changes")
+        }
+    }
     fun clearOpenItem() {
         Log.d(TAG, "clearOpenItem")
         // Clear id
         pref.remove(OPEN_ITEM_ID)
+        ItemChanges.clear()
         // Update live data
         openItem.value = null
     }
@@ -116,7 +124,7 @@ object Logic {
         openList.value?.items?.update(item, pos)
     }
 
-    fun updateOpenItem(input:FItem.DataInput){
+    fun updateOpenItem(input:ItemChanges){
         val openitem = openItem.value
         val openlist = openList.value
         if(openitem==null) throw Exception("updateOpenItem: open item is null")
@@ -198,8 +206,14 @@ object Logic {
         }
         // Set open item
         openItemId?.let { id->
-            openList.value?.openItemById(id)?.let {
-                setOpenItem(it)
+            openList.value?.findItemAndPositionById(id)?.let {
+                // Init
+                val openitem = OpenItem(it.first, it.second)
+                // Get saved changes - ONLY HERE ON APP START!!!
+                openitem.changes = ItemChanges.load()
+                Log.d(TAG, "*** restored open item changes ${openitem.changes}")
+                // Set and open window
+                setOpenItem(openitem)
             }
         }
 

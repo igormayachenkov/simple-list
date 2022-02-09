@@ -8,10 +8,8 @@ import android.view.View.GONE
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
-import ru.igormayachenkov.list.data.Item
 import kotlinx.android.synthetic.main.f_item.*
-import org.json.JSONObject
-import ru.igormayachenkov.list.Prefs.Companion.OPEN_ITEM_CHANGES
+import ru.igormayachenkov.list.data.ItemChanges
 import ru.igormayachenkov.list.data.OpenItem
 
 class FItem : BaseFragment()  {
@@ -47,7 +45,7 @@ class FItem : BaseFragment()  {
         btnDel.setOnClickListener  { onButtonDelete() }
         // Observe open item
         Logic.openItem.observe(viewLifecycleOwner, Observer<OpenItem?> { openitem->
-            if(openitem!=null) show(openitem.item) else hide()
+            if(openitem!=null) show(openitem) else hide()
         })
     }
 
@@ -56,34 +54,24 @@ class FItem : BaseFragment()  {
         Log.d(TAG, "onSaveInstanceState")
 
         // Save current input
-        val json = loadInput().toJSON()
-        Log.d(TAG, "*** save $json")
-        Logic.pref.saveJSON(OPEN_ITEM_CHANGES, json)
-
+        Logic.saveOpenItemChanges(loadInput())
     }
 
-
     //----------------------------------------------------------------------------------------------
-    // SHOW/HIDE
-    fun show(item: Item){
-        Log.d(TAG, "show #${item.id}")
+    // DATA + SHOW/HIDE
+    fun show(openitem: OpenItem){
+        Log.d(TAG, "show #${openitem}")
 
         //-------------------------------------
         // LOAD DATA
-        // Get saved input
-        val saved = DataInput.fromJSON(
-                Logic.pref.loadJSON(OPEN_ITEM_CHANGES))
-        Log.d(TAG, "*** saved $saved")
-
-        // Load controls
-        if(saved!=null) {
-            with(saved) {
+        openitem.changes?.let {
+            with(it) {
                 txtName.setText     (name )
                 txtDescr.setText    (description)
                 chkState.isChecked = isChecked
             }
-        }else {
-            with(item) {
+        }?: kotlin.run {
+            with(openitem.item) {
                 txtName.setText     (name )
                 txtDescr.setText    (description)
                 chkState.isChecked = isChecked
@@ -97,60 +85,19 @@ class FItem : BaseFragment()  {
 
     fun hide(){
         Log.d(TAG, "hide")
-        //-------------------------------------
-        // UNLOAD DATA
-        // Clear saved input
-        Logic.pref.remove(OPEN_ITEM_CHANGES)
-        //-------------------------------------
-
         // Hide fragment
         hideFragment()
         chkState.isChecked = false // to prevent blinking
     }
 
-    //----------------------------------------------------------------------------------------------
     // DATA INPUT
-    data class DataInput(
-        val name        : String,
-        val description : String,
-        val isChecked   : Boolean
-    ){
-        fun toJSON():JSONObject{
-            val json = JSONObject()
-            json.put("name",        name)
-            json.put("description", description)
-            json.put("isChecked",   isChecked)
-            return json
-        }
-        // From JSON
-        private constructor(json:JSONObject):this(
-                json.getString("name"),
-                json.getString("description"),
-                json.getBoolean("isChecked"),
-        )
-        companion object{
-            fun fromJSON(json:JSONObject?):DataInput?{
-                json?.let {
-                    try {
-                        return DataInput(it)
-                    } catch (e: Exception) {
-                        Log.e(TAG, e.message.toString())
-                    }
-                }
-                return null
-            }
-        }
-    }
-
-    fun loadInput():DataInput{
-        return DataInput(
+    fun loadInput():ItemChanges{
+        return ItemChanges(
                 txtName.text.toString().trim(),
                 txtDescr.text.toString().trim(),
                 chkState.isChecked
         )
     }
-
-
 
     //----------------------------------------------------------------------------------------------
     // HANDLERS

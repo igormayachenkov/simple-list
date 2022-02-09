@@ -12,11 +12,11 @@ class Prefs(filename:String) {
             App.context.getSharedPreferences(filename, Context.MODE_PRIVATE)
 
     companion object{
-        const val TAG = "myapp.Logic"
+        const val TAG = "myapp.Prefs"
         // COMMON KEY LIST
         const val OPEN_LIST_ID      = "open_list_id"
         const val OPEN_ITEM_ID      = "open_item_id"
-        const val OPEN_ITEM_CHANGES = "open_item_changes"
+        //const val OPEN_ITEM_CHANGES = "open_item_changes"
     }
 
     fun remove(key:String){
