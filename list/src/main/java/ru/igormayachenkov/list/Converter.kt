@@ -10,6 +10,8 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import ru.igormayachenkov.list.App.Companion.getString
+import ru.igormayachenkov.list.UtilsJSON.getJSONArrayOrNull
+import ru.igormayachenkov.list.UtilsJSON.getStringOrNull
 import ru.igormayachenkov.list.data.Item
 import ru.igormayachenkov.list.data.List
 import ru.igormayachenkov.list.dialogs.DlgCommon
@@ -277,49 +279,49 @@ object Converter {
         // Version
 
         // LISTS
-        val listsJSON = json.optJSONArray("lists")
-        if (listsJSON != null) {
+        getJSONArrayOrNull(json,"lists")?.let {  listsJSON->
+
             // Fill existed lists hash
             val existed = HashSet<Long>()
             Logic.listOfLists.asList.forEach { list->
                 existed.add(list.id)
             }
 
+            // Work with Database only!
+            // Logic.listOfLists will be reloaded from Database!!!
+
             // LOOP BY INPUT
             for (i in 0 until listsJSON.length()) {
                 val listJSON = listsJSON.optJSONObject(i) ?: continue
 
                 // Verify list
-                val id = listJSON.optLong("id", 0)
-                val name = listJSON.optString("name", null)
-                if (id == 0L || name == null || name.isEmpty()) continue
+                val id    = UtilsJSON.getLongOrNull  (listJSON, "id") ?: continue
+                val name  = UtilsJSON.getStringOrNull(listJSON, "name") ?: continue
 
                 // Search for existed
-                //var list = Logic.listOfLists.get(id)
-                if(existed.contains(id)) continue
-
-//                if (list != null) {
-//                    // Remove old list (& items)
-//                    Logic.listOfLists.remove(id)
-//                }
+                if(existed.contains(id)){
+                    // Remove old list (& items)
+                    Database.deleteList(id)
+                }
 
                 // Append list
                 val list = List(id, name, null)
                 Database.insertList(list)
-                //Logic.listOfLists.put(list.id, list)
+
                 // Insert list items
-                val itemsJSON = listJSON.optJSONArray("items")
-                if (itemsJSON != null) {
+                getJSONArrayOrNull(listJSON, "items")?.let{ itemsJSON->
                     for (j in 0 until itemsJSON.length()) {
+                        // Read the item
                         val itemJSON = itemsJSON.optJSONObject(j) ?: continue
-                        val itemName = itemJSON.optString("name", null) ?: continue
-                        // Update the database only because of the list is not loaded
+                        // Read name
+                        val itemName = getStringOrNull( itemJSON,"name") ?: continue
+                        // Update the database
                         Database.insertItem(
-                                Item.create(
-                                        list.id,
-                                        itemName,
-                                        itemJSON.optString("description", null)
-                                )
+                            Item.create( // TODO Copy item id
+                                list.id,
+                                itemName,
+                                getStringOrNull(itemJSON,"description")
+                            )
                         )
                     }
                 }
