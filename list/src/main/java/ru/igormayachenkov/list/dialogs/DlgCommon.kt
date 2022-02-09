@@ -1,7 +1,6 @@
 package ru.igormayachenkov.list.dialogs
 
 import android.R
-import android.content.Context
 import androidx.appcompat.app.AlertDialog
 import ru.igormayachenkov.list.AMain
 
@@ -16,7 +15,7 @@ object DlgCommon{
             message: String?,
             callback: (()->Unit)?
     ){
-        AMain.instance?.let { context->
+        AMain.context?.let { context->
             // Create builder
             val builder = AlertDialog.Builder(context)
             if (idTitle != 0) builder.setTitle(idTitle)

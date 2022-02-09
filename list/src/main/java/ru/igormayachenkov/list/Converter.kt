@@ -148,7 +148,7 @@ object Converter {
     // FILE EXPORT/IMPORT UTILS
     private fun saveLists(uri: Uri?, lists: Collection<List>):Int{
         // Open
-        val pfd = App.instance()!!.contentResolver.openFileDescriptor(uri!!, "w")
+        val pfd = App.context.contentResolver.openFileDescriptor(uri!!, "w")
         val fileOutputStream = FileOutputStream(pfd!!.fileDescriptor)
 
         // Write
@@ -164,7 +164,7 @@ object Converter {
 
     private fun saveListToXML(list:List, uri: Uri?):Int{
         // Open
-        val pfd = App.instance()!!.contentResolver.openFileDescriptor(uri!!, "w")
+        val pfd = App.context.contentResolver.openFileDescriptor(uri!!, "w")
         val fileOutputStream = FileOutputStream(pfd!!.fileDescriptor)
 
         // Write
@@ -205,10 +205,9 @@ object Converter {
     private fun dataToJSON(lists: Collection<List>): JSONObject {
         val json = JSONObject()
         // Version
-        val pInfo = App.instance()?.packageInfo
-        if (pInfo != null) {
-            json.put("versionCode", pInfo.versionCode)
-            json.put("versionName", pInfo.versionName)
+        App.packageInfo?.let{
+            json.put("versionCode", it.versionCode)
+            json.put("versionName", it.versionName)
         }
 
         // LISTS

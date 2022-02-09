@@ -26,7 +26,7 @@ object Utils {
     fun showError(TAG:String, e:Exception){
         Log.e(TAG, e.stackTraceToString())
         Log.e(TAG, e.message.toString())
-        Toast.makeText(App.instance(), e.message, Toast.LENGTH_LONG).show()
+        Toast.makeText(App.context, e.message, Toast.LENGTH_LONG).show()
     }
 
     //----------------------------------------------------------------------------------------------

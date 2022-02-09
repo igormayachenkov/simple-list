@@ -15,7 +15,7 @@ object DlgError {
     fun show(ex: Exception) {
         Log.e(TAG, ex.toString())
 
-        AMain.instance?.let { context ->
+        AMain.context?.let { context ->
             // Create builder
             val builder = AlertDialog.Builder(context)
             builder.setIcon(R.drawable.ic_dialog_alert)

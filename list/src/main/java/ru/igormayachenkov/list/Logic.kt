@@ -42,7 +42,7 @@ object Logic {
     }
 
     fun createList(name:String?){
-        if (name.isNullOrEmpty()) throw Exception(App.instance()!!.getString(R.string.dialog_error))
+        if (name.isNullOrEmpty()) throw Exception(App.context.getString(R.string.dialog_error))
 
         // Create a new list object
         val list = List(
@@ -61,7 +61,7 @@ object Logic {
     fun renameOpenList(name:String?){
         val list = openList.value
         if(list==null) throw Exception("open list is null")
-        if (name.isNullOrEmpty()) throw Exception(App.instance()!!.getString(R.string.dialog_error))
+        if (name.isNullOrEmpty()) throw Exception(App.getString(R.string.dialog_error))
 
         // Rename List
         Database.updateListName(list.id, name)

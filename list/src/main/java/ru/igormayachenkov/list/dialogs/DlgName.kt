@@ -13,14 +13,14 @@ import ru.igormayachenkov.list.AMain
 // AlertDialog-BASED DIALOG
 // FOR NAME INPUT
 object DlgName {
-    
+
     // SHOW
     fun show(idTitle: Int,
              idNameHint: Int,
              name: String?,
              callback:((String)->Unit)?
     ) {
-        AMain.instance?.let { context->
+        AMain.context?.let { context->
             // Create builder
             val builder = AlertDialog.Builder((context))
             if (idTitle != 0) builder.setTitle(idTitle)

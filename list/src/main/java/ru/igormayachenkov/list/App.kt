@@ -16,17 +16,25 @@ class App : Application() {
     companion object {
 
         // CONTEXT
+        // use an Activity's Context within that Activity,
+        // and the Application Context when passing a context beyond the scope of an Activity
+        // to avoid memory leaks.
         private lateinit var m_context: Context
         val context: Context
             get() = m_context
 
         fun getString(rscId:Int):String {return context.getString(rscId)}
 
-        private var instance: App? = null
-        @JvmStatic
-        fun instance(): App? {
-            return instance
-        }
+        // PACKAGE INFO
+        val packageInfo: PackageInfo?
+            get() {
+                try {
+                    return context.packageManager?.getPackageInfo(context.packageName, 0)
+                } catch (e: PackageManager.NameNotFoundException) {
+                    e.printStackTrace()
+                }
+                return null
+            }
 
 
     }
@@ -36,20 +44,10 @@ class App : Application() {
         Log.d(TAG, "onCreate")
 
         super.onCreate()
-        instance = this
 
         // Init Logic
         Logic
     }
 
-    val packageInfo: PackageInfo?
-        get() {
-            val pInfo: PackageInfo? = null
-            try {
-                return packageManager.getPackageInfo(packageName, 0)
-            } catch (e: PackageManager.NameNotFoundException) {
-                e.printStackTrace()
-            }
-            return null
-        }
+
 }

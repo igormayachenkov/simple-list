@@ -1,6 +1,7 @@
 package ru.igormayachenkov.list
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -22,7 +23,7 @@ class AMain : AppCompatActivity() {
     companion object {
         private const val TAG = "myapp.AMain"
         var publicInterface : PublicInterface? = null
-        var instance : AppCompatActivity? = null
+        var context : Context? = null
     }
 
     // Data objects
@@ -40,7 +41,7 @@ class AMain : AppCompatActivity() {
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         toolbar.setOnMenuItemClickListener { onMenuClick(it); true }
 
-        instance = this
+        context = this
         publicInterface = PublicInterface()
 
         // List
@@ -61,7 +62,7 @@ class AMain : AppCompatActivity() {
         Log.d(TAG, "onDestroy")
         super.onDestroy()
         publicInterface = null
-        instance = null
+        context = null
     }
 
     override fun onStart() {
