@@ -1,6 +1,5 @@
 package ru.igormayachenkov.list.data
 
-import android.util.Log
 import ru.igormayachenkov.list.FList
 
 

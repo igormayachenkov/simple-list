@@ -17,6 +17,7 @@ import kotlinx.android.synthetic.main.a_main.lblEmptyList
 import kotlinx.android.synthetic.main.a_main.recyclerView
 import kotlinx.android.synthetic.main.item_main.view.*
 import ru.igormayachenkov.list.data.IListAdapter
+import ru.igormayachenkov.list.dialogs.DlgError
 import ru.igormayachenkov.list.dialogs.DlgName
 
 class AMain : AppCompatActivity() {
@@ -145,15 +146,18 @@ class AMain : AppCompatActivity() {
     fun onMenuAdd() {
         // Name DIALOG
         DlgName.show(
-                R.string.main_add_menu,
-                R.string.main_add_hint,
-                null,  // name value
-                { text ->
-                    try {
-                        Logic.createList(text)
-                    }catch (e:Exception){ Utils.showError(TAG, e) }
-                }
+            R.string.main_add_menu,
+            R.string.main_add_hint,
+            null  // name value
         )
+        // the last parameter because of kotlin style: https://stackoverflow.com/questions/53375316/lambda-argument-should-be-moved-out-of-parentheses
+        { text ->
+            try {
+                Logic.createList(text)
+            } catch (e: Exception) {
+                DlgError.showErrorToast(TAG, e)
+            }
+        }
 
     }
 
@@ -173,7 +177,7 @@ class AMain : AppCompatActivity() {
         builder.setPositiveButton(android.R.string.ok) { _,_ ->
             try {
                 Logic.deleteALL()
-            }catch (e:Exception){ Utils.showError(TAG, e) }
+            }catch (e:Exception){ DlgError.showErrorToast(TAG, e) }
         }
         builder.show()
     }

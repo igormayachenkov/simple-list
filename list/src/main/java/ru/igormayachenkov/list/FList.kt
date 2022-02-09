@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.item_list.view.*
 import ru.igormayachenkov.list.data.IListAdapter
 import ru.igormayachenkov.list.data.Item
 import ru.igormayachenkov.list.data.OpenItem
+import ru.igormayachenkov.list.dialogs.DlgError
 import ru.igormayachenkov.list.dialogs.DlgName
 
 class FList : BaseFragment()  {
@@ -27,7 +28,7 @@ class FList : BaseFragment()  {
     //----------------------------------------------------------------------------------------------
     // STATIC
     companion object {
-        val TAG: String = "myapp.FList"
+        const val TAG: String = "myapp.FList"
         val colorChecked  : Int = ContextCompat.getColor(App.context, R.color.colorChecked)
         val colorUnchecked: Int = ContextCompat.getColor(App.context, R.color.colorUnchecked)
 
@@ -190,13 +191,14 @@ class FList : BaseFragment()  {
         DlgName.show(
             R.string.dialog_title_rename,
             R.string.main_add_hint,
-            toolbar.title.toString(),
-            { text ->
-                try {
-                    Logic.renameOpenList(text)
-                }catch (e:Exception){ Utils.showError(TAG, e) }
+            toolbar.title.toString()
+        ) { text ->
+            try {
+                Logic.renameOpenList(text)
+            } catch (e: Exception) {
+                DlgError.showErrorToast(TAG, e)
             }
-        )
+        }
     }
 
     private fun onMenuDelete() {
@@ -209,7 +211,7 @@ class FList : BaseFragment()  {
             .setPositiveButton(android.R.string.yes) { _, _ ->
                 try{
                     Logic.deleteOpenList()
-                }catch (e:Exception){Utils.showError(TAG,e)}
+                }catch (e:Exception){DlgError.showErrorToast(TAG,e)}
             }
             .show()
     }
@@ -233,9 +235,9 @@ class FList : BaseFragment()  {
 
             // Description
             if (item.description.isNullOrEmpty()) {
-                txtDescr.visibility = View.GONE
+                txtDescr.visibility = GONE
             } else {
-                txtDescr.visibility = View.VISIBLE
+                txtDescr.visibility = VISIBLE
                 txtDescr.text = item.description
             }
 

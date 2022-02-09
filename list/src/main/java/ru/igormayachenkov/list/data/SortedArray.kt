@@ -1,7 +1,5 @@
 package ru.igormayachenkov.list.data
 
-import android.util.Log
-
 //----------------------------------------------------------------
 // LIST DATA (SortedArray) + APPROPRIATE LIST VIEW (IListAdapter)
 

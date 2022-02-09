@@ -2,7 +2,6 @@ package ru.igormayachenkov.list
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.fragment.app.Fragment

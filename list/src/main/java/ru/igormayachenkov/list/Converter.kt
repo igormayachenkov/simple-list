@@ -3,6 +3,7 @@ package ru.igormayachenkov.list
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import android.os.Build
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import org.json.JSONArray
@@ -26,49 +27,67 @@ object Converter {
     //----------------------------------------------------------------------------------------------
     // INTERFACE
     fun loadAll() {
-        // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file browser.
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file browser.
+            val intent =
+                    Intent(Intent.ACTION_OPEN_DOCUMENT)
 
-        // Filter to only show results that can be "opened", such as a
-        // file (as opposed to a list of contacts or timezones)
-        intent.addCategory(Intent.CATEGORY_OPENABLE)
-        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+            // Filter to only show results that can be "opened", such as a
+            // file (as opposed to a list of contacts or timezones)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
 
-        // Filter to show only images, using the image MIME data type.
-        // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
-        // To search for all documents available via installed storage providers, it would be "*/*".
-        intent.type = "*/*"
+            // Filter to show only images, using the image MIME data type.
+            // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
+            // To search for all documents available via installed storage providers, it would be "*/*".
+            intent.type = "*/*"
 
-        AMain.publicInterface?.startExternalActivity(intent, LOAD_ALL_REQUEST)
+            AMain.publicInterface?.startExternalActivity(intent, LOAD_ALL_REQUEST)
+        } else {
+            DlgError.showErrorToast(TAG,"SDK VERSION (${Build.VERSION.SDK_INT}) < KITKAT (19)")
+        }
     }
 
     fun saveAll() {
-        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 
-        // Filter to only show results that can be "opened", such as
-        // a file (as opposed to a list of contacts or timezones).
-        intent.addCategory(Intent.CATEGORY_OPENABLE)
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
 
-        // Create a file with the requested MIME type.
-        intent.type = "*/*"
-        intent.putExtra(Intent.EXTRA_TITLE, "Simple List.json")
-        AMain.publicInterface?.startExternalActivity(intent, SAVE_ALL_REQUEST)
+            // Filter to only show results that can be "opened", such as
+            // a file (as opposed to a list of contacts or timezones).
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+
+            // Create a file with the requested MIME type.
+            intent.type = "*/*"
+            intent.putExtra(Intent.EXTRA_TITLE, "Simple List.json")
+            AMain.publicInterface?.startExternalActivity(intent, SAVE_ALL_REQUEST)
+        } else {
+            DlgError.showErrorToast(TAG,"SDK VERSION (${Build.VERSION.SDK_INT}) < KITKAT (19)")
+        }
     }
 
     fun saveOpenList() {
-        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-        intent.addCategory(Intent.CATEGORY_OPENABLE)
-        intent.type = "*/*"
-        intent.putExtra(Intent.EXTRA_TITLE, Logic.openList.value!!.name + ".json")
-        AMain.publicInterface?.startExternalActivity(intent, SAVE_LIST_REQUEST)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.type = "*/*"
+            intent.putExtra(Intent.EXTRA_TITLE, Logic.openList.value!!.name + ".json")
+            AMain.publicInterface?.startExternalActivity(intent, SAVE_LIST_REQUEST)
+        } else {
+            DlgError.showErrorToast(TAG,"SDK VERSION (${Build.VERSION.SDK_INT}) < KITKAT (19)")
+        }
     }
 
     fun saveOpenListXML() {
-        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-        intent.addCategory(Intent.CATEGORY_OPENABLE)
-        intent.type = "*/*"
-        intent.putExtra(Intent.EXTRA_TITLE, Logic.openList.value!!.name + ".xml")
-        AMain.publicInterface?.startExternalActivity(intent, SAVE_LIST_XML_REQUEST)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.type = "*/*"
+            intent.putExtra(Intent.EXTRA_TITLE, Logic.openList.value!!.name + ".xml")
+            AMain.publicInterface?.startExternalActivity(intent, SAVE_LIST_XML_REQUEST)
+        } else {
+            DlgError.showErrorToast(TAG,"SDK VERSION (${Build.VERSION.SDK_INT}) < KITKAT (19)")
+        }
     }
 
     // TO CALL FROM AMain
@@ -105,7 +124,7 @@ object Converter {
         val message =   "${getString(R.string.load_to_insert)} ${estimation.toInsert}\n"+
                         "${getString(R.string.load_to_update)} ${estimation.toUpdate}"
         // Ask user for request
-        val dlg = DlgCommon.show(R.string.load_title, message, {
+        DlgCommon.show(R.string.load_title, message) {
             try {
                 loadFromJSON(json)
                 // Show result
@@ -113,7 +132,7 @@ object Converter {
             } catch (e: Exception) {
                 DlgError.show(e)
             }
-        })
+        }
     }
 
     private fun doSaveAll(uri: Uri?) {
@@ -326,85 +345,44 @@ object Converter {
             sb.append("<list>\n")
             sb.append("<id>$id</id>\n")
             sb.append("<name>$name</name>\n")
-            if (description != null && !description!!.isEmpty()) sb.append("<description>$description</description>\n")
+            description?.let{ if(it.isNotEmpty()) sb.append("<description>$it</description>\n")}
             sb.append("<items>\n")
             val items = Database.loadListItems(id)
             for (item in items) {
                 sb.append("<item>\n")
-                sb.append("""<id>${item.id}</id>""".trimIndent())
-                sb.append("""
-        <name>${item.name}</name>
-    
-        """.trimIndent())
-                if (item.description != null && !item.description!!.isEmpty()) sb.append("""
-        <description>${item.description}</description>
-    
-        """.trimIndent())
-                sb.append("""
-        <state>${item.state}</state>
-    
-        """.trimIndent())
+                sb.append("<id>${item.id}</id>")
+                sb.append("<name>${item.name}</name>")
+                item.description?.let { if(it.isNotEmpty())
+                    sb.append("<description>$it</description>")}
+                sb.append("<state>${item.state}</state>")
                 sb.append("</item>\n")
             }
-
             sb.append("</items>\n")
-            sb.append("</list>")
+            sb.append("</list>\n")
         }
         return sb.toString()
-    }
-
-    @Throws(IOException::class)
-    fun listSaveXML(list:List, bw: BufferedWriter) {
-        bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
-        bw.newLine()
-        with(list) {
-            bw.write("<list>")
-            bw.newLine()
-            bw.write("<id>$id</id>")
-            bw.newLine()
-            bw.write("<name>$name</name>")
-            bw.newLine()
-            if (description != null && !description!!.isEmpty()) bw.write("<description>$description</description>")
-            bw.newLine()
-            bw.write("<items>")
-            bw.newLine()
-            val items = Database.loadListItems(id)
-            for (item in items) {
-                bw.write("<item>")
-                bw.newLine()
-                bw.write("<id>" + item.id + "</id>")
-                bw.newLine()
-                bw.write("<name>" + item.name + "</name>")
-                bw.newLine()
-                if (item.description != null && !item.description!!.isEmpty()) bw.write("<description>" + item.description + "</description>")
-                bw.newLine()
-                bw.write("<state>" + item.state + "</state>")
-                bw.newLine()
-                bw.write("</item>")
-                bw.newLine()
-            }
-            bw.write("</items>")
-            bw.newLine()
-            bw.write("</list>")
-        }
     }
 
     @Throws(JSONException::class)
     fun listToJSON(list:List): JSONObject {
         val json = JSONObject()
         with(list) {
-            json.put("id", id)
-            json.put("name", name)
-            if (description != null && !description!!.isEmpty()) json.put("description", description)
+            json.put("id",      id)
+            json.put("name",    name)
+            description?.let{ if(it.isNotEmpty())
+                json.put("description", it) }
             // ITEMS
             val items = Database.loadListItems(id)
             val jsItems = JSONArray()
             for (item in items) {
                 val js = JSONObject()
-                js.put("id", item.id)
-                js.put("name", item.name)
-                if (item.description != null && !item.description!!.isEmpty()) js.put("description", item.description)
-                js.put("state", item.state)
+                with(item) {
+                    js.put("id",    id)
+                    js.put("state", state)
+                    js.put("name",  name)
+                    description?.let{ if(it.isNotEmpty())
+                        js.put("description", it) }
+                }
                 jsItems.put(js)
             }
             json.put("items", jsItems)

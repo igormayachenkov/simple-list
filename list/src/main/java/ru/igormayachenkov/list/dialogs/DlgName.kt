@@ -1,6 +1,5 @@
 package ru.igormayachenkov.list.dialogs
 
-import android.R
 import android.content.DialogInterface
 import android.text.InputType
 import android.view.View
@@ -35,16 +34,16 @@ object DlgName {
             builder.setView(input)
 
             // Set up the buttons
-            builder.setPositiveButton(R.string.ok, DialogInterface.OnClickListener { dialog, which -> // Raise event
+            builder.setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { dialog, which -> // Raise event
                 callback?.invoke(input.text.toString().trim { it <= ' ' })
             })
-            builder.setNegativeButton(R.string.cancel, null)
+            builder.setNegativeButton(android.R.string.cancel, null)
 
             // Create alert dialog
             val alert = builder.create()
 
             // Seet keyboard auto show
-            alert.getWindow()?.setSoftInputMode(
+            alert.window?.setSoftInputMode(
                     WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
 
             alert.show()

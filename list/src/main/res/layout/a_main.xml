@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/list_empty"
+        android:text="@string/main_empty"
         android:layout_gravity="center"/>
 
     <!-- OPEN LIST FRAGMENT-->

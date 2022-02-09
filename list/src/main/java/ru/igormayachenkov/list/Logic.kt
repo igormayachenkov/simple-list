@@ -1,13 +1,11 @@
 package ru.igormayachenkov.list
 
-import android.content.Context
-import androidx.lifecycle.MutableLiveData
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import ru.igormayachenkov.list.Prefs.Companion.OPEN_ITEM_ID
 import ru.igormayachenkov.list.Prefs.Companion.OPEN_LIST_ID
 import ru.igormayachenkov.list.data.*
 import ru.igormayachenkov.list.data.List
-import kotlin.Exception
 
 object Logic {
     const val TAG = "myapp.Logic"
@@ -59,8 +57,7 @@ object Logic {
     }
 
     fun renameOpenList(name:String?){
-        val list = openList.value
-        if(list==null) throw Exception("open list is null")
+        val list = openList.value ?: throw Exception("open list is null")
         if (name.isNullOrEmpty()) throw Exception(App.getString(R.string.dialog_error))
 
         // Rename List
@@ -71,8 +68,7 @@ object Logic {
     }
 
     fun deleteOpenList(){
-        val openlist = openList.value
-        if(openlist==null) throw Exception("open list is null")
+        val openlist = openList.value ?: throw Exception("open list is null")
 
         Database.deleteList(openlist.id)
         clearOpenList()
@@ -210,7 +206,7 @@ object Logic {
                 val pos = openlist.findPositionById(id)
                 val openitem =
                         if (pos != null)
-                            OpenItem(openlist.items.asList.get(pos), pos) // Existed
+                            OpenItem(openlist.items.asList[pos], pos) // Existed
                         else
                             OpenItem(Item.create(openlist.id), null) // New
 
