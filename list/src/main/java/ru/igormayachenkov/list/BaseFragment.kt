@@ -7,6 +7,9 @@ import android.view.View.VISIBLE
 import androidx.fragment.app.Fragment
 
 abstract class BaseFragment : Fragment(){
+    //val isVisible : Boolean
+      //  get() = {return view?.visibility == VISIBLE}
+
     //----------------------------------------------------------------------------------------------
     // ANIMATION
     val useAnimation: Boolean = true

@@ -22,4 +22,7 @@
     <item android:id="@+id/menu_help"
         android:title="@string/list_menu_help" />
 
+    <item android:id="@+id/menu_settings"
+        android:title="@string/settings" />
+
 </menu>

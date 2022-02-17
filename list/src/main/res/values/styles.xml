@@ -14,5 +14,11 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="Icon">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:padding">4dp</item>
+        <item name="background">@drawable/bg_clickable</item>
+    </style>
 
 </resources>

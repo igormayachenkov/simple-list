@@ -58,6 +58,7 @@
     <string name="item_checked_text">Выполнено</string>
     <string name="item_button_delete">Удалить</string>
     <string name="item_button_save">Сохранить</string>
+    <string name="settings">Настройки</string>
 
 
 </resources>

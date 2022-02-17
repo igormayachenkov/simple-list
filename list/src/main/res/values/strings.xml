@@ -8,6 +8,8 @@
     <string name="load_to_update">lists to update:</string>
     <string name="load_success">Data successfully updated</string>
 
+    <string name="settings">Settings</string>
+
     <!-- MAIN -->
     <string name="main_title">All lists</string>
     <string name="main_empty">You haven\'t got any list yet\nPress \'+\' to create a new one</string>

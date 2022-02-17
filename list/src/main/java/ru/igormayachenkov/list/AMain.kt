@@ -13,8 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import ru.igormayachenkov.list.data.List
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.a_main.lblEmptyList
-import kotlinx.android.synthetic.main.a_main.recyclerView
+import kotlinx.android.synthetic.main.a_main.*
 import kotlinx.android.synthetic.main.item_main.view.*
 import ru.igormayachenkov.list.data.IListAdapter
 import ru.igormayachenkov.list.dialogs.DlgError
@@ -118,7 +117,9 @@ class AMain : AppCompatActivity() {
     // HANDLERS
     override fun onBackPressed() {
         Log.d(TAG, "onBackPressed")
-        if(Logic.openItem.value!=null) {
+        if(Settings.isVisible.value==true){
+            Settings.isVisible.value = false
+        }else if(Logic.openItem.value!=null) {
             Logic.clearOpenItem()
         }else if(Logic.openList.value!=null) {
             Logic.clearOpenList()
@@ -129,11 +130,12 @@ class AMain : AppCompatActivity() {
 
     fun onMenuClick(item: MenuItem) {
         when (item.itemId) {
-            R.id.menu_add   -> onMenuAdd()
-            R.id.menu_save  -> Converter.saveAll()
-            R.id.menu_clear -> onMenuClear()
-            R.id.menu_load  -> Converter.loadAll()
-            R.id.menu_help  -> onMenuHelp()
+            R.id.menu_add       -> onMenuAdd()
+            R.id.menu_save      -> Converter.saveAll()
+            R.id.menu_clear     -> onMenuClear()
+            R.id.menu_load      -> Converter.loadAll()
+            R.id.menu_help      -> onMenuHelp()
+            R.id.menu_settings  -> Settings.isVisible.value = true
         }
     }
 

@@ -44,9 +44,9 @@ class App : Application() {
 
         super.onCreate()
 
-        // Init Logic
+        // Init
+        Settings
         Logic
     }
-
 
 }
