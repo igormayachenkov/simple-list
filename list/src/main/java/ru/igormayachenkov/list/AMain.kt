@@ -118,7 +118,7 @@ class AMain : AppCompatActivity() {
     override fun onBackPressed() {
         Log.d(TAG, "onBackPressed")
         if(FSettings.isItActive){
-            FSettings.hide()
+            FSettings.onBackPressed()
         }else if(Logic.openItem.value!=null) {
             Logic.clearOpenItem()
         }else if(Logic.openList.value!=null) {

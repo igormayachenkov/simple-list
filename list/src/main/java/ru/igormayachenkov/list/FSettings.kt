@@ -32,8 +32,19 @@ class FSettings : BaseFragment()   {
             isActive = false
             instance?.hideFragment()
         }
-
+        fun onBackPressed(){
+            Log.d(TAG, "onBackPressed")
+            instance?.popupView?.let {
+                if(it.isVisible)
+                    it.hide()
+                else
+                    hide()
+            }
+        }
     }
+
+    // CONTROLS
+    var popupView:PopupView?=null
 
     //----------------------------------------------------------------------------------------------
     // FRAGMENT
@@ -52,6 +63,7 @@ class FSettings : BaseFragment()   {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
         instance = this
+        popupView = PopupView(popupContainer)
 
         // Update state
         if(isActive) {
@@ -63,11 +75,14 @@ class FSettings : BaseFragment()   {
 
         // Set handlers
         btnBack.setOnClickListener { hide() }
+        btnRowLeft.setOnClickListener  { onBtnItemSide(it) }
+        btnRowRight.setOnClickListener { onBtnItemSide(it) }
     }
 
     override fun onDestroyView() {
         Log.d(TAG, "onDestroyView")
         instance = null
+        popupView = null
         super.onDestroyView()
     }
 
@@ -80,5 +95,20 @@ class FSettings : BaseFragment()   {
 
     }
 
+    //----------------------------------------------------------------------------------------------
+    // HANDLERS
+    private fun onBtnItemSide(btn: View){
+        val popup:ViewGroup = layoutInflater.inflate(R.layout.sel_row_side, null) as ViewGroup
+//        menu.children.forEach { view->
+//            view.setOnClickListener(menuClickListener)
+//        }
+        popupView?.show(popup, btn,
+                PopupView.VERT_ALIGNMENT.TOP,
+                if(btn.id==btnRowLeft.id)
+                    PopupView.HORIZ_ALIGNMENT.LEFT
+                else
+                    PopupView.HORIZ_ALIGNMENT.RIGHT
+        )
+    }
 
 }
