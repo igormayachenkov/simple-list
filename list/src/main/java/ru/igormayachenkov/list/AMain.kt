@@ -117,8 +117,8 @@ class AMain : AppCompatActivity() {
     // HANDLERS
     override fun onBackPressed() {
         Log.d(TAG, "onBackPressed")
-        if(Settings.isVisible.value==true){
-            Settings.isVisible.value = false
+        if(FSettings.isItActive){
+            FSettings.hide()
         }else if(Logic.openItem.value!=null) {
             Logic.clearOpenItem()
         }else if(Logic.openList.value!=null) {
@@ -135,7 +135,7 @@ class AMain : AppCompatActivity() {
             R.id.menu_clear     -> onMenuClear()
             R.id.menu_load      -> Converter.loadAll()
             R.id.menu_help      -> onMenuHelp()
-            R.id.menu_settings  -> Settings.isVisible.value = true
+            R.id.menu_settings  -> FSettings.show()
         }
     }
 

@@ -30,6 +30,34 @@
     </FrameLayout>
 
     <!-- BODY -->
+    <TextView
+        style="@style/Header"
+        android:text="Main View"/>
+    <TextView
+        style="@style/Header"
+        android:text="List View"/>
+    <TextView
+        style="@style/Header"
+        android:text="List Item View"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="8dp"
+        android:background="#bbb">
+        <ImageView
+            style="@style/Icon"
+            app:srcCompat="@drawable/ic_arrow_left_white" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:text="Body"
+            android:textAlignment="center"/>
+        <ImageView
+            style="@style/Icon"
+            app:srcCompat="@drawable/ic_arrow_left_white" />
+    </LinearLayout>
 
 
 </LinearLayout>

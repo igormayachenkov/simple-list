@@ -173,7 +173,7 @@ class FList : BaseFragment()  {
             R.id.menu_help      -> onMenuHelp()
             R.id.menu_save_json -> Converter.saveOpenList()
             R.id.menu_save_xml  -> Converter.saveOpenListXML()
-            R.id.menu_settings  -> Settings.isVisible.value = true
+            R.id.menu_settings  -> FSettings.show()
         }
     }
 
