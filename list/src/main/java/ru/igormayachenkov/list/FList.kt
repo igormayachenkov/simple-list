@@ -161,7 +161,7 @@ class FList : BaseFragment()  {
 
     fun onItemLongClick(view: View): Boolean {
         val position = recyclerView.getChildAdapterPosition(view)
-        Logic.setOpenItem( OpenItem(uiList[position], position) )
+        Logic.changeOpenItem( OpenItem(uiList[position], position) )
         return true
     }
 

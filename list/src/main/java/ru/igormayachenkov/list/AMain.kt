@@ -57,6 +57,8 @@ class AMain : AppCompatActivity() {
 
         // Update list
         publicInterface?.notifyDataSetChanged()
+
+        FItem.onActivityCreated(supportFragmentManager)
     }
 
     override fun onDestroy() {
@@ -90,6 +92,28 @@ class AMain : AppCompatActivity() {
             startActivityForResult(intent,requestCode)
         }
 
+        // MAIN FRAGMENTS (NO BACKSTACK - SHOW/HIDE BY DATA)
+        fun showFragment(fragment: Fragment, tag:String){
+            with(supportFragmentManager.beginTransaction()){
+                setCustomAnimations(R.anim.enter_from_right,0,0, R.anim.exit_to_right)
+                add(fragmentContainer.id, fragment, tag)
+                commit()
+            }
+        }
+        fun removeFragment(tag:String):Boolean{
+            supportFragmentManager.findFragmentByTag(tag)?.let { fragment->
+                with(supportFragmentManager.beginTransaction()) {
+                    setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right,
+                            R.anim.enter_from_right, R.anim.exit_to_right)
+                    remove(fragment)
+                    commit()
+                }
+                return true
+            }
+            return false
+        }
+
+        // DIALOGS - BACKSTACK FRAGMENTS
         fun showDialog(fragment: Fragment, tag:String){
             with(supportFragmentManager.beginTransaction()){
                 //setCustomAnimations(R.anim.fade_in,0,0, R.anim.fade_out)
@@ -133,7 +157,7 @@ class AMain : AppCompatActivity() {
         Log.d(TAG, "onBackPressed")
         if(supportFragmentManager.backStackEntryCount>0){
             supportFragmentManager.popBackStack()
-        }else if(Logic.openItem.value!=null) {
+        }else if(Logic.openItem!=null) {
             Logic.clearOpenItem()
         }else if(Logic.openList.value!=null) {
             Logic.clearOpenList()

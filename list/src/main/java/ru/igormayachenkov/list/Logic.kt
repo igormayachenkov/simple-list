@@ -81,17 +81,18 @@ object Logic {
 
     //----------------------------------------------------------------------------------------------
     // OPEN ITEM
-    var openItem = MutableLiveData<OpenItem?>()
+    var openItem : OpenItem? = null
 
-    fun setOpenItem(openitem:OpenItem) {
-        Log.d(TAG, "setOpenItem #${openitem.item.id} pos${openitem.pos}")
+    fun changeOpenItem(openitem:OpenItem) {
+        Log.d(TAG, "changeOpenItem #${openitem.item.id} pos${openitem.pos}")
         // Save id
         pref.saveLong(OPEN_ITEM_ID, openitem.item.id)
         // Update live data
-        openItem.value = openitem
+        this.openItem = openitem
+        FItem.show()
     }
     fun saveOpenItemChanges(changes:ItemChanges){
-        openItem.value?.let {
+        openItem?.let {
             it.changes = changes
             ItemChanges.save(changes)
             Log.d(ItemChanges.TAG, "*** save $changes")
@@ -103,14 +104,15 @@ object Logic {
         pref.remove(OPEN_ITEM_ID)
         ItemChanges.clear()
         // Update live data
-        openItem.value = null
+        openItem = null
+        FItem.hide()
     }
 
     fun createItem(){
         Log.d(TAG, "createItem")
         openList.value?.id?.let { list_id->
             val item = Item.create(list_id)
-            setOpenItem(OpenItem(item,null))
+            changeOpenItem(OpenItem(item,null))
         }?:run{ throw Exception("createItem when openList is NULL") }
     }
 
@@ -121,7 +123,7 @@ object Logic {
     }
 
     fun updateOpenItem(input:ItemChanges){
-        val openitem = openItem.value
+        val openitem = openItem
         val openlist = openList.value
         if(openitem==null) throw Exception("updateOpenItem: open item is null")
         if(openlist==null) throw Exception("updateOpenItem: open list is null")
@@ -157,7 +159,7 @@ object Logic {
     }
 
     fun deleteOpenItem(){
-        val openitem = openItem.value
+        val openitem = openItem
         val openlist = openList.value
         if(openitem==null) throw Exception("deleteOpenItem: open item is null")
         if(openlist==null) throw Exception("deleteOpenItem: open list is null")
@@ -215,7 +217,7 @@ object Logic {
                 Log.d(TAG, "*** restored open item changes ${openitem.changes}")
 
                 // Set and open window
-                setOpenItem(openitem)
+                changeOpenItem(openitem)
             }
         }
     }

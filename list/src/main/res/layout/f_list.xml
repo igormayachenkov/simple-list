@@ -43,11 +43,11 @@
         android:layout_gravity="center"/>
 
     <!-- OPEN ITEM FRAGMENT -->
-    <fragment android:id="@+id/fItem"
+    <!--fragment android:id="@+id/fItem"
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="ru.igormayachenkov.list.FItem"/>
+        android:name="ru.igormayachenkov.list.FItem"/-->
     <!--androidx.fragment.app.FragmentContainerView
         android:id="@+id/viewItem"
         android:visibility="gone"

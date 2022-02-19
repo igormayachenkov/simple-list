@@ -1,5 +1,6 @@
 package ru.igormayachenkov.list
 
+import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,17 +8,38 @@ import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.lifecycle.Observer
+import androidx.fragment.app.FragmentManager
 import kotlinx.android.synthetic.main.f_item.*
 import ru.igormayachenkov.list.data.ItemChanges
 import ru.igormayachenkov.list.data.OpenItem
 
-class FItem : BaseFragment()  {
+class FItem : Fragment()  {
 
     //----------------------------------------------------------------------------------------------
     // STATIC
     companion object {
         const val TAG: String = "myapp.FItem"
+
+        fun show(){
+            Log.d(TAG, "show")
+            AMain.publicInterface?.showFragment(FItem(), TAG)
+        }
+
+        fun hide(){
+            Log.d(TAG, "hide")
+            AMain.publicInterface?.removeFragment(TAG)
+        }
+
+        // FACKED STUPID ANDROID: Sync DATA - UI
+        fun onActivityCreated(fragmentManager:FragmentManager){
+            val fragment = fragmentManager.findFragmentByTag(TAG)
+
+            // CHECK WRONG CASES
+            if(Logic.openItem!=null && fragment==null)
+                show()
+            if(Logic.openItem==null && fragment!=null)
+                hide()
+        }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -37,16 +59,15 @@ class FItem : BaseFragment()  {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
 
-        view.visibility = GONE // initial hidden state !!!
-
         // Set handlers
         //fog.setOnClickListener     { onButtonCancel() } TODO add hide-on-fog-click setting
         btnSave.setOnClickListener { onButtonSave() }
         btnDel.setOnClickListener  { onButtonDelete() }
-        // Observe open item
-        Logic.openItem.observe(viewLifecycleOwner, Observer<OpenItem?> { openitem->
-            if(openitem!=null) show(openitem) else hide()
-        })
+
+        // Load data
+        Logic.openItem?.let {
+            load(it)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -59,8 +80,8 @@ class FItem : BaseFragment()  {
 
     //----------------------------------------------------------------------------------------------
     // DATA + SHOW/HIDE
-    fun show(openitem: OpenItem){
-        Log.d(TAG, "show #${openitem}")
+    fun load(openitem: OpenItem){
+        Log.d(TAG, "load #${openitem}")
 
         //-------------------------------------
         // LOAD DATA
@@ -77,17 +98,6 @@ class FItem : BaseFragment()  {
                 chkState.isChecked = isChecked
             }
         }
-        //-------------------------------------
-
-        // Show fragment
-        showFragment()
-    }
-
-    fun hide(){
-        Log.d(TAG, "hide")
-        // Hide fragment
-        hideFragment()
-        chkState.isChecked = false // to prevent blinking
     }
 
     // DATA INPUT
