@@ -36,24 +36,32 @@ class FList : Fragment()  {
         var publicInterface : FList.PublicInterface? = null
 
         fun show(){
-            Log.d(TAG, "show")
-            AMain.publicInterface?.showFragment(FList(), TAG)
+            AMain.publicInterface?.let {
+                Log.d(TAG, "show: create fragment")
+                it.showFragment(FList(), TAG)
+            }?: run {
+                Log.w(TAG, "show: UI is not ready")
+            }
         }
 
         fun hide(){
-            Log.d(TAG, "hide")
+            Log.d(TAG, "hide: remove fragment")
             AMain.publicInterface?.removeFragment(TAG)
         }
 
         // FACKED STUPID ANDROID: Sync DATA - UI
-        fun onActivityCreated(fragmentManager:FragmentManager){
+        fun onActivityCreated(fragmentManager:FragmentManager) {
             val fragment = fragmentManager.findFragmentByTag(TAG)
 
             // CHECK WRONG CASES
-            if(Logic.openList!=null && fragment==null)
+            if (Logic.openList != null && fragment == null) {
+                Log.w(TAG,"onActivityCreated  RESTORE UI STATE: show")
                 show()
-            if(Logic.openList==null && fragment!=null)
+            }
+            if(Logic.openList==null && fragment!=null) {
+                Log.w(TAG,"onActivityCreated  RESTORE UI STATE: hide")
                 hide()
+            }
         }
     }
 

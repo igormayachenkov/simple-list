@@ -21,12 +21,16 @@ class FItem : Fragment()  {
         const val TAG: String = "myapp.FItem"
 
         fun show(){
-            Log.d(TAG, "show")
-            AMain.publicInterface?.showFragment(FItem(), TAG)
+            AMain.publicInterface?.let {
+                Log.d(TAG, "show: create fragment")
+                it.showFragment(FItem(), TAG)
+            }?: run {
+                Log.w(TAG, "show: UI is not ready")
+            }
         }
 
         fun hide(){
-            Log.d(TAG, "hide")
+            Log.d(TAG, "hide: remove fragment")
             AMain.publicInterface?.removeFragment(TAG)
         }
 
@@ -35,10 +39,14 @@ class FItem : Fragment()  {
             val fragment = fragmentManager.findFragmentByTag(TAG)
 
             // CHECK WRONG CASES
-            if(Logic.openItem!=null && fragment==null)
+            if(Logic.openItem!=null && fragment==null) {
+                Log.w(TAG,"onActivityCreated  RESTORE UI STATE: show")
                 show()
-            if(Logic.openItem==null && fragment!=null)
+            }
+            if(Logic.openItem==null && fragment!=null) {
+                Log.w(TAG,"onActivityCreated  RESTORE UI STATE: hide")
                 hide()
+            }
         }
     }
 
