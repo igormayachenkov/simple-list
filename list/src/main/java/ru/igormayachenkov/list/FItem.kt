@@ -59,15 +59,16 @@ class FItem : Fragment()  {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
 
+        // Load data
+        Logic.openItem?.let {
+            load(it)
+        }?: hide()
+
         // Set handlers
         //fog.setOnClickListener     { onButtonCancel() } TODO add hide-on-fog-click setting
         btnSave.setOnClickListener { onButtonSave() }
         btnDel.setOnClickListener  { onButtonDelete() }
 
-        // Load data
-        Logic.openItem?.let {
-            load(it)
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -24,7 +24,7 @@ class AMain : AppCompatActivity() {
     companion object {
         private const val TAG = "myapp.AMain"
         var publicInterface : PublicInterface? = null
-        var context : Context? = null
+        var context : AMain? = null
     }
 
     // Data objects
@@ -58,6 +58,8 @@ class AMain : AppCompatActivity() {
         // Update list
         publicInterface?.notifyDataSetChanged()
 
+        // Cretae fragments on star (facked Android!!!)
+        FList.onActivityCreated(supportFragmentManager)
         FItem.onActivityCreated(supportFragmentManager)
     }
 
@@ -95,16 +97,18 @@ class AMain : AppCompatActivity() {
         // MAIN FRAGMENTS (NO BACKSTACK - SHOW/HIDE BY DATA)
         fun showFragment(fragment: Fragment, tag:String){
             with(supportFragmentManager.beginTransaction()){
-                setCustomAnimations(R.anim.enter_from_right,0,0, R.anim.exit_to_right)
+                setCustomAnimations(R.anim.fade_in, R.anim.fade_out,
+                        R.anim.fade_in, R.anim.fade_out)
                 add(fragmentContainer.id, fragment, tag)
                 commit()
             }
         }
         fun removeFragment(tag:String):Boolean{
             supportFragmentManager.findFragmentByTag(tag)?.let { fragment->
+                Utils.hideSoftKeyboard(context)
                 with(supportFragmentManager.beginTransaction()) {
-                    setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right,
-                            R.anim.enter_from_right, R.anim.exit_to_right)
+                    setCustomAnimations(R.anim.fade_in, R.anim.fade_out,
+                            R.anim.fade_in, R.anim.fade_out)
                     remove(fragment)
                     commit()
                 }
@@ -117,7 +121,7 @@ class AMain : AppCompatActivity() {
         fun showDialog(fragment: Fragment, tag:String){
             with(supportFragmentManager.beginTransaction()){
                 //setCustomAnimations(R.anim.fade_in,0,0, R.anim.fade_out)
-                setCustomAnimations(R.anim.enter_from_right,0,0, R.anim.exit_to_right)
+                setCustomAnimations(R.anim.fade_in,0,0, R.anim.fade_out)
                 add(dialogContainer.id, fragment,tag)
                 addToBackStack(null)
                 commit()
@@ -159,7 +163,7 @@ class AMain : AppCompatActivity() {
             supportFragmentManager.popBackStack()
         }else if(Logic.openItem!=null) {
             Logic.clearOpenItem()
-        }else if(Logic.openList.value!=null) {
+        }else if(Logic.openList!=null) {
             Logic.clearOpenList()
         }else{
             super.onBackPressed()

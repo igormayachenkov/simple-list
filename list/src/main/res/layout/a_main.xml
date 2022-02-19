@@ -43,13 +43,6 @@
         android:text="@string/main_empty"
         android:layout_gravity="center"/>
 
-    <!-- OPEN LIST FRAGMENT-->
-    <fragment android:id="@+id/fList"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="ru.igormayachenkov.list.FList"/>
-
     <!-- MAIN FRAGMENT CONTAINER -> place for FList, FItem -->
     <FrameLayout android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
@@ -59,10 +52,5 @@
     <FrameLayout android:id="@+id/dialogContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-    <!--fragment android:id="@+id/fSettings"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="ru.igormayachenkov.list.FSettings"/-->
 
 </FrameLayout>

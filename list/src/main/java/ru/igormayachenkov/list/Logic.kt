@@ -20,7 +20,7 @@ object Logic {
 
     //----------------------------------------------------------------------------------------------
     // OPEN LIST
-    var openList    = MutableLiveData<OpenList?>()
+    var openList    : OpenList? = null
 
     fun setOpenList(list:List){
         // !!! DO NOT Clear open item
@@ -28,7 +28,8 @@ object Logic {
         // Save id
         pref.saveLong(OPEN_LIST_ID, list.id)
         // Update live data
-        openList.value = OpenList(list, Database.loadListItems(list.id))
+        openList = OpenList(list, Database.loadListItems(list.id))
+        FList.show()
     }
 
     fun clearOpenList(){
@@ -36,7 +37,8 @@ object Logic {
         // Save id
         pref.remove(OPEN_LIST_ID)
         // Update live data
-        openList.value = null
+        openList = null
+        FList.hide()
     }
 
     fun createList(name:String?){
@@ -57,7 +59,7 @@ object Logic {
     }
 
     fun renameOpenList(name:String?){
-        val list = openList.value ?: throw Exception("open list is null")
+        val list = openList?: throw Exception("open list is null")
         if (name.isNullOrEmpty()) throw Exception(App.getString(R.string.dialog_error))
 
         // Rename List
@@ -68,7 +70,7 @@ object Logic {
     }
 
     fun deleteOpenList(){
-        val openlist = openList.value ?: throw Exception("open list is null")
+        val openlist = openList?: throw Exception("open list is null")
 
         Database.deleteList(openlist.id)
         clearOpenList()
@@ -91,13 +93,6 @@ object Logic {
         this.openItem = openitem
         FItem.show()
     }
-    fun saveOpenItemChanges(changes:ItemChanges){
-        openItem?.let {
-            it.changes = changes
-            ItemChanges.save(changes)
-            Log.d(ItemChanges.TAG, "*** save $changes")
-        }
-    }
     fun clearOpenItem() {
         Log.d(TAG, "clearOpenItem")
         // Clear id
@@ -107,10 +102,16 @@ object Logic {
         openItem = null
         FItem.hide()
     }
-
+    fun saveOpenItemChanges(changes:ItemChanges){
+        openItem?.let {
+            it.changes = changes
+            ItemChanges.save(changes)
+            Log.d(ItemChanges.TAG, "*** save $changes")
+        }
+    }
     fun createItem(){
         Log.d(TAG, "createItem")
-        openList.value?.id?.let { list_id->
+        openList?.id?.let { list_id->
             val item = Item.create(list_id)
             changeOpenItem(OpenItem(item,null))
         }?:run{ throw Exception("createItem when openList is NULL") }
@@ -119,12 +120,12 @@ object Logic {
     fun toggleItemState(item:Item, pos: Int){
         item.toggleState()
         Database.updateItemState(item)
-        openList.value?.items?.update(item, pos)
+        openList?.items?.update(item, pos)
     }
 
     fun updateOpenItem(input:ItemChanges){
         val openitem = openItem
-        val openlist = openList.value
+        val openlist = openList
         if(openitem==null) throw Exception("updateOpenItem: open item is null")
         if(openlist==null) throw Exception("updateOpenItem: open list is null")
         val item = openitem.item
@@ -160,7 +161,7 @@ object Logic {
 
     fun deleteOpenItem(){
         val openitem = openItem
-        val openlist = openList.value
+        val openlist = openList
         if(openitem==null) throw Exception("deleteOpenItem: open item is null")
         if(openlist==null) throw Exception("deleteOpenItem: open list is null")
 
@@ -204,7 +205,7 @@ object Logic {
         }
         // Set open item
         openItemId?.let { id->
-            openList.value?.let { openlist ->
+            openList?.let { openlist ->
                 val pos = openlist.findPositionById(id)
                 val openitem =
                         if (pos != null)

@@ -73,7 +73,7 @@ object Converter {
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "*/*"
-            intent.putExtra(Intent.EXTRA_TITLE, Logic.openList.value!!.name + ".json")
+            intent.putExtra(Intent.EXTRA_TITLE, Logic.openList!!.name + ".json")
             AMain.publicInterface?.startExternalActivity(intent, SAVE_LIST_REQUEST)
         } else {
             DlgError.showErrorToast(TAG,"SDK VERSION (${Build.VERSION.SDK_INT}) < KITKAT (19)")
@@ -85,7 +85,7 @@ object Converter {
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "*/*"
-            intent.putExtra(Intent.EXTRA_TITLE, Logic.openList.value!!.name + ".xml")
+            intent.putExtra(Intent.EXTRA_TITLE, Logic.openList!!.name + ".xml")
             AMain.publicInterface?.startExternalActivity(intent, SAVE_LIST_XML_REQUEST)
         } else {
             DlgError.showErrorToast(TAG,"SDK VERSION (${Build.VERSION.SDK_INT}) < KITKAT (19)")
@@ -146,7 +146,7 @@ object Converter {
     }
 
     private fun doSaveOpenList(uri: Uri?) {
-        Logic.openList.value?.let {
+        Logic.openList?.let {
             val lists = ArrayList<List>()
             lists.add(it.list)
             try {
@@ -159,7 +159,7 @@ object Converter {
 
     private fun doSaveOpenListXML(uri: Uri?) {
         try {
-            val bytes = saveListToXML(Logic.openList.value!!.list, uri)
+            val bytes = saveListToXML(Logic.openList!!.list, uri)
             // Show result
             Toast.makeText(App.context, bytes.toString() + " " + getString(R.string.bytes_saved), Toast.LENGTH_LONG).show()
         }catch (e:Exception){ DlgError.show(e)}
