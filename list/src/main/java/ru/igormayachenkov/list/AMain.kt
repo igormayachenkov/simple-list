@@ -11,6 +11,7 @@ import android.view.View.VISIBLE
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
 import ru.igormayachenkov.list.data.List
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.a_main.*
@@ -89,6 +90,19 @@ class AMain : AppCompatActivity() {
             startActivityForResult(intent,requestCode)
         }
 
+        fun showDialog(fragment: Fragment, tag:String){
+            with(supportFragmentManager.beginTransaction()){
+                //setCustomAnimations(R.anim.fade_in,0,0, R.anim.fade_out)
+                setCustomAnimations(R.anim.enter_from_right,0,0, R.anim.exit_to_right)
+                add(dialogContainer.id, fragment,tag)
+                addToBackStack(null)
+                commit()
+            }
+        }
+        fun hideDialog(){
+            supportFragmentManager.popBackStack()
+        }
+
         override fun notifyDataSetChanged() {
             Log.d(TAG, "notifyDataSetChanged")
             adapter.notifyDataSetChanged()
@@ -117,8 +131,8 @@ class AMain : AppCompatActivity() {
     // HANDLERS
     override fun onBackPressed() {
         Log.d(TAG, "onBackPressed")
-        if(FSettings.isItActive){
-            FSettings.onBackPressed()
+        if(supportFragmentManager.backStackEntryCount>0){
+            supportFragmentManager.popBackStack()
         }else if(Logic.openItem.value!=null) {
             Logic.clearOpenItem()
         }else if(Logic.openList.value!=null) {

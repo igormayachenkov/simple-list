@@ -1,5 +1,6 @@
 package ru.igormayachenkov.list
 
+import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,37 +10,32 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.f_settings.*
 
-class FSettings : BaseFragment()   {
+//--------------------------------------------------------------------------------------------------
+// DIALOG: Settings
+// "Dialog" means that the show/hide status is controlled by crazy android UI (not by my data)
+
+class FSettings : Fragment()   {
     //----------------------------------------------------------------------------------------------
     // STATIC
     companion object {
         const val TAG: String = "myapp.FSettings"
-        private var instance : FSettings? = null
-        private var isActive :Boolean = false
-        val isItActive:Boolean
-            get() = isActive
 
         fun show(){
             Log.d(TAG, "show")
-            isActive = true
-            instance?.let {
-                it.load()
-                it.showFragment()
-            }
+            AMain.publicInterface?.showDialog(FSettings(), TAG)
         }
         fun hide(){
             Log.d(TAG, "hide")
-            isActive = false
-            instance?.hideFragment()
+            AMain.publicInterface?.hideDialog()
         }
         fun onBackPressed(){
             Log.d(TAG, "onBackPressed")
-            instance?.popupView?.let {
-                if(it.isVisible)
-                    it.hide()
-                else
-                    hide()
-            }
+//            instance?.popupView?.let {
+//                if(it.isVisible)
+//                    it.hide()
+//                else
+//                    hide()
+//            }
         }
     }
 
@@ -62,16 +58,10 @@ class FSettings : BaseFragment()   {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
-        instance = this
         popupView = PopupView(popupContainer)
 
         // Update state
-        if(isActive) {
-            load()
-            view.visibility = VISIBLE
-        }else{
-            view.visibility = GONE // initial hidden state !!!
-        }
+        load()
 
         // Set handlers
         btnBack.setOnClickListener { hide() }
@@ -81,7 +71,6 @@ class FSettings : BaseFragment()   {
 
     override fun onDestroyView() {
         Log.d(TAG, "onDestroyView")
-        instance = null
         popupView = null
         super.onDestroyView()
     }
@@ -89,7 +78,7 @@ class FSettings : BaseFragment()   {
 
 
     //----------------------------------------------------------------------------------------------
-    // DATA + SHOW/HIDE
+    // DATA
     private fun load(){
         Log.d(TAG, "load")
 

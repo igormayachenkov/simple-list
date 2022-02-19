@@ -51,10 +51,13 @@
         android:name="ru.igormayachenkov.list.FList"/>
 
     <!-- DIALOG CONTAINER -> place for popup fragments (dialogs) -->
-    <fragment android:id="@+id/fSettings"
+    <FrameLayout android:id="@+id/dialogContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <!--fragment android:id="@+id/fSettings"
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="ru.igormayachenkov.list.FSettings"/>
+        android:name="ru.igormayachenkov.list.FSettings"/-->
 
 </FrameLayout>
