@@ -44,9 +44,9 @@ class App : Application() {
 
         super.onCreate()
 
-        // Init
-        Settings
-        Logic
+//        // Init  - moved to AMain !!!
+//        Settings
+//        Logic
     }
 
 }

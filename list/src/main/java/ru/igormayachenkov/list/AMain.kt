@@ -52,15 +52,18 @@ class AMain : AppCompatActivity() {
         }
         recyclerView.adapter = adapter
 
-        // Set link to sorted list
-        uiList = Logic.listOfLists.asList
+        //----------------------------
+        // Init APP data  here !!!
+        Settings
+        Logic
+        //----------------------------
 
-        // Update list
+        // Load
         publicInterface?.notifyDataSetChanged()
 
-        // Cretae fragments on star (facked Android!!!)
-        FList.onActivityCreated(supportFragmentManager)
-        FItem.onActivityCreated(supportFragmentManager)
+        // Create fragments on start
+        //FList.onActivityCreated(supportFragmentManager)
+        //FItem.onActivityCreated(supportFragmentManager)
     }
 
     override fun onDestroy() {
@@ -133,6 +136,9 @@ class AMain : AppCompatActivity() {
 
         override fun notifyDataSetChanged() {
             Log.d(TAG, "notifyDataSetChanged")
+            // Set link to sorted list
+            uiList = Logic.listOfLists.asList // update data set link
+
             adapter.notifyDataSetChanged()
             updateNoDataLabel()
         }
@@ -240,6 +246,7 @@ class AMain : AppCompatActivity() {
         }
 
         fun bind(position: Int) {
+            //Log.d(TAG,"--- bind --- $position")
             val list = uiList[position]
             // Name
             txtName.text = list.name

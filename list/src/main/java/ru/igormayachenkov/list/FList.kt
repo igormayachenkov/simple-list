@@ -49,7 +49,7 @@ class FList : Fragment()  {
             AMain.publicInterface?.removeFragment(TAG)
         }
 
-        // FACKED STUPID ANDROID: Sync DATA - UI
+        // Sync DATA - UI
         fun onActivityCreated(fragmentManager:FragmentManager) {
             val fragment = fragmentManager.findFragmentByTag(TAG)
 
@@ -117,7 +117,7 @@ class FList : Fragment()  {
         // Name
         toolbar.title = list.name
 
-        // Set list data
+        // Set list data set link
         uiList = list.items.asList
 
         // Update items
@@ -246,6 +246,7 @@ class FList : Fragment()  {
         }
 
         fun bind(position: Int) {
+            // Log.d(TAG,"--- bind --- $position")
             val item = uiList[position]
 
             // Name
