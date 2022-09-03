@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:id="@+id/viewFog"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:padding="30dp"
+    android:background="@color/fog">
+
+    <!-- CARD WINDOW -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFACD"
+        android:orientation="vertical"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="16dp">
+
+        <LinearLayout android:id="@+id/selCheckbox"
+            style="@style/SelectorRow">
+            <ImageView
+                style="@style/Icon"
+                app:srcCompat="@drawable/ic_checkbox_marked" />
+            <TextView
+                style="@style/SelectorText"
+                android:text="Check"/>
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/selDelete"
+            style="@style/SelectorRow">
+            <ImageView
+                style="@style/Icon"
+                app:srcCompat="@drawable/ic_delete_black_48" />
+            <TextView
+                style="@style/SelectorText"
+                android:text="Delete"/>
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/selEdit"
+            style="@style/SelectorRow">
+            <ImageView
+                style="@style/Icon"
+                app:srcCompat="@drawable/ic_page_next" />
+            <TextView
+                style="@style/SelectorText"
+                android:text="Open"/>
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/selNone"
+            style="@style/SelectorRow">
+            <ImageView
+                style="@style/Icon"
+                app:srcCompat="@drawable/ic_none" />
+            <TextView
+                style="@style/SelectorText"
+                android:text="None"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -1,14 +1,15 @@
-package ru.igormayachenkov.list
+package ru.igormayachenkov.list.settings
 
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.f_settings.*
+import ru.igormayachenkov.list.AMain
+import ru.igormayachenkov.list.PopupView
+import ru.igormayachenkov.list.R
 
 //--------------------------------------------------------------------------------------------------
 // DIALOG: Settings
@@ -40,7 +41,7 @@ class FSettings : Fragment()   {
     }
 
     // CONTROLS
-    var popupView:PopupView?=null
+    var popupView: PopupView?=null
 
     //----------------------------------------------------------------------------------------------
     // FRAGMENT
@@ -87,17 +88,18 @@ class FSettings : Fragment()   {
     //----------------------------------------------------------------------------------------------
     // HANDLERS
     private fun onBtnItemSide(btn: View){
-        val popup:ViewGroup = layoutInflater.inflate(R.layout.sel_row_side, null) as ViewGroup
-//        menu.children.forEach { view->
-//            view.setOnClickListener(menuClickListener)
-//        }
-        popupView?.show(popup, btn,
-                PopupView.VERT_ALIGNMENT.TOP,
-                if(btn.id==btnRowLeft.id)
-                    PopupView.HORIZ_ALIGNMENT.LEFT
-                else
-                    PopupView.HORIZ_ALIGNMENT.RIGHT
-        )
+//        val popup:ViewGroup = layoutInflater.inflate(R.layout.sel_row_side, null) as ViewGroup
+////        menu.children.forEach { view->
+////            view.setOnClickListener(menuClickListener)
+////        }
+//        popupView?.show(popup, btn,
+//                PopupView.VERT_ALIGNMENT.TOP,
+//                if(btn.id==btnRowLeft.id)
+//                    PopupView.HORIZ_ALIGNMENT.LEFT
+//                else
+//                    PopupView.HORIZ_ALIGNMENT.RIGHT
+//        )
+        FRowSide.show()
     }
 
 }

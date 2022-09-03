@@ -52,6 +52,9 @@ class FItem : Fragment()  {
 
     //----------------------------------------------------------------------------------------------
     // FRAGMENT
+    init {
+        Log.d(TAG, "init")
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")

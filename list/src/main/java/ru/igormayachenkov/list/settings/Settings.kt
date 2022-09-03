@@ -1,7 +1,7 @@
-package ru.igormayachenkov.list
+package ru.igormayachenkov.list.settings
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
+import ru.igormayachenkov.list.Prefs
 
 
 object Settings {

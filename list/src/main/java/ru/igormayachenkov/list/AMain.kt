@@ -1,7 +1,6 @@
 package ru.igormayachenkov.list
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -19,6 +18,8 @@ import kotlinx.android.synthetic.main.item_main.view.*
 import ru.igormayachenkov.list.data.IListAdapter
 import ru.igormayachenkov.list.dialogs.DlgError
 import ru.igormayachenkov.list.dialogs.DlgName
+import ru.igormayachenkov.list.settings.FSettings
+import ru.igormayachenkov.list.settings.Settings
 
 class AMain : AppCompatActivity() {
     companion object {

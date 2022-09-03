@@ -23,6 +23,7 @@ import ru.igormayachenkov.list.data.Item
 import ru.igormayachenkov.list.data.OpenItem
 import ru.igormayachenkov.list.dialogs.DlgError
 import ru.igormayachenkov.list.dialogs.DlgName
+import ru.igormayachenkov.list.settings.FSettings
 
 class FList : Fragment()  {
 
@@ -71,6 +72,9 @@ class FList : Fragment()  {
 
     //----------------------------------------------------------------------------------------------
     // FRAGMENT
+    init {
+        Log.d(TAG, "init")
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
