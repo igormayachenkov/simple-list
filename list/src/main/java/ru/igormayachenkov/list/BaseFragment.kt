@@ -10,13 +10,15 @@ abstract class BaseFragment : Fragment(){
     //val isVisible : Boolean
       //  get() = {return view?.visibility == VISIBLE}
 
-    //----------------------------------------------------------------------------------------------
-    // ANIMATION
-    val useAnimation: Boolean = true
+    //val useAnimation: Boolean = true
     val animationDuration:Long = 200
 
-    fun showFragment() {
+    // Load data to controls
+    abstract fun load():Boolean
+
+    private fun show(useAnimation: Boolean) {
         view?.apply {
+            // Show fragment
             if(visibility != VISIBLE) {
                 visibility = VISIBLE
                 if (useAnimation) {
@@ -30,7 +32,7 @@ abstract class BaseFragment : Fragment(){
         }
     }
 
-    fun hideFragment() {
+    private fun hide(useAnimation: Boolean) {
         view?.apply {
             if(visibility==VISIBLE) {
                 Utils.hideSoftKeyboard(activity)
@@ -45,9 +47,17 @@ abstract class BaseFragment : Fragment(){
                             }
                         })
                 } else {
-                    visibility = GONE
+                   visibility = GONE
                 }
             }
         }
+    }
+
+    // Update UI according to the data
+    open fun update(useAnimation: Boolean){
+        if(load())
+            show(useAnimation)
+        else
+            hide(useAnimation)
     }
 }

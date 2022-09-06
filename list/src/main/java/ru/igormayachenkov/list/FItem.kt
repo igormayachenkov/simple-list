@@ -13,41 +13,14 @@ import kotlinx.android.synthetic.main.f_item.*
 import ru.igormayachenkov.list.data.ItemChanges
 import ru.igormayachenkov.list.data.OpenItem
 
-class FItem : Fragment()  {
+class FItem : BaseFragment()  {
 
     //----------------------------------------------------------------------------------------------
     // STATIC
     companion object {
         const val TAG: String = "myapp.FItem"
+        var instance:FItem? = null
 
-        fun show(){
-            AMain.publicInterface?.let {
-                Log.d(TAG, "show: create fragment")
-                it.showFragment(FItem(), TAG)
-            }?: run {
-                Log.w(TAG, "show: UI is not ready")
-            }
-        }
-
-        fun hide(){
-            Log.d(TAG, "hide: remove fragment")
-            AMain.publicInterface?.removeFragment(TAG)
-        }
-
-        // FACKED STUPID ANDROID: Sync DATA - UI
-        fun onActivityCreated(fragmentManager:FragmentManager){
-            val fragment = fragmentManager.findFragmentByTag(TAG)
-
-            // CHECK WRONG CASES
-            if(Logic.openItem!=null && fragment==null) {
-                Log.w(TAG,"onActivityCreated  RESTORE UI STATE: show")
-                show()
-            }
-            if(Logic.openItem==null && fragment!=null) {
-                Log.w(TAG,"onActivityCreated  RESTORE UI STATE: hide")
-                hide()
-            }
-        }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -58,7 +31,7 @@ class FItem : Fragment()  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
-        retainInstance = true// TO PREVENT DESTROY ON SCREEN ROTATION !!!
+        //retainInstance = true// TO PREVENT DESTROY ON SCREEN ROTATION !!!
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -69,11 +42,10 @@ class FItem : Fragment()  {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
+        instance = this
 
-        // Load data
-        Logic.openItem?.let {
-            load(it)
-        }?: hide()
+        // Restore status according to the data
+        update(false)
 
         // Set handlers
         //fog.setOnClickListener     { onButtonCancel() } TODO add hide-on-fog-click setting
@@ -90,26 +62,35 @@ class FItem : Fragment()  {
         Logic.saveOpenItemChanges(loadInput())
     }
 
-    //----------------------------------------------------------------------------------------------
-    // DATA + SHOW/HIDE
-    fun load(openitem: OpenItem){
-        Log.d(TAG, "load #${openitem}")
+    override fun onDestroyView() {
+        super.onDestroyView()
+        instance = null
+    }
 
-        //-------------------------------------
-        // LOAD DATA
-        openitem.changes?.let {
-            with(it) {
-                txtName.setText     (name )
-                txtDescr.setText    (description)
-                chkState.isChecked = isChecked
+    //----------------------------------------------------------------------------------------------
+    // DATA => CONTROLS
+    override fun load():Boolean {
+        Logic.openItem?.let { openItem ->
+            Log.d(TAG, "load #${openItem}")
+
+            //-------------------------------------
+            // LOAD DATA
+            openItem.changes?.let {
+                with(it) {
+                    txtName.setText(name)
+                    txtDescr.setText(description)
+                    chkState.isChecked = isChecked
+                }
+            } ?: kotlin.run {
+                with(openItem.item) {
+                    txtName.setText(name)
+                    txtDescr.setText(description)
+                    chkState.isChecked = isChecked
+                }
             }
-        }?: kotlin.run {
-            with(openitem.item) {
-                txtName.setText     (name )
-                txtDescr.setText    (description)
-                chkState.isChecked = isChecked
-            }
+            return true
         }
+        return false
     }
 
     // DATA INPUT

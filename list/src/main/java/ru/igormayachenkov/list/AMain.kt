@@ -53,19 +53,10 @@ class AMain : AppCompatActivity() {
         }
         recyclerView.adapter = adapter
 
-        //----------------------------
-        // Init APP data  here !!!
-        Settings
-        Logic
-        //----------------------------
-
         // Load
         publicInterface?.notifyDataSetChanged()
 
-        // Create fragments on start
-        //FList.onActivityCreated(supportFragmentManager)
-        //FItem.onActivityCreated(supportFragmentManager)
-    }
+   }
 
     override fun onDestroy() {
         Log.d(TAG, "onDestroy")
@@ -96,29 +87,6 @@ class AMain : AppCompatActivity() {
     inner class PublicInterface : IListAdapter{
         fun startExternalActivity(intent:Intent, requestCode:Int){
             startActivityForResult(intent,requestCode)
-        }
-
-        // MAIN FRAGMENTS (NO BACKSTACK - SHOW/HIDE BY DATA)
-        fun showFragment(fragment: Fragment, tag:String){
-            with(supportFragmentManager.beginTransaction()){
-                setCustomAnimations(R.anim.fade_in, R.anim.fade_out,
-                        R.anim.fade_in, R.anim.fade_out)
-                add(fragmentContainer.id, fragment, tag)
-                commit()
-            }
-        }
-        fun removeFragment(tag:String):Boolean{
-            supportFragmentManager.findFragmentByTag(tag)?.let { fragment->
-                Utils.hideSoftKeyboard(context)
-                with(supportFragmentManager.beginTransaction()) {
-                    setCustomAnimations(R.anim.fade_in, R.anim.fade_out,
-                            R.anim.fade_in, R.anim.fade_out)
-                    remove(fragment)
-                    commit()
-                }
-                return true
-            }
-            return false
         }
 
         // DIALOGS - BACKSTACK FRAGMENTS

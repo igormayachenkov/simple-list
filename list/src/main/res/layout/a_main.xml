@@ -43,10 +43,19 @@
         android:text="@string/main_empty"
         android:layout_gravity="center"/>
 
-    <!-- MAIN FRAGMENT CONTAINER -> place for FList, FItem -->
-    <FrameLayout android:id="@+id/fragmentContainer"
+    <!-- OPEN LIST VIEW -->
+    <fragment android:id="@+id/fList"
+        android:name="ru.igormayachenkov.list.FList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:visibility="gone"  />
+
+    <!-- OPEN ITEM VIEW -->
+    <fragment android:id="@+id/fItem"
+        android:name="ru.igormayachenkov.list.FItem"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"  />
 
     <!-- DIALOG CONTAINER -> place for popup fragments (dialogs) -->
     <FrameLayout android:id="@+id/dialogContainer"

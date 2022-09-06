@@ -13,7 +13,7 @@ class SortedItems : SortedArray<Item>(){
 
     // LIST ADAPTER
     override val adapter: IListAdapter?
-        get() = FList.publicInterface
+        get() = FList.instance?.listChangeInterface
 
 
 }

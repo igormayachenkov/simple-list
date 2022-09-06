@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.util.Log
+import ru.igormayachenkov.list.settings.Settings
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -44,9 +45,9 @@ class App : Application() {
 
         super.onCreate()
 
-//        // Init  - moved to AMain !!!
-//        Settings
-//        Logic
+        // Init
+        Settings
+        Logic
     }
 
 }

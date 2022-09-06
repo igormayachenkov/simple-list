@@ -16,7 +16,8 @@ abstract class SortedArray<TYPE> {
     fun load(elements : Collection<TYPE> ) {
         array.clear()
         array.addAll(elements)
-        updateSortOrder()
+        //updateSortOrder()
+        array.sortWith(comparator)
     }
 
     fun clear(){

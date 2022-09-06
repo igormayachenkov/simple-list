@@ -27,18 +27,20 @@ object Logic {
         Log.d(TAG, "setOpenList #${list.id}")
         // Save id
         pref.saveLong(OPEN_LIST_ID, list.id)
-        // Update live data
+        // Update data
         openList = OpenList(list, Database.loadListItems(list.id))
-        FList.show()
+        // Update UI
+        FList.instance?.update(true)
     }
 
     fun clearOpenList(){
         Log.d(TAG, "clearOpenList")
         // Save id
         pref.remove(OPEN_LIST_ID)
-        // Update live data
+        // Update data
         openList = null
-        FList.hide()
+        // update UI
+        FList.instance?.update(true)
     }
 
     fun createList(name:String?){
@@ -66,7 +68,8 @@ object Logic {
         Database.updateListName(list.id, name)
         list.name = name
         listOfLists.updateSortOrder() //TODO listOfLists.update
-        FList.publicInterface?.onListRenamed()
+        // Update UI
+        FList.instance?.listChangeInterface?.onListRenamed()
     }
 
     fun deleteOpenList(){
@@ -89,18 +92,20 @@ object Logic {
         Log.d(TAG, "changeOpenItem #${openitem.item.id} pos${openitem.pos}")
         // Save id
         pref.saveLong(OPEN_ITEM_ID, openitem.item.id)
-        // Update live data
+        // Update data
         this.openItem = openitem
-        FItem.show()
+        // Update UI
+        FItem.instance?.update(true)
     }
     fun clearOpenItem() {
         Log.d(TAG, "clearOpenItem")
         // Clear id
         pref.remove(OPEN_ITEM_ID)
         ItemChanges.clear()
-        // Update live data
+        // Update data
         openItem = null
-        FItem.hide()
+        // Update UI
+        FItem.instance?.update(true)
     }
     fun saveOpenItemChanges(changes:ItemChanges){
         openItem?.let {

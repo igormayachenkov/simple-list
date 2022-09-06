@@ -25,7 +25,7 @@ import ru.igormayachenkov.list.dialogs.DlgError
 import ru.igormayachenkov.list.dialogs.DlgName
 import ru.igormayachenkov.list.settings.FSettings
 
-class FList : Fragment()  {
+class FList : BaseFragment()  {
 
     //----------------------------------------------------------------------------------------------
     // STATIC
@@ -34,36 +34,8 @@ class FList : Fragment()  {
         val colorChecked  : Int = ContextCompat.getColor(App.context, R.color.colorChecked)
         val colorUnchecked: Int = ContextCompat.getColor(App.context, R.color.colorUnchecked)
 
-        var publicInterface : FList.PublicInterface? = null
+        var instance : FList? = null
 
-        fun show(){
-            AMain.publicInterface?.let {
-                Log.d(TAG, "show: create fragment")
-                it.showFragment(FList(), TAG)
-            }?: run {
-                Log.w(TAG, "show: UI is not ready")
-            }
-        }
-
-        fun hide(){
-            Log.d(TAG, "hide: remove fragment")
-            AMain.publicInterface?.removeFragment(TAG)
-        }
-
-        // Sync DATA - UI
-        fun onActivityCreated(fragmentManager:FragmentManager) {
-            val fragment = fragmentManager.findFragmentByTag(TAG)
-
-            // CHECK WRONG CASES
-            if (Logic.openList != null && fragment == null) {
-                Log.w(TAG,"onActivityCreated  RESTORE UI STATE: show")
-                show()
-            }
-            if(Logic.openList==null && fragment!=null) {
-                Log.w(TAG,"onActivityCreated  RESTORE UI STATE: hide")
-                hide()
-            }
-        }
     }
 
     // DATA
@@ -78,7 +50,7 @@ class FList : Fragment()  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
-        retainInstance = true// TO PREVENT DESTROY ON SCREEN ROTATION !!!
+        //retainInstance = true// TO PREVENT DESTROY ON SCREEN ROTATION !!!
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -89,15 +61,7 @@ class FList : Fragment()  {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
-        publicInterface = PublicInterface()
-
-        // Load data
-        Logic.openList?.let {
-            load(it)
-        }?: hide()
-
-        // Set handlers
-        toolbar.setOnMenuItemClickListener { onMenuClick(it); true}  //  https://developer.android.com/guide/fragments/appbar
+        instance = this
 
         // Init List
         recyclerView.layoutManager = when {
@@ -105,27 +69,39 @@ class FList : Fragment()  {
             else -> androidx.recyclerview.widget.GridLayoutManager(activity, columnCount)
         }
         recyclerView.adapter = adapter
+
+        // Restore status according to the data
+        update(false)
+
+        // Set handlers
+        toolbar.setOnMenuItemClickListener { onMenuClick(it); true}  //  https://developer.android.com/guide/fragments/appbar
+
     }
 
     override fun onDestroyView() {
         Log.d(TAG, "onDestroyView")
-        publicInterface = null
+        instance = null
         super.onDestroyView()
     }
 
     //----------------------------------------------------------------------------------------------
-    // LOAD DATA
-    fun load(list: OpenList){
-        Log.d(TAG, "load #${list.id}")
+    // DATA => CONTROLS
+    override fun load():Boolean {
+        Logic.openList?.let {list->
+            Log.d(TAG, "load #${list.id}")
 
-        // Name
-        toolbar.title = list.name
+            // Name
+            toolbar.title = list.name
 
-        // Set list data set link
-        uiList = list.items.asList
+            // Set list data set link
+            uiList = list.items.asList
 
-        // Update items
-        publicInterface?.notifyDataSetChanged()
+            // Update items
+            listChangeInterface?.notifyDataSetChanged()
+
+            return true
+        }
+        return false
     }
 
     fun updateNoDataLabel(){
@@ -134,8 +110,9 @@ class FList : Fragment()  {
     }
 
     //----------------------------------------------------------------------------------------------
-    // PUBLIC INTERFACE
-    inner class PublicInterface : IListAdapter {
+    // LIST CHANGE INTERFACE
+    val listChangeInterface = ListChangeInterface()
+    inner class ListChangeInterface : IListAdapter {
 
         fun onListRenamed(){
             Log.d(TAG, "onListRenamed")
