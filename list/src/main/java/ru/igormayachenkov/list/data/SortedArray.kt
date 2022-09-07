@@ -15,9 +15,6 @@ abstract class SortedArray<TYPE> : ArrayList<TYPE>(){
         updateSortOrder()
     }
 
-    //val asList : kotlin.collections.List<TYPE>
-    //    get() = array // sorted items
-
     fun updateSortOrder(){
         sortWith(comparator)
     }
@@ -32,6 +29,7 @@ abstract class SortedArray<TYPE> : ArrayList<TYPE>(){
         add(pos, element)
         return pos
     }
+
     fun update(element:TYPE, posOld:Int):Int{
         removeAt(posOld)
         return doInsert(element)

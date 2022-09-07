@@ -1,7 +1,5 @@
 package ru.igormayachenkov.list
 
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -14,11 +12,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import ru.igormayachenkov.list.data.OpenList
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.f_list.*
 import kotlinx.android.synthetic.main.item_list.view.*
-import ru.igormayachenkov.list.data.IListAdapter
 import ru.igormayachenkov.list.data.Item
 import ru.igormayachenkov.list.data.OpenItem
 import ru.igormayachenkov.list.dialogs.DlgError

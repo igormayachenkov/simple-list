@@ -15,11 +15,9 @@ import ru.igormayachenkov.list.data.List
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.a_main.*
 import kotlinx.android.synthetic.main.item_main.view.*
-import ru.igormayachenkov.list.data.IListAdapter
 import ru.igormayachenkov.list.dialogs.DlgError
 import ru.igormayachenkov.list.dialogs.DlgName
 import ru.igormayachenkov.list.settings.FSettings
-import ru.igormayachenkov.list.settings.Settings
 
 class AMain : AppCompatActivity() {
     companion object {
