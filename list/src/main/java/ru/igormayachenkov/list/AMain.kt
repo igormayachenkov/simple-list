@@ -24,8 +24,7 @@ import ru.igormayachenkov.list.settings.Settings
 class AMain : AppCompatActivity() {
     companion object {
         private const val TAG = "myapp.AMain"
-        var publicInterface : PublicInterface? = null
-        var context : AMain? = null
+        var instance : AMain? = null
     }
 
     // Data objects
@@ -44,8 +43,7 @@ class AMain : AppCompatActivity() {
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         toolbar.setOnMenuItemClickListener { onMenuClick(it); true }
 
-        context = this
-        publicInterface = PublicInterface()
+        instance = this
 
         // List
         recyclerView.layoutManager = when {
@@ -55,15 +53,14 @@ class AMain : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         // Load
-        publicInterface?.notifyDataSetChanged()
+        notifyDataSetChanged()
 
    }
 
     override fun onDestroy() {
         Log.d(TAG, "onDestroy")
         super.onDestroy()
-        publicInterface = null
-        context = null
+        instance = null
     }
 
     override fun onStart() {
@@ -85,47 +82,45 @@ class AMain : AppCompatActivity() {
 
     //----------------------------------------------------------------------------------------------
     // PUBLIC INTERFACE
-    inner class PublicInterface : IListAdapter{
-        fun startExternalActivity(intent:Intent, requestCode:Int){
-            startActivityForResult(intent,requestCode)
-        }
+    fun startExternalActivity(intent:Intent, requestCode:Int){
+        startActivityForResult(intent,requestCode)
+    }
 
-        // DIALOGS - BACKSTACK FRAGMENTS
-        fun showDialog(fragment: Fragment, tag:String){
-            with(supportFragmentManager.beginTransaction()){
-                //setCustomAnimations(R.anim.fade_in,0,0, R.anim.fade_out)
-                setCustomAnimations(R.anim.fade_in,0,0, R.anim.fade_out)
-                add(dialogContainer.id, fragment,tag)
-                addToBackStack(null)
-                commit()
-            }
+    // DIALOGS - BACKSTACK FRAGMENTS
+    fun showDialog(fragment: Fragment, tag:String){
+        with(supportFragmentManager.beginTransaction()){
+            //setCustomAnimations(R.anim.fade_in,0,0, R.anim.fade_out)
+            setCustomAnimations(R.anim.fade_in,0,0, R.anim.fade_out)
+            add(dialogContainer.id, fragment,tag)
+            addToBackStack(null)
+            commit()
         }
-        fun hideDialog(){
-            supportFragmentManager.popBackStack()
-        }
+    }
+    fun hideDialog(){
+        supportFragmentManager.popBackStack()
+    }
 
-        override fun notifyDataSetChanged() {
-            Log.d(TAG, "notifyDataSetChanged")
-            adapter.notifyDataSetChanged()
-            updateNoDataLabel()
-        }
+    fun notifyDataSetChanged() {
+        Log.d(TAG, "notifyDataSetChanged")
+        adapter.notifyDataSetChanged()
+        updateNoDataLabel()
+    }
 
-        override fun notifyItemInserted(pos: Int) {
-            Log.d(TAG, "notifyItemInserted pos:$pos")
-            adapter.notifyItemInserted(pos)
-            updateNoDataLabel()
-        }
+    fun notifyItemInserted(pos: Int) {
+        Log.d(TAG, "notifyItemInserted pos:$pos")
+        adapter.notifyItemInserted(pos)
+        updateNoDataLabel()
+    }
 
-        override fun notifyItemChanged(pos: Int) {
-            Log.d(TAG, "notifyItemChanged pos:$pos")
-            adapter.notifyItemChanged(pos)
-        }
+    fun notifyItemChanged(pos: Int) {
+        Log.d(TAG, "notifyItemChanged pos:$pos")
+        adapter.notifyItemChanged(pos)
+    }
 
-        override fun notifyItemRemoved(pos: Int) {
-            Log.d(TAG, "notifyItemRemoved pos:$pos")
-            adapter.notifyItemRemoved(pos)
-            updateNoDataLabel()
-        }
+    fun notifyItemRemoved(pos: Int) {
+        Log.d(TAG, "notifyItemRemoved pos:$pos")
+        adapter.notifyItemRemoved(pos)
+        updateNoDataLabel()
     }
 
     //----------------------------------------------------------------------------------------------

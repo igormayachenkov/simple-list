@@ -18,12 +18,12 @@ class FRowSide : Fragment()  {
 
         fun show() {
             Log.d(TAG, "show")
-            AMain.publicInterface?.showDialog(FRowSide(), TAG)
+            AMain.instance?.showDialog(FRowSide(), TAG)
         }
 
         fun hide() {
             Log.d(TAG, "hide")
-            AMain.publicInterface?.hideDialog()
+            AMain.instance?.hideDialog()
         }
     }
 

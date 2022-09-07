@@ -95,7 +95,7 @@ class FList : BaseFragment()  {
             toolbar.title = list.name
 
             // Update items
-            listChangeInterface?.notifyDataSetChanged()
+            notifyDataSetChanged()
 
             return true
         }
@@ -109,37 +109,33 @@ class FList : BaseFragment()  {
 
     //----------------------------------------------------------------------------------------------
     // LIST CHANGE INTERFACE
-    val listChangeInterface = ListChangeInterface()
-    inner class ListChangeInterface : IListAdapter {
+    fun onListRenamed(){
+        Log.d(TAG, "onListRenamed")
+        // Update title
+        toolbar.title = Logic.openList?.name
+    }
 
-        fun onListRenamed(){
-            Log.d(TAG, "onListRenamed")
-            // Update title
-            toolbar.title = Logic.openList?.name
-        }
+    fun notifyDataSetChanged() {
+        Log.d(TAG, "notifyDataSetChanged")
+        adapter.notifyDataSetChanged()
+        updateNoDataLabel()
+    }
 
-        override fun notifyDataSetChanged() {
-            Log.d(TAG, "notifyDataSetChanged")
-            adapter.notifyDataSetChanged()
-            updateNoDataLabel()
-        }
+    fun notifyItemInserted(pos: Int) {
+        Log.d(TAG, "notifyItemInserted pos:$pos")
+        adapter.notifyItemInserted(pos)
+        updateNoDataLabel()
+    }
 
-        override fun notifyItemInserted(pos: Int) {
-            Log.d(TAG, "notifyItemInserted pos:$pos")
-            adapter.notifyItemInserted(pos)
-            updateNoDataLabel()
-        }
+    fun notifyItemChanged(pos: Int) {
+        Log.d(TAG, "notifyItemChanged pos:$pos")
+        adapter.notifyItemChanged(pos)
+    }
 
-        override fun notifyItemChanged(pos: Int) {
-            Log.d(TAG, "notifyItemChanged pos:$pos")
-            adapter.notifyItemChanged(pos)
-        }
-
-        override fun notifyItemRemoved(pos: Int) {
-            Log.d(TAG, "notifyItemRemoved pos:$pos")
-            adapter.notifyItemRemoved(pos)
-            updateNoDataLabel()
-        }
+    fun notifyItemRemoved(pos: Int) {
+        Log.d(TAG, "notifyItemRemoved pos:$pos")
+        adapter.notifyItemRemoved(pos)
+        updateNoDataLabel()
     }
 
 

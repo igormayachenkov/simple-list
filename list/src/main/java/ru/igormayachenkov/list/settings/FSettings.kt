@@ -23,11 +23,11 @@ class FSettings : Fragment()   {
 
         fun show(){
             Log.d(TAG, "show")
-            AMain.publicInterface?.showDialog(FSettings(), TAG)
+            AMain.instance?.showDialog(FSettings(), TAG)
         }
         fun hide(){
             Log.d(TAG, "hide")
-            AMain.publicInterface?.hideDialog()
+            AMain.instance?.hideDialog()
         }
         fun onBackPressed(){
             Log.d(TAG, "onBackPressed")

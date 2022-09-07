@@ -14,7 +14,7 @@ object DlgCommon{
             message: String?,
             callback: (()->Unit)?
     ){
-        AMain.context?.let { context->
+        AMain.instance?.let { context->
             // Create builder
             val builder = AlertDialog.Builder(context)
             if (idTitle != 0) builder.setTitle(idTitle)

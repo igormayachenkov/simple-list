@@ -56,7 +56,7 @@ object Logic {
         Database.insertList(list)
         val pos = listOfLists.insert(list)
         // Update UI
-        AMain.publicInterface?.notifyItemInserted(pos)
+        AMain.instance?.notifyItemInserted(pos)
 
         // Open the list immediately
         setOpenList(list)
@@ -71,8 +71,8 @@ object Logic {
         list.name = name
         listOfLists.updateSortOrder() //TODO listOfLists.update
         // Update UI
-        AMain.publicInterface?.notifyDataSetChanged()
-        FList.instance?.listChangeInterface?.onListRenamed()
+        AMain.instance?.notifyDataSetChanged()
+        FList.instance?.onListRenamed()
     }
 
     fun deleteOpenList(){
@@ -82,7 +82,7 @@ object Logic {
         clearOpenList()
         listOfLists.getPositionById(openlist.id)?.let { pos->
             listOfLists.removeAt(pos)
-            AMain.publicInterface?.notifyItemRemoved(pos)
+            AMain.instance?.notifyItemRemoved(pos)
         }
     }
 
@@ -131,7 +131,7 @@ object Logic {
         Database.updateItemState(item)
         val posNew = openList?.items?.update(item, pos)
         // Update UI
-        FList.instance?.listChangeInterface?.apply {
+        FList.instance?.apply {
             if (posNew == pos) notifyItemChanged(pos)
             else notifyDataSetChanged()
         }
@@ -163,7 +163,7 @@ object Logic {
                 Database.updateItem(item)
                 val posNew = openlist.items.update(item, pos)
                 // Update UI
-                FList.instance?.listChangeInterface?.apply {
+                FList.instance?.apply {
                     if (posNew == pos) notifyItemChanged(pos)
                     else notifyDataSetChanged()
                 }
@@ -171,7 +171,7 @@ object Logic {
                 // NEW ITEM
                 Database.insertItem(item)
                 val pos = openlist.items.insert(item)
-                FList.instance?.listChangeInterface?.notifyItemInserted(pos)
+                FList.instance?.notifyItemInserted(pos)
             }
         }
 
@@ -190,7 +190,7 @@ object Logic {
             // Update storage
             Database.deleteItem(openitem.item.id)
             openlist.items.removeAt(openitem.pos)
-            FList.instance?.listChangeInterface?.notifyItemRemoved(openitem.pos)
+            FList.instance?.notifyItemRemoved(openitem.pos)
         }//else{
             // NEW : Do nothing. Just clear open item
         //}
@@ -201,7 +201,7 @@ object Logic {
     fun deleteALL(){
         Database.deleteALL()
         listOfLists.clear() // reload?
-        AMain.publicInterface?.notifyDataSetChanged()
+        AMain.instance?.notifyDataSetChanged()
         clearOpenList()
     }
 

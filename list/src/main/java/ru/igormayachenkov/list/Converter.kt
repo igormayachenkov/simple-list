@@ -44,7 +44,7 @@ object Converter {
             // To search for all documents available via installed storage providers, it would be "*/*".
             intent.type = "*/*"
 
-            AMain.publicInterface?.startExternalActivity(intent, LOAD_ALL_REQUEST)
+            AMain.instance?.startExternalActivity(intent, LOAD_ALL_REQUEST)
         } else {
             DlgError.showErrorToast(TAG,"SDK VERSION (${Build.VERSION.SDK_INT}) < KITKAT (19)")
         }
@@ -62,7 +62,7 @@ object Converter {
             // Create a file with the requested MIME type.
             intent.type = "*/*"
             intent.putExtra(Intent.EXTRA_TITLE, "Simple List.json")
-            AMain.publicInterface?.startExternalActivity(intent, SAVE_ALL_REQUEST)
+            AMain.instance?.startExternalActivity(intent, SAVE_ALL_REQUEST)
         } else {
             DlgError.showErrorToast(TAG,"SDK VERSION (${Build.VERSION.SDK_INT}) < KITKAT (19)")
         }
@@ -74,7 +74,7 @@ object Converter {
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "*/*"
             intent.putExtra(Intent.EXTRA_TITLE, Logic.openList!!.name + ".json")
-            AMain.publicInterface?.startExternalActivity(intent, SAVE_LIST_REQUEST)
+            AMain.instance?.startExternalActivity(intent, SAVE_LIST_REQUEST)
         } else {
             DlgError.showErrorToast(TAG,"SDK VERSION (${Build.VERSION.SDK_INT}) < KITKAT (19)")
         }
@@ -86,7 +86,7 @@ object Converter {
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "*/*"
             intent.putExtra(Intent.EXTRA_TITLE, Logic.openList!!.name + ".xml")
-            AMain.publicInterface?.startExternalActivity(intent, SAVE_LIST_XML_REQUEST)
+            AMain.instance?.startExternalActivity(intent, SAVE_LIST_XML_REQUEST)
         } else {
             DlgError.showErrorToast(TAG,"SDK VERSION (${Build.VERSION.SDK_INT}) < KITKAT (19)")
         }
@@ -333,7 +333,7 @@ object Converter {
             )
 
             // Update UI
-            AMain.publicInterface?.notifyDataSetChanged()
+            AMain.instance?.notifyDataSetChanged()
         }
     }
 
