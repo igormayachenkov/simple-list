@@ -29,7 +29,8 @@ class AMain : AppCompatActivity() {
     }
 
     // Data objects
-    private lateinit var uiList : kotlin.collections.List<List>
+    private val uiList : kotlin.collections.List<List>
+       get() = Logic.listOfLists
 
     val columnCount = 1
 
@@ -105,9 +106,6 @@ class AMain : AppCompatActivity() {
 
         override fun notifyDataSetChanged() {
             Log.d(TAG, "notifyDataSetChanged")
-            // Set link to sorted list
-            uiList = Logic.listOfLists.asList // update data set link
-
             adapter.notifyDataSetChanged()
             updateNoDataLabel()
         }

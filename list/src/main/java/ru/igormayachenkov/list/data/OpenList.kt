@@ -23,7 +23,7 @@ class OpenList(
                         set(value) {list.name = value}
 
     fun findPositionById(itemId:Long):Int?{
-        items.asList.forEachIndexed { pos, item->
+        items.forEachIndexed { pos, item->
             if(item.id==itemId) return pos
         }
         return null

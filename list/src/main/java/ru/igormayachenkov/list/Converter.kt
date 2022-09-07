@@ -139,7 +139,7 @@ object Converter {
 
     private fun doSaveAll(uri: Uri?) {
         try {
-            val bytes = saveLists(uri, Logic.listOfLists.asList)
+            val bytes = saveLists(uri, Logic.listOfLists)
             // Show result
             Toast.makeText(App.context, bytes.toString() + " " + getString(R.string.bytes_saved), Toast.LENGTH_LONG).show()
         } catch (e: Exception) { DlgError.show(e) }
@@ -283,7 +283,7 @@ object Converter {
 
             // Fill existed lists hash
             val existed = HashSet<Long>()
-            Logic.listOfLists.asList.forEach { list->
+            Logic.listOfLists.forEach { list->
                 existed.add(list.id)
             }
 

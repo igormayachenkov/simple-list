@@ -39,7 +39,8 @@ class FList : BaseFragment()  {
     }
 
     // DATA
-    lateinit var uiList : List<Item>
+    val uiList : List<Item>
+       get() = Logic.openList!!.items
     val columnCount = 1
 
     //----------------------------------------------------------------------------------------------
@@ -92,9 +93,6 @@ class FList : BaseFragment()  {
 
             // Name
             toolbar.title = list.name
-
-            // Set list data set link
-            uiList = list.items.asList
 
             // Update items
             listChangeInterface?.notifyDataSetChanged()

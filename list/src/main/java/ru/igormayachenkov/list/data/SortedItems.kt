@@ -10,10 +10,4 @@ class SortedItems : SortedArray<Item>(){
 
     override val comparator: Comparator<Item>
         get() = comparaByName
-
-    // LIST ADAPTER
-    override val adapter: IListAdapter?
-        get() = FList.instance?.listChangeInterface
-
-
 }

@@ -11,18 +11,14 @@ class SortedLists : SortedArray<List>(){
     override val comparator: Comparator<List>
         get() = comparaByName
 
-    // LIST ADAPTER
-    override val adapter: IListAdapter?
-        get() = AMain.publicInterface
-
     fun getElementById(id:Long):List?{
-        array.forEach{ element->
+        forEach{ element->
             if(element.id==id) return element
         }
         return null
     }
     fun getPositionById(id:Long):Int?{
-        array.forEachIndexed{ pos, element->
+        forEachIndexed{ pos, element->
             if(element.id==id) return pos
         }
         return null
