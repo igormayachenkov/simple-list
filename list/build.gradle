@@ -29,6 +29,7 @@ android {
     }
     productFlavors {
     }
+    namespace 'ru.igormayachenkov.list'
 }
 
 dependencies {
