@@ -11,10 +11,9 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.f_list.*
-import kotlinx.android.synthetic.main.item_list.view.*
 import ru.igormayachenkov.list.data.Item
 import ru.igormayachenkov.list.data.OpenItem
 import ru.igormayachenkov.list.dialogs.DlgError
@@ -33,6 +32,10 @@ class FList : BaseFragment()  {
         var instance : FList? = null
 
     }
+    // Controls
+    private val recyclerView:RecyclerView by lazy { requireView().findViewById(R.id.recyclerView) }
+    private val toolbar:Toolbar by lazy { requireView().findViewById(R.id.toolbar) }
+    private val lblEmptyList:View by lazy{ requireView().findViewById(R.id.lblEmptyList)}
 
     // DATA
     val uiList : List<Item>
@@ -209,8 +212,8 @@ class FList : BaseFragment()  {
     //----------------------------------------------------------------------------------------------
     // VIEW HOLDER
     inner class MyViewHolder(view:View):RecyclerView.ViewHolder(view){
-        val txtName      : TextView = view.txtName
-        val txtDescr     : TextView = view.txtDescription
+        val txtName      : TextView = view.findViewById(R.id.txtName)
+        val txtDescr     : TextView = view.findViewById(R.id.txtDescription)
         init {
             view.setOnClickListener{v->onItemClick(v)}
             view.setOnLongClickListener { v->onItemLongClick(v)}

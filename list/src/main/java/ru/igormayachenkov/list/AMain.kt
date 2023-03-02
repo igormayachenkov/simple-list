@@ -13,8 +13,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import ru.igormayachenkov.list.data.List
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.a_main.*
-import kotlinx.android.synthetic.main.item_main.view.*
 import ru.igormayachenkov.list.dialogs.DlgError
 import ru.igormayachenkov.list.dialogs.DlgName
 import ru.igormayachenkov.list.settings.FSettings
@@ -24,6 +22,9 @@ class AMain : AppCompatActivity() {
         private const val TAG = "myapp.AMain"
         var instance : AMain? = null
     }
+    // Controls
+    private val recyclerView:RecyclerView by lazy { findViewById(R.id.recyclerView) }
+    private val lblEmptyList:View by lazy{ findViewById(R.id.lblEmptyList)}
 
     // Data objects
     private val uiList : kotlin.collections.List<List>
@@ -89,7 +90,7 @@ class AMain : AppCompatActivity() {
         with(supportFragmentManager.beginTransaction()){
             //setCustomAnimations(R.anim.fade_in,0,0, R.anim.fade_out)
             setCustomAnimations(R.anim.fade_in,0,0, R.anim.fade_out)
-            add(dialogContainer.id, fragment,tag)
+            add(R.id.dialogContainer, fragment,tag)
             addToBackStack(null)
             commit()
         }
@@ -200,7 +201,7 @@ class AMain : AppCompatActivity() {
     //----------------------------------------------------------------------------------------------
     // VIEW HOLDER
     inner class MyViewHolder(view:View):RecyclerView.ViewHolder(view){
-        val txtName      : TextView = view.txtName
+        val txtName : TextView = view.findViewById(R.id.txtName)
         init {
             view.setOnClickListener{v->onListItemClick(v)}
         }

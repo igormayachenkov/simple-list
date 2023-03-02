@@ -5,13 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
 import android.view.ViewGroup
+import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.fragment.app.FragmentManager
-import kotlinx.android.synthetic.main.f_item.*
 import ru.igormayachenkov.list.data.ItemChanges
-import ru.igormayachenkov.list.data.OpenItem
 
 class FItem : BaseFragment()  {
 
@@ -22,6 +21,12 @@ class FItem : BaseFragment()  {
         var instance:FItem? = null
 
     }
+    // Controls
+    private val btnSave:LinearLayout by lazy { requireView().findViewById(R.id.btnSave) }
+    private val btnDel:LinearLayout  by lazy { requireView().findViewById(R.id.btnDel) }
+    private val txtName:EditText     by lazy { requireView().findViewById(R.id.txtName) }
+    private val txtDescr:EditText    by lazy { requireView().findViewById(R.id.txtDescr) }
+    private val chkState:CheckBox    by lazy { requireView().findViewById(R.id.chkState) }
 
     //----------------------------------------------------------------------------------------------
     // FRAGMENT

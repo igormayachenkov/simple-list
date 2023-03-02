@@ -6,7 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.f_settings.*
+import android.widget.RelativeLayout
 import ru.igormayachenkov.list.AMain
 import ru.igormayachenkov.list.PopupView
 import ru.igormayachenkov.list.R
@@ -42,6 +42,10 @@ class FSettings : Fragment()   {
 
     // CONTROLS
     var popupView: PopupView?=null
+    private val btnBack         :View           by lazy { requireView().findViewById(R.id.btnBack) }
+    private val btnRowLeft      :View           by lazy { requireView().findViewById(R.id.btnRowLeft) }
+    private val btnRowRight     :View           by lazy { requireView().findViewById(R.id.btnRowRight) }
+    private val popupContainer  :RelativeLayout by lazy { requireView().findViewById(R.id.popupContainer) }
 
     //----------------------------------------------------------------------------------------------
     // FRAGMENT

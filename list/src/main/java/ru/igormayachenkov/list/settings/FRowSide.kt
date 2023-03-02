@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.f_row_side.*
 import ru.igormayachenkov.list.AMain
 import ru.igormayachenkov.list.R
 
@@ -26,6 +25,8 @@ class FRowSide : Fragment()  {
             AMain.instance?.hideDialog()
         }
     }
+    // Controls
+    private val viewFog:View by lazy { requireView().findViewById(R.id.viewFog) }
 
     //----------------------------------------------------------------------------------------------
     // FRAGMENT
