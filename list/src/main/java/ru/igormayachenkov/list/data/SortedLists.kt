@@ -1,17 +1,16 @@
 package ru.igormayachenkov.list.data
 
-import ru.igormayachenkov.list.AMain
 import kotlin.Comparator
 
-class SortedLists : SortedArray<List>(){
+class SortedLists : SortedArray<DataList>(){
 
     // SORTING
-    val comparaByName = compareBy<List> { it.name }
+    val comparaByName = compareBy<DataList> { it.name }
 
-    override val comparator: Comparator<List>
+    override val comparator: Comparator<DataList>
         get() = comparaByName
 
-    fun getElementById(id:Long):List?{
+    fun getElementById(id:Long):DataList?{
         forEach{ element->
             if(element.id==id) return element
         }

@@ -12,8 +12,8 @@ import org.json.JSONObject
 import ru.igormayachenkov.list.App.Companion.getString
 import ru.igormayachenkov.list.UtilsJSON.getJSONArrayOrNull
 import ru.igormayachenkov.list.UtilsJSON.getStringOrNull
-import ru.igormayachenkov.list.data.Item
-import ru.igormayachenkov.list.data.List
+import ru.igormayachenkov.list.data.DataItem
+import ru.igormayachenkov.list.data.DataList
 import ru.igormayachenkov.list.dialogs.DlgCommon
 import ru.igormayachenkov.list.dialogs.DlgError
 import java.io.*
@@ -147,7 +147,7 @@ object Converter {
 
     private fun doSaveOpenList(uri: Uri?) {
         Logic.openList?.let {
-            val lists = ArrayList<List>()
+            val lists = ArrayList<DataList>()
             lists.add(it.list)
             try {
                 val bytes = saveLists( uri, lists)
@@ -167,7 +167,7 @@ object Converter {
 
     //----------------------------------------------------------------------------------------------
     // FILE EXPORT/IMPORT UTILS
-    private fun saveLists(uri: Uri?, lists: Collection<List>):Int{
+    private fun saveLists(uri: Uri?, lists: Collection<DataList>):Int{
         // Open
         val pfd = App.context.contentResolver.openFileDescriptor(uri!!, "w")
         val fileOutputStream = FileOutputStream(pfd!!.fileDescriptor)
@@ -183,7 +183,7 @@ object Converter {
         return bytes.size
     }
 
-    private fun saveListToXML(list:List, uri: Uri?):Int{
+    private fun saveListToXML(list:DataList, uri: Uri?):Int{
         // Open
         val pfd = App.context.contentResolver.openFileDescriptor(uri!!, "w")
         val fileOutputStream = FileOutputStream(pfd!!.fileDescriptor)
@@ -223,7 +223,7 @@ object Converter {
 
     // DATA TO JSON
     @Throws(JSONException::class)
-    private fun dataToJSON(lists: Collection<List>): JSONObject {
+    private fun dataToJSON(lists: Collection<DataList>): JSONObject {
         val json = JSONObject()
         // Version
         App.packageInfo?.let{
@@ -305,7 +305,7 @@ object Converter {
                 }
 
                 // Append list
-                val list = List(id, name, null)
+                val list = DataList(id, name, null)
                 Database.insertList(list)
 
                 // Insert list items
@@ -317,7 +317,7 @@ object Converter {
                         val itemName = getStringOrNull( itemJSON,"name") ?: continue
                         // Update the database
                         Database.insertItem(
-                            Item.create( // TODO Copy item id
+                            DataItem.create( // TODO Copy item id
                                 list.id,
                                 itemName,
                                 getStringOrNull(itemJSON,"description")
@@ -340,7 +340,7 @@ object Converter {
     //----------------------------------------------------------------------------------------------
     // SINGLE LIST - EXPORT TO A FILE
     @Throws(IOException::class)
-    fun listToXML(list:List): String {
+    fun listToXML(list:DataList): String {
         val sb = StringBuilder()
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
         with(list) {
@@ -366,7 +366,7 @@ object Converter {
     }
 
     @Throws(JSONException::class)
-    fun listToJSON(list:List): JSONObject {
+    fun listToJSON(list:DataList): JSONObject {
         val json = JSONObject()
         with(list) {
             json.put("id",      id)

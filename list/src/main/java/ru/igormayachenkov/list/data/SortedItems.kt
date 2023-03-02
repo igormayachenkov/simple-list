@@ -1,13 +1,11 @@
 package ru.igormayachenkov.list.data
 
-import ru.igormayachenkov.list.FList
 
-
-class SortedItems : SortedArray<Item>(){
+class SortedItems : SortedArray<DataItem>(){
 
     // SORTING
-    val comparaByName = compareBy<Item> { it.name }
+    val comparaByName = compareBy<DataItem> { it.name }
 
-    override val comparator: Comparator<Item>
+    override val comparator: Comparator<DataItem>
         get() = comparaByName
 }

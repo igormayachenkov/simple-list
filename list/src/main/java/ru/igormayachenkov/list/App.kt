@@ -46,8 +46,9 @@ class App : Application() {
         super.onCreate()
 
         // Init
-        Settings
-        Logic
+        //Settings
+        Database.open(this)
+        //Logic
     }
 
 }

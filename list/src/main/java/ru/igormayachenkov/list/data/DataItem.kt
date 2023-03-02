@@ -2,14 +2,14 @@ package ru.igormayachenkov.list.data
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // DATA OBJECT: Item
-data class Item(
-        val id          : Long,
-        val parent_id   : Long,
+data class DataItem(
+    override val id  : Long,
+    val parent_id   : Long,
         //var syncState:Int,
-        var state       : Int, // checked/unchecked
-        var name        : String?,
-        var description : String?
-) {
+    var state       : Int, // checked/unchecked
+    var name        : String?,
+    var description : String?
+) :Element{
     //-----------------------------------------
     // COMPARE FUNCTIONS FOR HASH TABLE
 //    override fun hashCode(): Int {
@@ -23,8 +23,8 @@ data class Item(
 
     companion object {
         const val ITEM_STATE_CHECKED = 1
-        fun create(parent_id:Long, name:String?=null, descr:String?=null):Item{
-            return Item(
+        fun create(parent_id:Long, name:String?=null, descr:String?=null):DataItem{
+            return DataItem(
                     System.currentTimeMillis(),
                     parent_id,
                     0,

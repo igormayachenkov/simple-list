@@ -3,9 +3,9 @@ package ru.igormayachenkov.list.data
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // DATA OBJECT: List + item hash + item sorted list
 class OpenList(
-    val list : List,
+    val list : DataList,
     //val pos  : Int,  - Can't have it here: position is changing if list renamed
-    itemsCollection : Collection<Item>
+    itemsCollection : Collection<DataItem>
 ){
     companion object {
         private const val TAG = "myapp.OpenList"

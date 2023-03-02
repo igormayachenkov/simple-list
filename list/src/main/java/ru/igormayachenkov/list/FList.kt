@@ -14,7 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import ru.igormayachenkov.list.data.Item
+import ru.igormayachenkov.list.data.DataItem
 import ru.igormayachenkov.list.data.OpenItem
 import ru.igormayachenkov.list.dialogs.DlgError
 import ru.igormayachenkov.list.dialogs.DlgName
@@ -38,7 +38,7 @@ class FList : BaseFragment()  {
     private val lblEmptyList:View by lazy{ requireView().findViewById(R.id.lblEmptyList)}
 
     // DATA
-    val uiList : List<Item>
+    val uiList : List<DataItem>
        get() = Logic.openList!!.items
     val columnCount = 1
 
@@ -238,8 +238,8 @@ class FList : BaseFragment()  {
             updateChecked(item)
         }
 
-        fun updateChecked(item:Item){
-            if (item.state == Item.ITEM_STATE_CHECKED) {
+        fun updateChecked(item:DataItem){
+            if (item.state == DataItem.ITEM_STATE_CHECKED) {
                 txtName.setTextColor(colorChecked)
                 txtDescr.setTextColor(colorChecked)
             } else {

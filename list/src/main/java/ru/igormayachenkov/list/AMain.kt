@@ -11,7 +11,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import ru.igormayachenkov.list.data.List
+import ru.igormayachenkov.list.data.DataList
 import androidx.recyclerview.widget.RecyclerView
 import ru.igormayachenkov.list.dialogs.DlgError
 import ru.igormayachenkov.list.dialogs.DlgName
@@ -27,7 +27,7 @@ class AMain : AppCompatActivity() {
     private val lblEmptyList:View by lazy{ findViewById(R.id.lblEmptyList)}
 
     // Data objects
-    private val uiList : kotlin.collections.List<List>
+    private val uiList : kotlin.collections.List<DataList>
        get() = Logic.listOfLists
 
     val columnCount = 1

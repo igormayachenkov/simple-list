@@ -5,8 +5,8 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import ru.igormayachenkov.list.data.Item
-import ru.igormayachenkov.list.data.List
+import ru.igormayachenkov.list.data.DataItem
+import ru.igormayachenkov.list.data.DataList
 import java.util.*
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ object Database {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // INSERTERS
-    fun insertList(list: List) {
+    fun insertList(list: DataList) {
         Log.d(TAG, "addList")
 
         // Prepare values
@@ -44,7 +44,7 @@ object Database {
         val rowID = db!!.insert(TABLE_LISTS, null, cv)
     }
 
-    fun insertItem(item: Item) {
+    fun insertItem(item: DataItem) {
         Log.d(TAG, "insertItem")
 
         // Prepare values
@@ -78,7 +78,7 @@ object Database {
         )
     }
 
-    fun updateItem(item: Item) {
+    fun updateItem(item: DataItem) {
         Log.d(TAG, "updateItem $item")
 
         // Prepare values
@@ -97,7 +97,7 @@ object Database {
         )
     }
 
-    fun updateItemState(item: Item) {
+    fun updateItemState(item: DataItem) {
         Log.d(TAG, "updateItemState id:${item.id}  state:${item.state}")
 
         // Prepare values
@@ -162,12 +162,12 @@ object Database {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // LOADERS
-    fun loadListOfLists():HashSet<List> {
+    fun loadListOfLists():HashSet<DataList> {
         // Open database
         //SQLiteDatabase dbRead = dbHelper.getReadableDatabase();
 
         // LOAD ITEMS
-        val hashSet = HashSet<List>()
+        val hashSet = HashSet<DataList>()
         // Query all rows and get Cursor
         val c = db!!.query(
                 TABLE_LISTS,  // table
@@ -189,7 +189,7 @@ object Database {
             // Load
             do {
                 // Create new data object
-                val list = List(
+                val list = DataList(
                         c.getLong(iID),
                         c.getString(iName),
                         // c.getInt(iSyncState)
@@ -207,12 +207,12 @@ object Database {
         return hashSet
     }
 
-    fun loadListItems(listId:Long):HashSet<Item> {
+    fun loadListItems(listId:Long):HashSet<DataItem> {
         // Open database
         //SQLiteDatabase dbRead = dbHelper.getReadableDatabase();
 
         // LOAD ITEMS
-        val items = HashSet<Item>()
+        val items = HashSet<DataItem>()
         // Query all rows and get Cursor
         val args = arrayOf(listId.toString())
         val c = db!!.query(
@@ -236,7 +236,7 @@ object Database {
             // Load
             do {
                 // Create deta object
-                val item = Item(
+                val item = DataItem(
                         c.getLong(iID),
                         listId,
                         c.getInt(iState),

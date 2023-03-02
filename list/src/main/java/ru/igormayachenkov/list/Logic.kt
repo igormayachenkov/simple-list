@@ -1,11 +1,10 @@
 package ru.igormayachenkov.list
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import ru.igormayachenkov.list.Prefs.Companion.OPEN_ITEM_ID
 import ru.igormayachenkov.list.Prefs.Companion.OPEN_LIST_ID
 import ru.igormayachenkov.list.data.*
-import ru.igormayachenkov.list.data.List
+import ru.igormayachenkov.list.data.DataList
 
 object Logic {
     const val TAG = "myapp.Logic"
@@ -22,7 +21,7 @@ object Logic {
     // OPEN LIST
     var openList    : OpenList? = null
 
-    fun setOpenList(list:List){
+    fun setOpenList(list:DataList){
         // !!! DO NOT Clear open item
         Log.d(TAG, "setOpenList #${list.id}")
         // Save id
@@ -47,7 +46,7 @@ object Logic {
         if (name.isNullOrEmpty()) throw Exception(App.context.getString(R.string.dialog_error))
 
         // Create a new list object
-        val list = List(
+        val list = DataList(
                 System.currentTimeMillis(),
                 name,
                 null
@@ -121,12 +120,12 @@ object Logic {
     fun createItem(){
         Log.d(TAG, "createItem")
         openList?.id?.let { list_id->
-            val item = Item.create(list_id)
+            val item = DataItem.create(list_id)
             changeOpenItem(OpenItem(item,null))
         }?:run{ throw Exception("createItem when openList is NULL") }
     }
 
-    fun toggleItemState(item:Item, pos: Int){
+    fun toggleItemState(item:DataItem, pos: Int){
         item.toggleState()
         Database.updateItemState(item)
         val posNew = openList?.items?.update(item, pos)
@@ -233,7 +232,7 @@ object Logic {
                         if (pos != null)
                             OpenItem(openlist.items[pos], pos) // Existed
                         else
-                            OpenItem(Item.create(openlist.id), null) // New
+                            OpenItem(DataItem.create(openlist.id), null) // New
 
                 // Load saved changes - ONLY HERE ON APP START!!!
                 openitem.changes = ItemChanges.load()
