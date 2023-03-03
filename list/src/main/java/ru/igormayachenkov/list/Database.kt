@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import ru.igormayachenkov.list.data.DataItem
 import ru.igormayachenkov.list.data.DataList
+import ru.igormayachenkov.list.data.Element
 import java.util.*
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21,7 +22,7 @@ object Database {
         Log.d(TAG, "open")
         dbHelper = DBHelper(context,
                 "maindatabase.db",  // name
-                1 // version
+                2 // version
         )
         db = dbHelper!!.writableDatabase // open here
     }
@@ -182,7 +183,7 @@ object Database {
         if (c.moveToFirst()) {
             // Define col numbers by name
             val iID = c.getColumnIndex(LIST_ID)
-            val iSyncState = c.getColumnIndex(SYNC_STATE)
+            val iSyncState = c.getColumnIndex(TYPE)
             val iName = c.getColumnIndex(NAME)
             val iDescription = c.getColumnIndex(DESCRIPTION)
 
@@ -222,7 +223,7 @@ object Database {
         if (c.moveToFirst()) {
             // Define col numbers by name
             val iID = c.getColumnIndex(LIST_ID)
-            val iSyncState = c.getColumnIndex(SYNC_STATE)
+            val iSyncState = c.getColumnIndex(TYPE)
             val iName = c.getColumnIndex(NAME)
             val iDescription = c.getColumnIndex(DESCRIPTION)
             // Create new data object
@@ -257,14 +258,14 @@ object Database {
         if (c.moveToFirst()) {
             // Define col numbers by name
             val iID = c.getColumnIndex(ITEM_ID)
-            val iSyncState = c.getColumnIndex(SYNC_STATE)
+            val iType = c.getColumnIndex(TYPE)
             val iState = c.getColumnIndex(STATE)
             val iName = c.getColumnIndex(NAME)
             val iDescription = c.getColumnIndex(DESCRIPTION)
 
             // Load
             do {
-                // Create deta object
+                // Create data object
                 val item = DataItem(
                         c.getLong(iID),
                         listId,
@@ -283,6 +284,56 @@ object Database {
         Log.d(TAG, "loadListItems. size:" + items.size)
         return  items
     }
+//
+//    fun loadListElements(listId:Long):List<Element> {
+//        // LOAD ITEMS
+//        val items = ArrayList<Element>()
+//        // Query all rows and get Cursor
+//        val args = arrayOf(listId.toString())
+//        val c = db!!.query(
+//            TABLE_ITEMS,  // table
+//            null,  // columns
+//            LIST_ID + "=?",  // selection
+//            args,  // selectionArgs
+//            null,  // group by
+//            null,  // having
+//            null//NAME // order by
+//        )
+//        // Loop for all string
+//        if (c.moveToFirst()) {
+//            // Define col numbers by name
+//            val iID = c.getColumnIndex(ITEM_ID)
+//            val iType = c.getColumnIndex(TYPE)
+//            val iState = c.getColumnIndex(STATE)
+//            val iName = c.getColumnIndex(NAME)
+//            val iDescription = c.getColumnIndex(DESCRIPTION)
+//
+//            // Load
+//            do {
+//                // Create deta object
+//                when(c.getInt(iType)) {
+//                    TYPE_ITEM -> items.add(DataItem(
+//                        c.getLong(iID),
+//                        listId,
+//                        c.getInt(iState),
+//                        c.getString(iName),
+//                        c.getString(iDescription)
+//                    ))
+//
+//                    TYPE_LIST -> items.add(DataList(
+//                        c.getLong(iID),
+//
+//                        ))
+//                }
+//            } while (c.moveToNext())
+//        }
+//        c.close()
+//
+//        // Close database
+//        //dbHelper.close();
+//        Log.d(TAG, "loadListItems. size:" + items.size)
+//        return  items
+//    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // DATABASE STRUCTURE
@@ -299,12 +350,16 @@ object Database {
     const val CAT_ID = "cat_id"
 
     // flags
-    const val SYNC_STATE = "sync_state"
+    const val TYPE = "type"
     const val STATE = "state"
 
     // data
     const val NAME = "name"
     const val DESCRIPTION = "description"
+
+    // type
+    const val TYPE_LIST = 100
+    const val TYPE_ITEM = 200
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // OPEN HELPER
@@ -312,19 +367,19 @@ object Database {
         override fun onCreate(db: SQLiteDatabase) {
             Log.d(TAG, "onCreate")
             // Create table lists
-            db.execSQL("CREATE TABLE " + TABLE_LISTS + " ("
-                    + LIST_ID + " INTEGER PRIMARY KEY,"
-                    + SYNC_STATE + " INTEGER,"
-                    + NAME + " TEXT,"
-                    + DESCRIPTION + " TEXT"
-                    + ");")
+//            db.execSQL("CREATE TABLE " + TABLE_LISTS + " ("
+//                    + LIST_ID + " INTEGER PRIMARY KEY,"
+//                    + TYPE + " INTEGER,"
+//                    + NAME + " TEXT,"
+//                    + DESCRIPTION + " TEXT"
+//                    + ");")
 
             // Create table items
             db.execSQL("CREATE TABLE " + TABLE_ITEMS + " ("
                     + ITEM_ID + " INTEGER PRIMARY KEY,"
                     + LIST_ID + " INTEGER,"
                     + CAT_ID + " INTEGER,"
-                    + SYNC_STATE + " INTEGER,"
+                    + TYPE + " INTEGER,"
                     + STATE + " INTEGER,"
                     + NAME + " TEXT,"
                     + DESCRIPTION + " TEXT"
@@ -333,14 +388,44 @@ object Database {
             // Create table cats
             db.execSQL("CREATE TABLE " + TABLE_CATS + " ("
                     + CAT_ID + " INTEGER PRIMARY KEY,"
-                    + SYNC_STATE + " INTEGER,"
+                    + TYPE + " INTEGER,"
                     + NAME + " TEXT,"
                     + DESCRIPTION + " TEXT"
                     + ");")
         }
 
         override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-            Log.d(TAG, "onUpgrade")
+            Log.d(TAG, "ON UPGRADE $oldVersion => $newVersion")
+            if(oldVersion<=1){
+                // ALTER items table
+                db.execSQL("ALTER TABLE items RENAME COLUMN sync_state to type",arrayOf())
+                db.execSQL("UPDATE items SET type=$TYPE_ITEM", arrayOf())
+
+                // Copy data: TABLE_LISTS => TABLE_ITEMS
+                db.execSQL("INSERT INTO items (item_id,list_id,type,name) SELECT list_id,0,$TYPE_LIST,name FROM lists", arrayOf())
+                db.execSQL("DROP TABLE lists",arrayOf())
+
+                data class DataCheck(val id: Long, val name:String, val type:Int)
+                val lists = ArrayList<DataCheck>()
+                val c = db.rawQuery("SELECT * FROM items", arrayOf())
+                if (c.moveToFirst()) {
+                    // Define col numbers by name
+                    val iID = c.getColumnIndex("item_id")
+                    val iName = c.getColumnIndex("name")
+                    val iType = c.getColumnIndex("type")
+                    // Load
+                    do {
+                        // Create new DataItem object from the list row!!!
+                        lists.add( DataCheck(
+                            c.getLong(iID),
+                            c.getString(iName),
+                            c.getInt(iType)
+                        ))
+                    } while (c.moveToNext())
+                }
+                c.close()
+            }
+            //throw Exception("ON UPGRADE $oldVersion => $newVersion")
         }
     }
 }

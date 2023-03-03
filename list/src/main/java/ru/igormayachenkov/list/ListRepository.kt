@@ -23,11 +23,7 @@ class ListRepository() {
         Log.d(TAG, "loadListItems started $listId")
         var items:List<Element>
         withContext(Dispatchers.IO) {
-            items = if (listId.compareTo(0) == 0) {
-                Database.loadListOfLists().toList()
-            }else {
-                Database.loadListItems(listId).toList()
-            }
+            items = Database.loadListItems(listId).toList()
         }
         Log.d(TAG, "loadListItems finished ${items.toString()}")
         return items

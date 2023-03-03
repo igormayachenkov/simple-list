@@ -61,7 +61,7 @@ fun ItemRow(element:Element){
         is DataItem->"item"
         is DataList->"list"
     })
-    Text(text = element.id.toString(), style = MaterialTheme.typography.h5, modifier=Modifier.padding(horizontal = 16.dp))
+    Text(text = element.id.toString(), modifier=Modifier.padding(horizontal = 8.dp))
     when(element){
         is DataItem -> Text(text = element.name?:"null",  style = MaterialTheme.typography.h5)
         is DataList -> Text(text = element.name,  style = MaterialTheme.typography.h5)
