@@ -1,13 +1,20 @@
 package ru.igormayachenkov.list.data
 
+import ru.igormayachenkov.list.Database
+
+// type
+const val TYPE_LIST = 100
+const val TYPE_ITEM = 200
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // DATA OBJECT: Item
 data class DataItem(
     override val id  : Long,
     val parent_id   : Long,
-        //var syncState:Int,
+    val type        : Int,
     var state       : Int, // checked/unchecked
-    var name        : String?,
+    var name        : String,
     var description : String?
 ) :Element{
     //-----------------------------------------
@@ -23,10 +30,11 @@ data class DataItem(
 
     companion object {
         const val ITEM_STATE_CHECKED = 1
-        fun create(parent_id:Long, name:String?=null, descr:String?=null):DataItem{
+        fun create(parent_id:Long, name:String="", descr:String?=null):DataItem{
             return DataItem(
                     System.currentTimeMillis(),
                     parent_id,
+                    TYPE_ITEM,
                     0,
                     name,
                     descr

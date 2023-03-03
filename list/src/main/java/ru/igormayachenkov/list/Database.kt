@@ -2,12 +2,11 @@ package ru.igormayachenkov.list
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import ru.igormayachenkov.list.data.DataItem
-import ru.igormayachenkov.list.data.DataList
-import ru.igormayachenkov.list.data.Element
+import ru.igormayachenkov.list.data.*
 import java.util.*
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -208,44 +207,28 @@ object Database {
         return hashSet
     }
 
-    fun loadList(listId:Long):DataList? {
+    fun loadItem(id:Long):DataItem? {
         // Query all rows and get Cursor
-        val args = arrayOf(listId.toString())
-        val c = db!!.query(
-            TABLE_LISTS,  // table
+        val args = arrayOf(id.toString())
+        val cursor = db!!.query(
+            TABLE_ITEMS,  // table
             null,  // columns
-            LIST_ID + "=?",  // selection
+            ITEM_ID + "=?",  // selection
             args,  // selectionArgs
             null,  // group by
             null,  // having
             null//NAME // order by
         )
-        if (c.moveToFirst()) {
-            // Define col numbers by name
-            val iID = c.getColumnIndex(LIST_ID)
-            val iSyncState = c.getColumnIndex(TYPE)
-            val iName = c.getColumnIndex(NAME)
-            val iDescription = c.getColumnIndex(DESCRIPTION)
-            // Create new data object
-            return DataList(
-                c.getLong(iID),
-                c.getString(iName),
-                // c.getInt(iSyncState)
-                c.getString(iDescription)
-            )
-        }
-        return null
+        val items = readItems(cursor)
+
+        return items.firstOrNull()
     }
 
-    fun loadListItems(listId:Long):HashSet<DataItem> {
-        // Open database
-        //SQLiteDatabase dbRead = dbHelper.getReadableDatabase();
-
+    fun loadListItems(listId:Long):List<DataItem> {
         // LOAD ITEMS
-        val items = HashSet<DataItem>()
         // Query all rows and get Cursor
         val args = arrayOf(listId.toString())
-        val c = db!!.query(
+        val cursor = db!!.query(
                 TABLE_ITEMS,  // table
                 null,  // columns
                 LIST_ID + "=?",  // selection
@@ -254,86 +237,41 @@ object Database {
                 null,  // having
                 null//NAME // order by
         )
+        val items = readItems(cursor)
+
+        Log.d(TAG, "loadListItems. size:" + items.size)
+        return  items
+    }
+    private fun readItems(c:Cursor):List<DataItem>{
+        val items = ArrayList<DataItem>()
         // Loop for all string
         if (c.moveToFirst()) {
             // Define col numbers by name
-            val iID = c.getColumnIndex(ITEM_ID)
-            val iType = c.getColumnIndex(TYPE)
-            val iState = c.getColumnIndex(STATE)
-            val iName = c.getColumnIndex(NAME)
-            val iDescription = c.getColumnIndex(DESCRIPTION)
+            val iItemId = c.getColumnIndex(ITEM_ID)
+            val iListId = c.getColumnIndex(LIST_ID)
+            val iType   = c.getColumnIndex(TYPE)
+            val iState  = c.getColumnIndex(STATE)
+            val iName   = c.getColumnIndex(NAME)
+            val iDescr  = c.getColumnIndex(DESCRIPTION)
 
             // Load
             do {
                 // Create data object
                 val item = DataItem(
-                        c.getLong(iID),
-                        listId,
-                        c.getInt(iState),
-                        c.getString(iName),
-                        c.getString(iDescription)
+                    c.getLong(iItemId),
+                    c.getLong(iListId),
+                    c.getInt(iType),
+                    c.getInt(iState),
+                    c.getString(iName),
+                    c.getString(iDescr)
                 )
                 // Add to the list
                 items.add(item)
             } while (c.moveToNext())
         }
         c.close()
-
-        // Close database
-        //dbHelper.close();
-        Log.d(TAG, "loadListItems. size:" + items.size)
-        return  items
+        return items
     }
-//
-//    fun loadListElements(listId:Long):List<Element> {
-//        // LOAD ITEMS
-//        val items = ArrayList<Element>()
-//        // Query all rows and get Cursor
-//        val args = arrayOf(listId.toString())
-//        val c = db!!.query(
-//            TABLE_ITEMS,  // table
-//            null,  // columns
-//            LIST_ID + "=?",  // selection
-//            args,  // selectionArgs
-//            null,  // group by
-//            null,  // having
-//            null//NAME // order by
-//        )
-//        // Loop for all string
-//        if (c.moveToFirst()) {
-//            // Define col numbers by name
-//            val iID = c.getColumnIndex(ITEM_ID)
-//            val iType = c.getColumnIndex(TYPE)
-//            val iState = c.getColumnIndex(STATE)
-//            val iName = c.getColumnIndex(NAME)
-//            val iDescription = c.getColumnIndex(DESCRIPTION)
-//
-//            // Load
-//            do {
-//                // Create deta object
-//                when(c.getInt(iType)) {
-//                    TYPE_ITEM -> items.add(DataItem(
-//                        c.getLong(iID),
-//                        listId,
-//                        c.getInt(iState),
-//                        c.getString(iName),
-//                        c.getString(iDescription)
-//                    ))
-//
-//                    TYPE_LIST -> items.add(DataList(
-//                        c.getLong(iID),
-//
-//                        ))
-//                }
-//            } while (c.moveToNext())
-//        }
-//        c.close()
-//
-//        // Close database
-//        //dbHelper.close();
-//        Log.d(TAG, "loadListItems. size:" + items.size)
-//        return  items
-//    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // DATABASE STRUCTURE
@@ -357,9 +295,6 @@ object Database {
     const val NAME = "name"
     const val DESCRIPTION = "description"
 
-    // type
-    const val TYPE_LIST = 100
-    const val TYPE_ITEM = 200
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // OPEN HELPER

@@ -4,8 +4,10 @@ import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import ru.igormayachenkov.list.data.DataItem
 import ru.igormayachenkov.list.data.DataList
 import ru.igormayachenkov.list.data.Element
+import ru.igormayachenkov.list.data.TYPE_LIST
 
 private const val TAG = "myapp.ListRepository"
 
@@ -14,16 +16,16 @@ class ListRepository() {
         Database.open(context)
     }
 
-    fun loadListById(listId: Long): DataList {
-        if(listId.compareTo(0)==0) return DataList(0,"all lists", null)
-        return Database.loadList(listId) ?: throw Exception("list not found by id=$listId")
+    fun loadListById(id: Long): DataItem {
+        if(id.compareTo(0)==0) return DataItem(0, 0, TYPE_LIST,0,"all lists", null)
+        return Database.loadItem(id) ?: throw Exception("list not found by id=$id")
     }
 
-    suspend fun loadListItems(listId:Long):List<Element>{
+    suspend fun loadListItems(listId:Long):List<DataItem>{
         Log.d(TAG, "loadListItems started $listId")
-        var items:List<Element>
+        var items:List<DataItem>
         withContext(Dispatchers.IO) {
-            items = Database.loadListItems(listId).toList()
+            items = Database.loadListItems(listId)
         }
         Log.d(TAG, "loadListItems finished ${items.toString()}")
         return items

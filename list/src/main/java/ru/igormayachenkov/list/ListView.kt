@@ -18,16 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ru.igormayachenkov.list.data.DataItem
-import ru.igormayachenkov.list.data.DataList
-import ru.igormayachenkov.list.data.Element
+import ru.igormayachenkov.list.data.*
 
 private const val TAG = "myapp.ListView"
 
 @Composable
 fun ListView() {
     val viewModel:ListViewModel = viewModel()
-    val theItems:List<Element> = viewModel.openListItems
+    val theItems:List<DataItem> = viewModel.openListItems
 
     Log.d(TAG,"=>")
 
@@ -56,16 +54,13 @@ fun ListView() {
 }
 
 @Composable
-fun ItemRow(element:Element){
-    Text(when(element){
-        is DataItem->"item"
-        is DataList->"list"
+fun ItemRow(item:DataItem){
+    Text(when(item.type){
+        TYPE_ITEM->"item"
+        TYPE_LIST->"list"
+        else->item.type.toString()
     })
-    Text(text = element.id.toString(), modifier=Modifier.padding(horizontal = 8.dp))
-    when(element){
-        is DataItem -> Text(text = element.name?:"null",  style = MaterialTheme.typography.h5)
-        is DataList -> Text(text = element.name,  style = MaterialTheme.typography.h5)
-    }
-
+    Text(text = item.id.toString(), modifier=Modifier.padding(horizontal = 8.dp))
+    Text(text = item.name,  style = MaterialTheme.typography.h5)
 }
 
