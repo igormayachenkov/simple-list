@@ -2,8 +2,10 @@ package ru.igormayachenkov.list
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -30,13 +32,16 @@ fun ListView() {
 
     Column() {
         Row(modifier= Modifier
+            .fillMaxWidth()
             .padding(all = 3.dp)
-            .background(color = Color(0x000088FF))) {
+            .background(Color.Blue)) {
             Text(text = viewModel.openList.name, style = MaterialTheme.typography.h5)
         }
         LazyColumn {
             items(theItems, { it.id }) { element ->
-                Row() {
+                Row(Modifier
+                    .clickable(onClick = {viewModel.onListRowClick(element)})
+                ) {
                     ItemRow(element)
                 }
             }

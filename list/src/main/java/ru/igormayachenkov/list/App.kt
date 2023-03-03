@@ -7,11 +7,11 @@ import android.content.pm.PackageManager
 import android.util.Log
 import ru.igormayachenkov.list.settings.Settings
 
+private const val TAG = "myapp.App"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // THE APPLICATION INSTANCE
 class App : Application() {
-    private val TAG:String="myapp.App"
 
     companion object {
 
@@ -19,35 +19,42 @@ class App : Application() {
         // use an Activity's Context within that Activity,
         // and the Application Context when passing a context beyond the scope of an Activity
         // to avoid memory leaks.
-        private lateinit var m_context: Context
-        val context: Context
-            get() = m_context
+//        private lateinit var m_context: Context
+//        val context: Context
+//            get() = m_context
 
-        fun getString(rscId:Int):String {return context.getString(rscId)}
+        lateinit var instance:App
+            private set
+
+        val context: Context
+            get() = instance
+
+
+        fun getString(rscId:Int):String {return instance.getString(rscId)}
 
         // PACKAGE INFO
         val packageInfo: PackageInfo?
             get() {
                 try {
-                    return context.packageManager?.getPackageInfo(context.packageName, 0)
+                    return instance.packageManager?.getPackageInfo(instance.packageName, 0)
                 } catch (e: PackageManager.NameNotFoundException) {
                     e.printStackTrace()
                 }
                 return null
             }
-
-
     }
 
+    val listRepository = ListRepository()
+
     override fun onCreate() {
-        m_context = this
+        instance = this
         Log.d(TAG, "onCreate")
 
         super.onCreate()
 
         // Init
         //Settings
-        Database.open(this)
+        listRepository.open(this)
         //Logic
     }
 
