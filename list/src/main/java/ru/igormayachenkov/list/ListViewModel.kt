@@ -13,15 +13,17 @@ private const val TAG = "myapp.ListViewModel"
 
 class ListViewModel : ViewModel() {
 
-    val listRepository:ListRepository = App.instance.listRepository
+    private val listRepository:ListRepository = App.instance.listRepository
 
-    var openList:DataList by mutableStateOf(DataList(0,"all lists", null))
+    var openList:DataList by mutableStateOf(listRepository.loadListById(0))
         private set
 
     val openListItems = mutableStateListOf<Element>(
         DataItem(11,0,1,"First",null),
         DataItem(12,0,0,"Second",null)
     )
+
+    val backStack = ArrayList<Long>()
 
     init {
         Log.d(TAG,"init")
@@ -33,7 +35,10 @@ class ListViewModel : ViewModel() {
     fun onListRowClick(element:Element){
         Log.d(TAG,"onListRowClick #${element.id}")
         when(element){
-            is DataList -> changeOpenList(element)
+            is DataList -> {
+                backStack.add(openList.id)
+                changeOpenList(element)
+            }
             is DataItem -> {}
         }
     }
@@ -52,7 +57,17 @@ class ListViewModel : ViewModel() {
             val items = listRepository.loadListItems(id)
             openListItems.addAll(items)
         }
+    }
 
+    fun onBackButtonClick(){
+        Log.d(TAG,"onBackButtonClick")
+        if(backStack.isEmpty()) return
+        // Pop backStack
+        val id = backStack.removeAt(backStack.lastIndex)
+        // Load the list object
+        val list = listRepository.loadListById(id)
+        // Change the open list
+        changeOpenList(list)
     }
 
 }

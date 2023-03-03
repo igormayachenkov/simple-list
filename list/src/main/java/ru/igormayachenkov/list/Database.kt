@@ -207,6 +207,35 @@ object Database {
         return hashSet
     }
 
+    fun loadList(listId:Long):DataList? {
+        // Query all rows and get Cursor
+        val args = arrayOf(listId.toString())
+        val c = db!!.query(
+            TABLE_LISTS,  // table
+            null,  // columns
+            LIST_ID + "=?",  // selection
+            args,  // selectionArgs
+            null,  // group by
+            null,  // having
+            null//NAME // order by
+        )
+        if (c.moveToFirst()) {
+            // Define col numbers by name
+            val iID = c.getColumnIndex(LIST_ID)
+            val iSyncState = c.getColumnIndex(SYNC_STATE)
+            val iName = c.getColumnIndex(NAME)
+            val iDescription = c.getColumnIndex(DESCRIPTION)
+            // Create new data object
+            return DataList(
+                c.getLong(iID),
+                c.getString(iName),
+                // c.getInt(iSyncState)
+                c.getString(iDescription)
+            )
+        }
+        return null
+    }
+
     fun loadListItems(listId:Long):HashSet<DataItem> {
         // Open database
         //SQLiteDatabase dbRead = dbHelper.getReadableDatabase();

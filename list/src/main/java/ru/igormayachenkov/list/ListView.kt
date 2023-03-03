@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -35,6 +36,11 @@ fun ListView() {
             .fillMaxWidth()
             .padding(all = 3.dp)
             .background(Color.Blue)) {
+            if(viewModel.backStack.isNotEmpty()) {
+                Button(onClick = viewModel::onBackButtonClick) {
+                    Text("back")
+                }
+            }
             Text(text = viewModel.openList.name, style = MaterialTheme.typography.h5)
         }
         LazyColumn {
