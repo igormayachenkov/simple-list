@@ -5,8 +5,6 @@ import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.igormayachenkov.list.data.DataItem
-import ru.igormayachenkov.list.data.DataList
-import ru.igormayachenkov.list.data.Element
 import ru.igormayachenkov.list.data.TYPE_LIST
 
 private const val TAG = "myapp.ListRepository"
@@ -29,6 +27,11 @@ class ListRepository() {
         }
         Log.d(TAG, "loadListItems finished ${items.toString()}")
         return items
+    }
+
+    fun updateItem(item:DataItem){
+        Log.d(TAG, "updateItem  $item")
+        Database.updateItem(item)
     }
 
 }

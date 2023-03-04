@@ -1,7 +1,5 @@
 package ru.igormayachenkov.list.data
 
-import ru.igormayachenkov.list.Database
-
 // type
 const val TYPE_LIST = 100
 const val TYPE_ITEM = 200
@@ -10,13 +8,22 @@ const val TYPE_ITEM = 200
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // DATA OBJECT: Item
 data class DataItem(
-    override val id  : Long,
+    val id  : Long,
     val parent_id   : Long,
     val type        : Int,
     var state       : Int, // checked/unchecked
     var name        : String,
     var description : String?
-) :Element{
+) {
+
+    val editableData:EditableData
+        get() = EditableData(name,description?:"")
+
+    constructor(old:DataItem, editableData: EditableData) : this(
+        old.id, old.parent_id, old.type, old.state,
+        editableData.name, editableData.descr
+    )
+
     //-----------------------------------------
     // COMPARE FUNCTIONS FOR HASH TABLE
 //    override fun hashCode(): Int {

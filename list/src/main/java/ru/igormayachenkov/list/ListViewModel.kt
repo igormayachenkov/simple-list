@@ -65,4 +65,19 @@ class ListViewModel : ViewModel() {
         changeOpenList(list)
     }
 
+    fun updateOpenList(editableData: EditableData):String?{
+        Log.d(TAG,"updateOpenList $editableData")
+        try {
+            // Update the data object
+            val newList = DataItem(openList, editableData)
+            // Save in the storage
+            listRepository.updateItem(newList)
+            // Update UI
+            openList = newList
+            return null
+        }catch(e:Exception){
+            return e.message
+        }
+    }
+
 }

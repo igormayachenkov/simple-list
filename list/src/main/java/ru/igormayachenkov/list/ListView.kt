@@ -14,6 +14,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -25,11 +26,22 @@ private const val TAG = "myapp.ListView"
 @Composable
 fun ListView() {
     val viewModel:ListViewModel = viewModel()
+    
+    val openList = viewModel.openList
     val theItems:List<DataItem> = viewModel.openListItems
+    var editingData:EditableData? by rememberSaveable() { mutableStateOf(null) }
 
     Log.d(TAG,"=>")
 
+    val saveEditedData = fun(updatedData:EditableData):String?{
+        Log.d(TAG,"onSave $updatedData")
+        viewModel.updateOpenList(updatedData)?.let { return it }
+        editingData=null
+        return null
+    }
+
     Column() {
+        // HEADER
         Row(modifier= Modifier
             .fillMaxWidth()
             .padding(all = 3.dp)
@@ -39,8 +51,19 @@ fun ListView() {
                     Text("back")
                 }
             }
-            Text(text = viewModel.openList.name, style = MaterialTheme.typography.h5)
+            Column() {
+                Text(text = openList.name, style = MaterialTheme.typography.h5)
+                openList.description?.let {
+                    Text(text = it)
+                }
+            }
+            
+            Button(onClick = {editingData=openList.editableData}) {
+                Text("E")
+            }
         }
+        
+        // ITEMS LIST
         LazyColumn {
             items(theItems, { it.id }) { element ->
                 Row(Modifier
@@ -51,7 +74,17 @@ fun ListView() {
             }
         }
     }
+    
+    // EDITOR DIALOG
+    editingData?.let{
+        Editor(
+            initialData = it,
+            onClose={editingData=null},
+            onSave=saveEditedData
+        )
+    }
 }
+
 
 @Composable
 fun ItemRow(item:DataItem){
