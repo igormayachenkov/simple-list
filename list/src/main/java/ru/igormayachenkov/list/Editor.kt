@@ -11,17 +11,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.igormayachenkov.list.data.EditableData
+import ru.igormayachenkov.list.data.DataItem
+import ru.igormayachenkov.list.data.EditorData
+import ru.igormayachenkov.list.data.TYPE_ITEM
+import ru.igormayachenkov.list.data.TYPE_LIST
 
 @Composable
 fun Editor(
-    initialData:EditableData,
+    initialData:EditorData,
     onClose:()->Unit,
-    onSave:(EditableData)->String?
+    onSave:(EditorData)->String?
 ){
-    var name    by rememberSaveable { mutableStateOf<String>(initialData.name) }
-    var descr   by rememberSaveable { mutableStateOf<String>(initialData.descr) }
-    var error   by rememberSaveable { mutableStateOf<String?>(null) }
+    val isNew:Boolean = initialData.isNew
+    val initialItem:DataItem = initialData.item
+    var name        by rememberSaveable { mutableStateOf<String>(initialItem.name) }
+    var descr       by rememberSaveable { mutableStateOf<String>(initialItem.description?:"") }
+    var hasChildren by rememberSaveable { mutableStateOf<Boolean>(initialItem.hasChildren) }
+    var error       by rememberSaveable { mutableStateOf<String?>(null) }
 
     Surface(
         modifier = Modifier
@@ -39,19 +45,31 @@ fun Editor(
                     .padding(all = 16.dp)
                 //.padding(all = 16.dp)
             ) {
-                Text("Editor")
+                // Header
+                Text((if(isNew)"New element" else "Edit existed"))
+                // Inputs
                 TextField(value = name,  onValueChange = { name = it })
                 TextField(value = descr, onValueChange = { descr = it })
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Has children")
+                    Switch(checked = hasChildren, onCheckedChange = { hasChildren = it })
+                }
+                // Buttons
                 Row() {
                     Button(onClick = onClose) {
                         Text("Close")
                     }
                     Spacer(modifier = Modifier.width(16.dp))
-                    Button(onClick = { 
-                        onSave(EditableData(initialData.isNew, initialData.id,
-                            name,descr))?.let { error=it }
+                    Button(onClick = {
+                        onSave(EditorData(
+                            isNew,
+                            initialItem.copy(
+                                name=name,
+                                description = descr.ifBlank { null },
+                                type = (if(hasChildren) TYPE_LIST else TYPE_ITEM)
+                        )))?.let { error=it }
                     }) {
-                        Text("Save")
+                        Text(text = (if(isNew)"Insert" else "Save"))
                     }
                 }
             }
@@ -77,5 +95,9 @@ fun Editor(
 @Preview(showBackground = false)
 @Composable
 fun EditorPreview() {
-    Editor(EditableData(false,13,"name","descr"), {},{null})
+    Editor(EditorData(true,
+        DataItem(13,0, TYPE_ITEM,0,"name","descr")),
+        {},
+        {null}
+    )
 }

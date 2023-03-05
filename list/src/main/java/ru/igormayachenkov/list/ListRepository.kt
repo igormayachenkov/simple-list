@@ -33,5 +33,16 @@ class ListRepository() {
         Log.d(TAG, "updateItem  $item")
         Database.updateItem(item)
     }
+    fun insertItem(item:DataItem){
+        Log.d(TAG, "insertItem  $item")
+        Database.insertItem(item)
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // UTILS
+    fun generateItemId():Long{
+        return System.currentTimeMillis()
+        // TODO make data-based id generation
+    }
 
 }

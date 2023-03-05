@@ -15,11 +15,7 @@ data class DataItem(
     var name        : String,
     var description : String?
 ) {
-    // From EditableData
-    constructor(old:DataItem, editableData: EditableData) : this(
-        old.id, old.parent_id, old.type, old.state,
-        editableData.name, editableData.descr
-    )
+    val hasChildren:Boolean = (type==TYPE_LIST)
 
     //-----------------------------------------
     // COMPARE FUNCTIONS FOR HASH TABLE

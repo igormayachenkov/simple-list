@@ -37,21 +37,24 @@ fun ListView() {
         Row(modifier= Modifier
             .fillMaxWidth()
             .padding(all = 3.dp)
-            .background(Color.Blue)) {
+            .background(Color.Blue)
+        ) {
+            // Back button
             if(viewModel.backStack.isNotEmpty()) {
                 Button(onClick = viewModel::onBackButtonClick) {
                     Text("back")
                 }
             }
-            Column() {
+            // Name + description
+            Column(Modifier.clickable(onClick = viewModel::editListHeader)) {
                 Text(text = openList.name, style = MaterialTheme.typography.h5)
                 openList.description?.let {
                     Text(text = it)
                 }
             }
-            
-            Button(onClick = viewModel::editListHeader) {
-                Text("E")
+            // Create button
+            Button(onClick = viewModel::createItem) {
+                Text("new")
             }
         }
         
@@ -85,7 +88,10 @@ fun ItemRow(item:DataItem){
         TYPE_LIST->"list"
         else->item.type.toString()
     })
-    Text(text = item.id.toString(), modifier=Modifier.padding(horizontal = 8.dp))
-    Text(text = item.name,  style = MaterialTheme.typography.h5)
+    Column() {
+        Text(text = item.id.toString(), modifier = Modifier.padding(horizontal = 8.dp))
+        Text(text = item.name, style = MaterialTheme.typography.h5)
+        Text(text = item.description?:"")
+    }
 }
 

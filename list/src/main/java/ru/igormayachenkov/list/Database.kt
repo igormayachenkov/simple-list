@@ -52,6 +52,7 @@ object Database {
         with(item) {
             cv.put(ITEM_ID,     id)
             cv.put(LIST_ID,     parent_id)
+            cv.put(TYPE,        type)
             cv.put(STATE,       state)
             cv.put(NAME,        name)
             cv.put(DESCRIPTION, description)
@@ -83,9 +84,11 @@ object Database {
 
         // Prepare values
         val cv = ContentValues()
+        cv.put(LIST_ID,     item.parent_id)
+        cv.put(TYPE,        item.type)
+        cv.put(STATE,       item.state)
         cv.put(NAME,        item.name)
         cv.put(DESCRIPTION, item.description)
-        cv.put(STATE,       item.state)
 
         // Update
         val args = arrayOf(item.id.toString())

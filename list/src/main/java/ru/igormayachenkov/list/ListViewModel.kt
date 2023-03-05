@@ -67,69 +67,85 @@ class ListViewModel : ViewModel() {
 
     //----------------------------------------------------------------------------------------------
     // USE EDITOR
-    var editingData:EditableData? by mutableStateOf(null)
+    var editingData:EditorData? by mutableStateOf(null)
         private set
 
     fun editListHeader(){
-        editingData = EditableData(false,openList)
+        editingData = EditorData(false, openList)
     }
+    fun createItem(){
+        editingData = EditorData(
+            isNew = true,
+            item = DataItem(
+                id = listRepository.generateItemId(),
+                parent_id = openList.id,
+                type = TYPE_ITEM,
+                state = 0,
+                name = "",
+                description = null
+            )
+        )
+    }
+
     private fun editListItem(item:DataItem){
-        editingData = EditableData(false,item)
+        editingData = EditorData(false,item)
     }
 
     fun onEditorCancel() {
         editingData=null
     }
 
-    fun onEditorSave(updatedData:EditableData):String?{
+    fun onEditorSave(updatedData:EditorData):String?{
         Log.d(TAG,"onSave $updatedData")
-        if(updatedData.isNew) {
-            // INSERT
-        }else{
-            // UPDATE
-            if(updatedData.id.compareTo(openList.id)==0)
-                updateOpenList(updatedData)?.let { return it }
-            else
-                updateItem(updatedData)?.let { return it }
+        try {
+            if (updatedData.isNew) {
+                // INSERT
+                insertItem(updatedData)
+            } else {
+                // UPDATE
+                if (updatedData.item.id.compareTo(openList.id) == 0)
+                    updateOpenList(updatedData)
+                else
+                    updateItem(updatedData)
+            }
+        }catch(e:Exception){
+            // return error
+            return e.message
         }
+        // Close editor
         onEditorCancel()
+        // Return no-error
         return null
     }
 
-    private fun updateOpenList(editableData: EditableData):String?{
-        Log.d(TAG,"updateOpenList $editableData")
-        try {
-            // Update the data object
-            val newList = DataItem(openList, editableData)
-            // Save in the storage
-            listRepository.updateItem(newList)
-            // Update UI
-            openList = newList
-            // Return no-error
-            return null
-        }catch(e:Exception){
-            return e.message
-        }
-    }
-    private fun updateItem(editableData: EditableData):String?{
-        Log.d(TAG,"updateItem $editableData")
-        try {
-            // Find the source item
-            val item = openListItems.find { it.id.compareTo(editableData.id)==0 }
-            if(item==null) throw Exception("item not found by id=${editableData.id}")
-            // Update the data object
-            val newItem = DataItem(item, editableData)
-            // Save in the storage
-            listRepository.updateItem(newItem)
-            // Update UI
-            openListItems[openListItems.indexOf(item)] = newItem
-            // Return no-error
-            return null
-        }catch(e:Exception){
-            return e.message
-        }
+    private fun insertItem(editorData: EditorData){
+        // New data object
+        val newItem = editorData.item
+        // Save in the storage
+        listRepository.insertItem(newItem)
+        // Update UI
+        openListItems.add(newItem)
     }
 
-
-
+    private fun updateOpenList(editorData: EditorData){
+        Log.d(TAG,"updateOpenList $editorData")
+        // Update the data object
+        val newList = editorData.item
+        // Save in the storage
+        listRepository.updateItem(newList)
+        // Update UI
+        openList = newList
+    }
+    private fun updateItem(editorData: EditorData){
+        Log.d(TAG,"updateItem $editorData")
+        // Find the source item
+        val item = openListItems.find { it.id.compareTo(editorData.item.id)==0 }
+        if(item==null) throw Exception("item not found by id=${editorData.item.id}")
+        // New data object
+        val newItem = editorData.item
+        // Save in the storage
+        listRepository.updateItem(newItem)
+        // Update UI
+        openListItems[openListItems.indexOf(item)] = newItem
+    }
 }
