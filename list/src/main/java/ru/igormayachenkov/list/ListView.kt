@@ -14,7 +14,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -29,16 +28,9 @@ fun ListView() {
     
     val openList = viewModel.openList
     val theItems:List<DataItem> = viewModel.openListItems
-    var editingData:EditableData? by rememberSaveable() { mutableStateOf(null) }
+    val editingData = viewModel.editingData
 
     Log.d(TAG,"=>")
-
-    val saveEditedData = fun(updatedData:EditableData):String?{
-        Log.d(TAG,"onSave $updatedData")
-        viewModel.updateOpenList(updatedData)?.let { return it }
-        editingData=null
-        return null
-    }
 
     Column() {
         // HEADER
@@ -58,7 +50,7 @@ fun ListView() {
                 }
             }
             
-            Button(onClick = {editingData=openList.editableData}) {
+            Button(onClick = viewModel::onListHeaderClick) {
                 Text("E")
             }
         }
@@ -79,8 +71,8 @@ fun ListView() {
     editingData?.let{
         Editor(
             initialData = it,
-            onClose={editingData=null},
-            onSave=saveEditedData
+            onClose = viewModel::onEditorCancel,
+            onSave  = viewModel::onEditorSave
         )
     }
 }

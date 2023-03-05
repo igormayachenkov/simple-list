@@ -65,7 +65,31 @@ class ListViewModel : ViewModel() {
         changeOpenList(list)
     }
 
-    fun updateOpenList(editableData: EditableData):String?{
+    //----------------------------------------------------------------------------------------------
+    // USE EDITOR
+    var editingData:EditableData? by mutableStateOf(null)
+        private set
+
+    fun onListHeaderClick(){
+        editingData = openList.editableData
+    }
+//    fun onListItemClick(){
+//        editingData = openList.editableData
+//    }
+
+
+    fun onEditorCancel() {
+        editingData=null
+    }
+
+    fun onEditorSave(updatedData:EditableData):String?{
+        Log.d(TAG,"onSave $updatedData")
+        updateOpenList(updatedData)?.let { return it }
+        onEditorCancel()
+        return null
+    }
+
+    private fun updateOpenList(editableData: EditableData):String?{
         Log.d(TAG,"updateOpenList $editableData")
         try {
             // Update the data object
@@ -79,5 +103,7 @@ class ListViewModel : ViewModel() {
             return e.message
         }
     }
+
+
 
 }
