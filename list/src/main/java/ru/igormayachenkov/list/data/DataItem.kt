@@ -15,10 +15,7 @@ data class DataItem(
     var name        : String,
     var description : String?
 ) {
-
-    val editableData:EditableData
-        get() = EditableData(name,description?:"")
-
+    // From EditableData
     constructor(old:DataItem, editableData: EditableData) : this(
         old.id, old.parent_id, old.type, old.state,
         editableData.name, editableData.descr

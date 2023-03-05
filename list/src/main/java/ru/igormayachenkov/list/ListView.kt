@@ -50,7 +50,7 @@ fun ListView() {
                 }
             }
             
-            Button(onClick = viewModel::onListHeaderClick) {
+            Button(onClick = viewModel::editListHeader) {
                 Text("E")
             }
         }

@@ -48,7 +48,8 @@ fun Editor(
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Button(onClick = { 
-                        onSave(EditableData(name,descr))?.let { error=it } 
+                        onSave(EditableData(initialData.isNew, initialData.id,
+                            name,descr))?.let { error=it }
                     }) {
                         Text("Save")
                     }
@@ -76,5 +77,5 @@ fun Editor(
 @Preview(showBackground = false)
 @Composable
 fun EditorPreview() {
-    Editor(EditableData("name","descr"), {},{null})
+    Editor(EditableData(false,13,"name","descr"), {},{null})
 }

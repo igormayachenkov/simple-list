@@ -34,7 +34,7 @@ class ListViewModel : ViewModel() {
                 backStack.add(openList.id)
                 changeOpenList(item)
             }
-            TYPE_ITEM -> {}
+            TYPE_ITEM -> {editListItem(item)}
         }
     }
     private fun changeOpenList(list:DataItem){
@@ -70,13 +70,12 @@ class ListViewModel : ViewModel() {
     var editingData:EditableData? by mutableStateOf(null)
         private set
 
-    fun onListHeaderClick(){
-        editingData = openList.editableData
+    fun editListHeader(){
+        editingData = EditableData(false,openList)
     }
-//    fun onListItemClick(){
-//        editingData = openList.editableData
-//    }
-
+    private fun editListItem(item:DataItem){
+        editingData = EditableData(false,item)
+    }
 
     fun onEditorCancel() {
         editingData=null
@@ -84,7 +83,15 @@ class ListViewModel : ViewModel() {
 
     fun onEditorSave(updatedData:EditableData):String?{
         Log.d(TAG,"onSave $updatedData")
-        updateOpenList(updatedData)?.let { return it }
+        if(updatedData.isNew) {
+            // INSERT
+        }else{
+            // UPDATE
+            if(updatedData.id.compareTo(openList.id)==0)
+                updateOpenList(updatedData)?.let { return it }
+            else
+                updateItem(updatedData)?.let { return it }
+        }
         onEditorCancel()
         return null
     }
@@ -98,6 +105,25 @@ class ListViewModel : ViewModel() {
             listRepository.updateItem(newList)
             // Update UI
             openList = newList
+            // Return no-error
+            return null
+        }catch(e:Exception){
+            return e.message
+        }
+    }
+    private fun updateItem(editableData: EditableData):String?{
+        Log.d(TAG,"updateItem $editableData")
+        try {
+            // Find the source item
+            val item = openListItems.find { it.id.compareTo(editableData.id)==0 }
+            if(item==null) throw Exception("item not found by id=${editableData.id}")
+            // Update the data object
+            val newItem = DataItem(item, editableData)
+            // Save in the storage
+            listRepository.updateItem(newItem)
+            // Update UI
+            openListItems[openListItems.indexOf(item)] = newItem
+            // Return no-error
             return null
         }catch(e:Exception){
             return e.message
