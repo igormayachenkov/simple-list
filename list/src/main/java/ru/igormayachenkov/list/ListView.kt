@@ -28,7 +28,7 @@ fun ListView() {
     
     val openList = viewModel.openList
     val theItems:List<DataItem> = viewModel.openListItems
-    val editingData = viewModel.editingData
+    val editingData = viewModel.editorData
 
     Log.d(TAG,"=>")
 
@@ -74,8 +74,8 @@ fun ListView() {
     editingData?.let{
         Editor(
             initialData = it,
-            onClose = viewModel::onEditorCancel,
-            onSave  = viewModel::onEditorSave
+            onClose  = viewModel::onEditorCancel,
+            onSave   = viewModel::onEditorSave
         )
     }
 }

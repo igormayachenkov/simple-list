@@ -20,7 +20,7 @@ import ru.igormayachenkov.list.data.TYPE_LIST
 fun Editor(
     initialData:EditorData,
     onClose:()->Unit,
-    onSave:(EditorData)->String?
+    onSave:(DataItem?)->String?
 ){
     val isNew:Boolean = initialData.isNew
     val initialItem:DataItem = initialData.item
@@ -56,18 +56,31 @@ fun Editor(
                 }
                 // Buttons
                 Row() {
+                    // Delete
+                    if(!isNew) {
+                        Button(onClick = {
+                            onSave(null)?.let { error = it }
+                        }) {
+                            Text(text = "Delete")
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+
+                    // Cancel
                     Button(onClick = onClose) {
                         Text("Close")
                     }
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // Save
                     Button(onClick = {
-                        onSave(EditorData(
-                            isNew,
+                        onSave(
                             initialItem.copy(
                                 name=name,
                                 description = descr.ifBlank { null },
                                 type = (if(hasChildren) TYPE_LIST else TYPE_ITEM)
-                        )))?.let { error=it }
+                            )
+                        )?.let { error=it }
                     }) {
                         Text(text = (if(isNew)"Insert" else "Save"))
                     }

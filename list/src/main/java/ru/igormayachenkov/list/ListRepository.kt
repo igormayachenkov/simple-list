@@ -29,13 +29,18 @@ class ListRepository() {
         return items
     }
 
+    fun insertItem(item:DataItem){
+        Log.d(TAG, "insertItem  $item")
+        Database.insertItem(item)
+    }
     fun updateItem(item:DataItem){
         Log.d(TAG, "updateItem  $item")
         Database.updateItem(item)
     }
-    fun insertItem(item:DataItem){
-        Log.d(TAG, "insertItem  $item")
-        Database.insertItem(item)
+    fun deleteItem(item:DataItem){
+        Log.d(TAG, "deleteItem  $item")
+        // TODO cascade deletion
+        Database.deleteItem(item.id)
     }
 
     //----------------------------------------------------------------------------------------------

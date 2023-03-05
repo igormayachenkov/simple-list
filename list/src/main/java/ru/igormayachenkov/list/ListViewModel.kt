@@ -67,14 +67,14 @@ class ListViewModel : ViewModel() {
 
     //----------------------------------------------------------------------------------------------
     // USE EDITOR
-    var editingData:EditorData? by mutableStateOf(null)
+    var editorData:EditorData? by mutableStateOf(null)
         private set
 
     fun editListHeader(){
-        editingData = EditorData(false, openList)
+        editorData = EditorData(false, openList)
     }
     fun createItem(){
-        editingData = EditorData(
+        editorData = EditorData(
             isNew = true,
             item = DataItem(
                 id = listRepository.generateItemId(),
@@ -88,64 +88,93 @@ class ListViewModel : ViewModel() {
     }
 
     private fun editListItem(item:DataItem){
-        editingData = EditorData(false,item)
+        editorData = EditorData(false,item)
     }
 
     fun onEditorCancel() {
-        editingData=null
+        editorData=null
     }
 
-    fun onEditorSave(updatedData:EditorData):String?{
-        Log.d(TAG,"onSave $updatedData")
-        try {
-            if (updatedData.isNew) {
-                // INSERT
-                insertItem(updatedData)
-            } else {
-                // UPDATE
-                if (updatedData.item.id.compareTo(openList.id) == 0)
-                    updateOpenList(updatedData)
-                else
-                    updateItem(updatedData)
+    fun onEditorSave(newItem:DataItem?):String?{
+        Log.d(TAG,"onEditorSave $newItem")
+        editorData?.let { initialData ->
+            val isNew   = initialData.isNew
+            val oldItem = initialData.item
+            try {
+                if (isNew) {
+                    if(newItem!=null) {
+                        // INSERT
+                        listRepository.insertItem(newItem)
+                        // Update UI
+                        onItemInserted(newItem)
+                    }else{
+                        // Wrong case: delete new item
+                    }
+                } else {
+                    if (newItem != null) {
+                        // UPDATE
+                        listRepository.updateItem(newItem)
+                        // Update UI
+                        //if (newItem.id.compareTo(openList.id) == 0) {
+                        if (oldItem===openList) {
+                            // It is the open list
+                            onOpenListUpdated(newItem)
+                        } else {
+                            // It is the list item
+                            onItemUpdated(newItem)
+                        }
+                    }else{
+                        // DELETE
+                        val item = initialData.item
+                        listRepository.deleteItem(item)
+                        // Update UI
+                        if (oldItem===openList) {
+                            // It is the open list
+                            onOpenListDeleted()
+                        } else {
+                            // It is the list item
+                            onItemDeleted(oldItem)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                // return error
+                return e.message
             }
-        }catch(e:Exception){
-            // return error
-            return e.message
+            // Close editor
+            onEditorCancel()
         }
-        // Close editor
-        onEditorCancel()
         // Return no-error
         return null
     }
 
-    private fun insertItem(editorData: EditorData){
-        // New data object
-        val newItem = editorData.item
-        // Save in the storage
-        listRepository.insertItem(newItem)
-        // Update UI
+    //----------------------------------------------------------------------------------------------
+    // UI UPDATERS
+    // LIST ITEM
+    private fun onItemInserted(newItem: DataItem){
         openListItems.add(newItem)
     }
+    private fun onItemUpdated(newItem: DataItem){
+        // Find the source item index
+        val index = openListItems.indexOfFirst { it.id.compareTo(newItem.id)==0 }
+        if(index<0) throw Exception("item not found by id=${newItem.id}")
+        // Update UI
+        openListItems[index] = newItem
+    }
+    private fun onItemDeleted(item:DataItem){
+        // Find the source item index
+        val index = openListItems.indexOfFirst { it.id.compareTo(item.id)==0 }
+        if(index<0) throw Exception("item not found by id=${item.id}")
+        // Update UI
+        openListItems.removeAt(index)
+    }
+    // OPEN LIST
+    private fun onOpenListUpdated(newItem: DataItem){
+        openList = newItem
+        // TODO do something if list => item change
+    }
+    private fun onOpenListDeleted(){
+        onBackButtonClick()
+    }
 
-    private fun updateOpenList(editorData: EditorData){
-        Log.d(TAG,"updateOpenList $editorData")
-        // Update the data object
-        val newList = editorData.item
-        // Save in the storage
-        listRepository.updateItem(newList)
-        // Update UI
-        openList = newList
-    }
-    private fun updateItem(editorData: EditorData){
-        Log.d(TAG,"updateItem $editorData")
-        // Find the source item
-        val item = openListItems.find { it.id.compareTo(editorData.item.id)==0 }
-        if(item==null) throw Exception("item not found by id=${editorData.item.id}")
-        // New data object
-        val newItem = editorData.item
-        // Save in the storage
-        listRepository.updateItem(newItem)
-        // Update UI
-        openListItems[openListItems.indexOf(item)] = newItem
-    }
 }
