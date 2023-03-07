@@ -50,13 +50,17 @@ fun Editor(
             ) {
                 // Header
                 Text((if(isNew)"New element" else "Edit existed"))
-                // Inputs
-                TextField(value = name,  onValueChange = { name = it })
-                TextField(value = descr, onValueChange = { descr = it })
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                // List / Item
+                if(isNew) Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Has children")
                     Switch(checked = hasChildren, onCheckedChange = { hasChildren = it })
                 }
+
+                // Name
+                TextField(value = name,  onValueChange = { name = it })
+                // Description
+                if(!hasChildren)
+                TextField(value = descr, onValueChange = { descr = it })
                 // Buttons
                 Row() {
                     // Delete
