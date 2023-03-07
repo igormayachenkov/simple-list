@@ -1,50 +1,45 @@
 package ru.igormayachenkov.list.data
 
-// type
-const val TYPE_LIST = 100
-const val TYPE_ITEM = 200
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// DATA OBJECT: Item
+// ATOMIC DATA OBJECT
 data class DataItem(
     val id  : Long,
     val parent_id   : Long,
-    val type        : Int,
-    val state       : Int, // checked/unchecked
+    val type        : Type,
+    val state       : State, // checked/unchecked
     val name        : String,
     val description : String?
-) {
-    val hasChildren:Boolean = (type==TYPE_LIST)
-
-    //-----------------------------------------
-    // COMPARE FUNCTIONS FOR HASH TABLE
-//    override fun hashCode(): Int {
-//        return id.hashCode()
-//    }
-//    override fun equals(other: Any?): Boolean {
-//        if(other is Item) return id==other.id
-//        return false
-//    }
-    //-----------------------------------------
-
-    companion object {
-        const val ITEM_STATE_CHECKED = 1
-        fun create(parent_id:Long, name:String="", descr:String?=null):DataItem{
-            return DataItem(
-                    System.currentTimeMillis(),
-                    parent_id,
-                    TYPE_ITEM,
-                    0,
-                    name,
-                    descr
-            )
+){
+    // TYPE FLAGS
+    data class Type(
+        val hasChildren : Boolean,
+        val isCheckable : Boolean
+    ){
+        companion object {
+            const val MASK_hasChildren = 0x01
+            const val MASK_isCheckable = 0x10
         }
+        constructor(int:Int):this(
+            (int and MASK_hasChildren)>0,
+            (int and MASK_isCheckable)>0
+        )
+        fun toInt():Int =
+            (if(hasChildren) MASK_hasChildren else 0) or
+                    (if(isCheckable) MASK_isCheckable else 0)
     }
 
-    val isChecked : Boolean
-        get() { return state==ITEM_STATE_CHECKED }
-        //set(value)  {  state = if(value) ITEM_STATE_CHECKED else 0 }
-
+    // STATE FLAGS
+    data class State(
+        val isChecked : Boolean
+    ){
+        companion object {
+            const val MASK_isChecked = 0x01
+        }
+        constructor(int:Int):this(
+            (int and MASK_isChecked)>0,
+        )
+        fun toInt():Int =
+            (if(isChecked) MASK_isChecked else 0)
+    }
 
 }

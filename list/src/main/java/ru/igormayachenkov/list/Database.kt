@@ -41,8 +41,8 @@ object Database {
         with(item) {
             cv.put(ITEM_ID,     id)
             cv.put(LIST_ID,     parent_id)
-            cv.put(TYPE,        type)
-            cv.put(STATE,       state)
+            cv.put(TYPE,        type.toInt())
+            cv.put(STATE,       state.toInt())
             cv.put(NAME,        name)
             cv.put(DESCRIPTION, description)
         }
@@ -58,8 +58,8 @@ object Database {
         // Prepare values
         val cv = ContentValues()
         cv.put(LIST_ID,     item.parent_id)
-        cv.put(TYPE,        item.type)
-        cv.put(STATE,       item.state)
+        cv.put(TYPE,        item.type.toInt())
+        cv.put(STATE,       item.state.toInt())
         cv.put(NAME,        item.name)
         cv.put(DESCRIPTION, item.description)
 
@@ -78,7 +78,7 @@ object Database {
 
         // Prepare values
         val cv = ContentValues()
-        cv.put(STATE, item.state)
+        cv.put(STATE, item.state.toInt())
         // Update
         val args = arrayOf(item.id.toString())
         db!!.update(
@@ -168,8 +168,8 @@ object Database {
                 val item = DataItem(
                     c.getLong(iItemId),
                     c.getLong(iListId),
-                    c.getInt(iType),
-                    c.getInt(iState),
+                    DataItem.Type(c.getInt(iType)),
+                    DataItem.State(c.getInt(iState)),
                     c.getString(iName),
                     c.getString(iDescr)
                 )
@@ -240,35 +240,38 @@ object Database {
         override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
             Log.d(TAG, "ON UPGRADE $oldVersion => $newVersion")
             if(oldVersion<=1){
+                // Legacy "type" field values
+                val typeItem = DataItem.Type(hasChildren = false, isCheckable = true).toInt()
+                val typeList = DataItem.Type(hasChildren = true,  isCheckable = false).toInt()
                 // ALTER items table
                 db.execSQL("ALTER TABLE items RENAME COLUMN sync_state to type",arrayOf())
-                db.execSQL("UPDATE items SET type=$TYPE_ITEM", arrayOf())
+                db.execSQL("UPDATE items SET type=$typeItem", arrayOf())
 
                 // Copy data: TABLE_LISTS => TABLE_ITEMS
-                db.execSQL("INSERT INTO items (item_id,list_id,type,name) SELECT list_id,0,$TYPE_LIST,name FROM lists", arrayOf())
+                db.execSQL("INSERT INTO items (item_id,list_id,type,name) SELECT list_id,0,$typeList,name FROM lists", arrayOf())
                 db.execSQL("DROP TABLE lists",arrayOf())
 
-                data class DataCheck(val id: Long, val name:String, val type:Int)
-                val lists = ArrayList<DataCheck>()
-                val c = db.rawQuery("SELECT * FROM items", arrayOf())
-                if (c.moveToFirst()) {
-                    // Define col numbers by name
-                    val iID = c.getColumnIndex("item_id")
-                    val iName = c.getColumnIndex("name")
-                    val iType = c.getColumnIndex("type")
-                    // Load
-                    do {
-                        // Create new DataItem object from the list row!!!
-                        lists.add( DataCheck(
-                            c.getLong(iID),
-                            c.getString(iName),
-                            c.getInt(iType)
-                        ))
-                    } while (c.moveToNext())
-                }
-                c.close()
+//                // CHECK THE RESULT (FOR DEBUGGER)
+//                data class DataCheck(val id: Long, val name:String, val type:Int)
+//                val lists = ArrayList<DataCheck>()
+//                val c = db.rawQuery("SELECT * FROM items", arrayOf())
+//                if (c.moveToFirst()) {
+//                    // Define col numbers by name
+//                    val iID = c.getColumnIndex("item_id")
+//                    val iName = c.getColumnIndex("name")
+//                    val iType = c.getColumnIndex("type")
+//                    // Load
+//                    do {
+//                        // Create new DataItem object from the list row!!!
+//                        lists.add( DataCheck(
+//                            c.getLong(iID),
+//                            c.getString(iName),
+//                            c.getInt(iType)
+//                        ))
+//                    } while (c.moveToNext())
+//                }
+//                c.close()
             }
-            //throw Exception("ON UPGRADE $oldVersion => $newVersion")
         }
     }
 }

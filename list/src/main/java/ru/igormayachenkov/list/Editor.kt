@@ -13,8 +13,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.igormayachenkov.list.data.DataItem
 import ru.igormayachenkov.list.data.EditorData
-import ru.igormayachenkov.list.data.TYPE_ITEM
-import ru.igormayachenkov.list.data.TYPE_LIST
 
 @Composable
 fun Editor(
@@ -26,7 +24,7 @@ fun Editor(
     val initialItem:DataItem = initialData.item
     var name        by rememberSaveable { mutableStateOf<String>(initialItem.name) }
     var descr       by rememberSaveable { mutableStateOf<String>(initialItem.description?:"") }
-    var hasChildren by rememberSaveable { mutableStateOf<Boolean>(initialItem.hasChildren) }
+    var hasChildren by rememberSaveable { mutableStateOf<Boolean>(initialItem.type.hasChildren) }
     var error       by rememberSaveable { mutableStateOf<String?>(null) }
 
     Surface(
@@ -78,7 +76,7 @@ fun Editor(
                             initialItem.copy(
                                 name=name,
                                 description = descr.ifBlank { null },
-                                type = (if(hasChildren) TYPE_LIST else TYPE_ITEM)
+                                type = initialItem.type.copy(hasChildren=hasChildren)
                             )
                         )?.let { error=it }
                     }) {
@@ -109,7 +107,7 @@ fun Editor(
 @Composable
 fun EditorPreview() {
     Editor(EditorData(true,
-        DataItem(13,0, TYPE_ITEM,0,"name","descr")),
+        DataItem(13,0, DataItem.Type(false,true), DataItem.State(true),"name","descr")),
         {},
         {null}
     )

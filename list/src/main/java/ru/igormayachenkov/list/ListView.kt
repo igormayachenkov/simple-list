@@ -83,15 +83,13 @@ fun ListView() {
 
 @Composable
 fun ItemRow(item:DataItem){
-    Text(when(item.type){
-        TYPE_ITEM->"item"
-        TYPE_LIST->"list"
-        else->item.type.toString()
-    })
+    Text(if(item.type.hasChildren) "list" else "item")
     Column() {
         Text(text = item.id.toString(), modifier = Modifier.padding(horizontal = 8.dp))
         Text(text = item.name, style = MaterialTheme.typography.h5)
         Text(text = item.description?:"")
     }
+    if(item.type.isCheckable)
+        Text(if(item.state.isChecked) "+" else "-")
 }
 

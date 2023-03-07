@@ -5,7 +5,6 @@ import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.igormayachenkov.list.data.DataItem
-import ru.igormayachenkov.list.data.TYPE_LIST
 
 private const val TAG = "myapp.ListRepository"
 
@@ -18,7 +17,9 @@ class ListRepository() {
     //----------------------------------------------------------------------------------------------
     // LOADERS
     fun loadListById(id: Long): DataItem {
-        if(id.compareTo(0)==0) return DataItem(0, 0, TYPE_LIST,0,"all lists", null)
+        if(id.compareTo(0)==0)
+            return DataItem(0, 0, DataItem.Type(true,false), DataItem.State(true),"all lists", null)
+
         return Database.loadItem(id) ?: throw Exception("list not found by id=$id")
     }
 

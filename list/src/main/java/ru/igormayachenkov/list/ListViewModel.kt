@@ -29,12 +29,13 @@ class ListViewModel : ViewModel() {
     // EVENTS
     fun onListRowClick(item:DataItem){
         Log.d(TAG,"onListRowClick #${item.id}")
-        when(item.type){
-            TYPE_LIST -> {
-                backStack.add(openList.id)
-                changeOpenList(item)
-            }
-            TYPE_ITEM -> {editListItem(item)}
+        if(item.type.hasChildren){
+            // List
+            backStack.add(openList.id)
+            changeOpenList(item)
+        }else{
+            // Item
+            editListItem(item)
         }
     }
     private fun changeOpenList(list:DataItem){
@@ -79,8 +80,8 @@ class ListViewModel : ViewModel() {
             item = DataItem(
                 id = listRepository.generateItemId(),
                 parent_id = openList.id,
-                type = TYPE_ITEM,
-                state = 0,
+                type = DataItem.Type(hasChildren = false, isCheckable = true),
+                state = DataItem.State(isChecked = false),
                 name = "",
                 description = null
             )
