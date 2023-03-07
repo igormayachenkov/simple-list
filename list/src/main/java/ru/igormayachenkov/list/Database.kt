@@ -14,8 +14,8 @@ import java.util.*
 object Database {
     const val TAG = "myapp.Database"
 
-    var db: SQLiteDatabase? = null
-    var dbHelper: DBHelper? = null
+    private lateinit var db: SQLiteDatabase
+    private lateinit var dbHelper: DBHelper
 
     fun open(context:Context) {
         Log.d(TAG, "open")
@@ -23,12 +23,12 @@ object Database {
                 "maindatabase.db",  // name
                 2 // version
         )
-        db = dbHelper!!.writableDatabase // open here
+        db = dbHelper.writableDatabase // open here
     }
 
     fun close() {
         Log.d(TAG, "close")
-        dbHelper?.close()
+        dbHelper.close()
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ object Database {
             cv.put(DESCRIPTION, description)
         }
         // Insert
-        val rowID = db!!.insert(TABLE_ITEMS, null, cv)
+        val rowID = db.insert(TABLE_ITEMS, null, cv)
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,7 +65,7 @@ object Database {
 
         // Update
         val args = arrayOf(item.id.toString())
-        db!!.update(
+        db.update(
                 TABLE_ITEMS,  // table
                 cv,  // values
                 ITEM_ID + "=?",  //where
@@ -81,10 +81,10 @@ object Database {
         cv.put(STATE, item.state.toInt())
         // Update
         val args = arrayOf(item.id.toString())
-        db!!.update(
+        db.update(
                 TABLE_ITEMS,  // table
                 cv,  // values
-                ITEM_ID + "=?",  //where
+            "$ITEM_ID=?",  //where
                 args // whereArgs
         )
     }
@@ -92,23 +92,28 @@ object Database {
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // DELETERS
     fun deleteItem(id: Long) {
-        Log.d(TAG, "deleteItem")
-
-        // Insert
-        val args = arrayOf(id.toString())
-        db!!.delete(
-                TABLE_ITEMS,  // table
-                ITEM_ID + "=?",  //where
-                args // whereArgs
+        val n = db.delete(
+            TABLE_ITEMS,  // table
+            "$ITEM_ID=$id",  //where
+            null // whereArgs
         )
+        Log.d(TAG, "deleteItem id:$id n:$n")
+    }
+    fun deleteChildren(parentId: Long) {
+        val n = db.delete(
+            TABLE_ITEMS,  // table
+            "$LIST_ID=$parentId",  //where
+            null // whereArgs
+        )
+        Log.d(TAG, "deleteChildren parentId:$parentId n:$n")
     }
 
     fun deleteALL() {
         // Delete items
-        val rItems = db!!.delete(
-                TABLE_ITEMS,  // table
-                null,  //where
-                null // whereArgs
+        val rItems = db.delete(
+            TABLE_ITEMS,  // table
+            null,  //where
+            null // whereArgs
         )
         Log.d(TAG, "deleteALL, number of items: $rItems")
     }
@@ -118,7 +123,7 @@ object Database {
     fun loadItem(id:Long):DataItem? {
         // Query all rows and get Cursor
         val args = arrayOf(id.toString())
-        val cursor = db!!.query(
+        val cursor = db.query(
             TABLE_ITEMS,  // table
             null,  // columns
             ITEM_ID + "=?",  // selection
@@ -136,7 +141,7 @@ object Database {
         // LOAD ITEMS
         // Query all rows and get Cursor
         val args = arrayOf(listId.toString())
-        val cursor = db!!.query(
+        val cursor = db.query(
                 TABLE_ITEMS,  // table
                 null,  // columns
                 LIST_ID + "=?",  // selection
@@ -147,7 +152,7 @@ object Database {
         )
         val items = readItems(cursor)
 
-        Log.d(TAG, "loadListItems. size:" + items.size)
+        Log.d(TAG, "loadItems. n:" + items.size)
         return  items
     }
     private fun readItems(c:Cursor):List<DataItem>{

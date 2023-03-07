@@ -45,8 +45,19 @@ class ListRepository() {
     }
     fun deleteItem(item:DataItem){
         Log.d(TAG, "deleteItem  $item")
-        // TODO cascade deletion
+        // Cascade children deletion
+        deleteChildren(item)
+        // Delete the item record
         Database.deleteItem(item.id)
+    }
+    private fun deleteChildren(item:DataItem){
+        if(item.type.hasChildren){
+            val children = Database.loadListItems(item.id)
+            // Delete sub-children
+            children.forEach { deleteChildren(it) }
+            // Delete the children
+            Database.deleteChildren(item.id)
+        }
     }
 
     //----------------------------------------------------------------------------------------------
