@@ -11,9 +11,9 @@ data class DataItem(
     val id  : Long,
     val parent_id   : Long,
     val type        : Int,
-    var state       : Int, // checked/unchecked
-    var name        : String,
-    var description : String?
+    val state       : Int, // checked/unchecked
+    val name        : String,
+    val description : String?
 ) {
     val hasChildren:Boolean = (type==TYPE_LIST)
 
@@ -42,13 +42,9 @@ data class DataItem(
         }
     }
 
-    var isChecked : Boolean
+    val isChecked : Boolean
         get() { return state==ITEM_STATE_CHECKED }
-        set(value)  {  state = if(value) ITEM_STATE_CHECKED else 0 }
-
-    fun toggleState() {
-        state = if (state==ITEM_STATE_CHECKED) 0 else ITEM_STATE_CHECKED
-    }
+        //set(value)  {  state = if(value) ITEM_STATE_CHECKED else 0 }
 
 
 }

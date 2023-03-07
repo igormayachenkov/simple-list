@@ -33,17 +33,6 @@ object Database {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // INSERTERS
-    fun insertList(list: DataList) {
-        Log.d(TAG, "addList")
-
-        // Prepare values
-        val cv = ContentValues()
-        cv.put(LIST_ID, list.id)
-        cv.put(NAME, list.name)
-        // Insert
-        val rowID = db!!.insert(TABLE_LISTS, null, cv)
-    }
-
     fun insertItem(item: DataItem) {
         Log.d(TAG, "insertItem")
 
@@ -63,22 +52,6 @@ object Database {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // UPDATERS
-    fun updateListName(id: Long, name: String?) {
-        Log.d(TAG, "updateListName")
-
-        // Prepare values
-        val cv = ContentValues()
-        cv.put(NAME, name)
-        // Update
-        val args = arrayOf(id.toString())
-        db!!.update(
-                TABLE_LISTS,  // table
-                cv,  // values
-                LIST_ID + "=?",  //where
-                args // whereArgs
-        )
-    }
-
     fun updateItem(item: DataItem) {
         Log.d(TAG, "updateItem $item")
 
@@ -130,86 +103,18 @@ object Database {
         )
     }
 
-    fun deleteList(id: Long) {
-        // Dalete items
-        val args = arrayOf(id.toString())
-        val rItems = db!!.delete(
-                TABLE_ITEMS,  // table
-                LIST_ID + "=?",  //where
-                args // whereArgs
-        )
-        // Delete list record
-        val rLists = db!!.delete(
-                TABLE_LISTS,  // table
-                LIST_ID + "=?",  //where
-                args // whereArgs
-        )
-        Log.d(TAG, "deleteList list:" + rLists + "rows  items:" + rItems + "rows")
-    }
-
     fun deleteALL() {
-        // Dalete items
+        // Delete items
         val rItems = db!!.delete(
                 TABLE_ITEMS,  // table
                 null,  //where
                 null // whereArgs
         )
-        // Delete list record
-        val rLists = db!!.delete(
-                TABLE_LISTS,  // table
-                null,  //where
-                null // whereArgs
-        )
-        Log.d(TAG, "deleteALL lists:$rLists  items:$rItems")
+        Log.d(TAG, "deleteALL, number of items: $rItems")
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // LOADERS
-    fun loadListOfLists():HashSet<DataList> {
-        // Open database
-        //SQLiteDatabase dbRead = dbHelper.getReadableDatabase();
-
-        // LOAD ITEMS
-        val hashSet = HashSet<DataList>()
-        // Query all rows and get Cursor
-        val c = db!!.query(
-                TABLE_LISTS,  // table
-                null,  // columns
-                null,  // selection
-                null,  // selectionArgs
-                null,  // group by
-                null,  // having
-                NAME // order by
-        )
-        // Loop for all string
-        if (c.moveToFirst()) {
-            // Define col numbers by name
-            val iID = c.getColumnIndex(LIST_ID)
-            val iSyncState = c.getColumnIndex(TYPE)
-            val iName = c.getColumnIndex(NAME)
-            val iDescription = c.getColumnIndex(DESCRIPTION)
-
-            // Load
-            do {
-                // Create new data object
-                val list = DataList(
-                        c.getLong(iID),
-                        c.getString(iName),
-                        // c.getInt(iSyncState)
-                        c.getString(iDescription)
-                )
-                // Add to the list
-                hashSet.add(list)
-            } while (c.moveToNext())
-        }
-        c.close()
-
-        // Close database
-        //dbHelper.close();
-        Log.d(TAG, "loadListOfLists. size:" + hashSet.size)
-        return hashSet
-    }
-
     fun loadItem(id:Long):DataItem? {
         // Query all rows and get Cursor
         val args = arrayOf(id.toString())
@@ -280,7 +185,7 @@ object Database {
     // DATABASE STRUCTURE
 
     // TABLE NAMES
-    const val TABLE_LISTS = "lists"
+    //const val TABLE_LISTS = "lists"
     const val TABLE_ITEMS = "items"
     const val TABLE_CATS = "cats"
 

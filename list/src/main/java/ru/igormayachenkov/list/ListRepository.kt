@@ -10,10 +10,13 @@ import ru.igormayachenkov.list.data.TYPE_LIST
 private const val TAG = "myapp.ListRepository"
 
 class ListRepository() {
+
     fun open(context:Context){
         Database.open(context)
     }
 
+    //----------------------------------------------------------------------------------------------
+    // LOADERS
     fun loadListById(id: Long): DataItem {
         if(id.compareTo(0)==0) return DataItem(0, 0, TYPE_LIST,0,"all lists", null)
         return Database.loadItem(id) ?: throw Exception("list not found by id=$id")
@@ -29,6 +32,8 @@ class ListRepository() {
         return items
     }
 
+    //----------------------------------------------------------------------------------------------
+    // MODIFIERS
     fun insertItem(item:DataItem){
         Log.d(TAG, "insertItem  $item")
         Database.insertItem(item)
