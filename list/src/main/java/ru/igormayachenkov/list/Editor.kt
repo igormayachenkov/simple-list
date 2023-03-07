@@ -26,6 +26,11 @@ fun Editor(
     var descr       by rememberSaveable { mutableStateOf<String>(initialItem.description?:"") }
     var hasChildren by rememberSaveable { mutableStateOf<Boolean>(initialItem.type.hasChildren) }
     var error       by rememberSaveable { mutableStateOf<String?>(null) }
+    var confirm     by rememberSaveable { mutableStateOf<String?>(null) }
+
+    fun handleDelete(){
+        onSave(null)?.let { error = it }
+    }
 
     Surface(
         modifier = Modifier
@@ -57,10 +62,11 @@ fun Editor(
                     // Delete
                     if(!isNew) {
                         Button(onClick = {
-                            onSave(null)?.let { error = it }
-                        }) {
-                            Text(text = "Delete")
-                        }
+                            confirm = if(hasChildren)
+                                "Delete the list and all it's items?"
+                            else
+                                "Delete the item?"
+                        }) { Text(text = "Delete") }
                         Spacer(modifier = Modifier.width(8.dp))
                     }
 
@@ -93,12 +99,23 @@ fun Editor(
             title = { Text(text = "Error") },
             text = { Text(it) },
             buttons = {
-                Button(
-                    onClick = {error=null}
-                ) {
-                    Text("OK", fontSize = 22.sp)
-                }
+                Button(onClick = {error=null}) {
+                    Text("OK", fontSize = 22.sp) }
             }
+        )
+    }
+
+    confirm?.let{
+        AlertDialog(
+            onDismissRequest = {error=null},
+            title = { Text(text = "Confirmation") },
+            text = { Text(it) },
+            buttons = { Row {
+                Button(onClick = { confirm = null }) {
+                    Text("Cancel", fontSize = 22.sp) }
+                Button(onClick = { confirm = null; handleDelete() }) {
+                    Text("OK", fontSize = 22.sp) }
+            }}
         )
     }
 }
