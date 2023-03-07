@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -60,11 +61,14 @@ fun ListView() {
         
         // ITEMS LIST
         LazyColumn {
-            items(theItems, { it.id }) { element ->
+            items(theItems, { it.id }) { item ->
                 Row(Modifier
-                    .clickable(onClick = {viewModel.onListRowClick(element)})
+                    .clickable(onClick = {viewModel.onListRowClick(item)})
                 ) {
-                    ItemRow(element)
+                    if(item.type.hasChildren)
+                        ListRow(item = item)
+                    else
+                        ItemRow(item = item)
                 }
             }
         }
@@ -82,12 +86,23 @@ fun ListView() {
 
 
 @Composable
-fun ItemRow(item:DataItem){
-    Text(if(item.type.hasChildren) "list" else "item")
+fun ListRow(item:DataItem){
+    Text("list")
     Column() {
-        Text(text = item.id.toString(), modifier = Modifier.padding(horizontal = 8.dp))
+        //Text(text = item.id.toString(), modifier = Modifier.padding(horizontal = 8.dp))
         Text(text = item.name, style = MaterialTheme.typography.h5)
-        Text(text = item.description?:"")
+        item.description?.let { Text(text = it) }
+    }
+    if(item.type.isCheckable)
+        Text(if(item.state.isChecked) "+" else "-")
+}
+
+@Composable
+fun ItemRow(item:DataItem){
+    Column() {
+        //Text(text = item.id.toString(), modifier = Modifier.padding(horizontal = 8.dp))
+        Text(text = item.name, style = MaterialTheme.typography.h5)
+        item.description?.let { Text(text = it)}
     }
     if(item.type.isCheckable)
         Text(if(item.state.isChecked) "+" else "-")
