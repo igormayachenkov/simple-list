@@ -38,33 +38,29 @@ fun ListView() {
             Header(viewModel = viewModel)
         }
     ) { innerPadding ->
-
-
-        Column() {
-            // ITEMS LIST
-            LazyColumn {
-                items(theItems, { it.id }) { item ->
-                    Box(
-                        Modifier
-                            .clickable(onClick = { viewModel.onListRowClick(item) })
-                    ) {
-                        if (item.type.hasChildren)
-                            ListRow(item = item)
-                        else
-                            ItemRow(item = item)
-                    }
+        // ITEMS LIST
+        LazyColumn(contentPadding = innerPadding) {
+            items(theItems, { it.id }) { item ->
+                Box(
+                    Modifier
+                        .clickable(onClick = { viewModel.onListRowClick(item) })
+                ) {
+                    if (item.type.hasChildren)
+                        ListRow(item = item)
+                    else
+                        ItemRow(item = item)
                 }
             }
         }
+    }
 
-        // EDITOR DIALOG
-        editingData?.let {
-            Editor(
-                initialData = it,
-                onClose = viewModel::onEditorCancel,
-                onSave = viewModel::onEditorSave
-            )
-        }
+    // EDITOR DIALOG
+    editingData?.let {
+        Editor(
+            initialData = it,
+            onClose = viewModel::onEditorCancel,
+            onSave = viewModel::onEditorSave
+        )
     }
 }
 
