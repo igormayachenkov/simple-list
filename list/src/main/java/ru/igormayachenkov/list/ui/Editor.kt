@@ -1,4 +1,4 @@
-package ru.igormayachenkov.list
+package ru.igormayachenkov.list.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -60,7 +60,7 @@ fun Editor(
                 TextField(value = name,  onValueChange = { name = it })
                 // Description
                 if(!hasChildren)
-                TextField(value = descr, onValueChange = { descr = it })
+                    TextField(value = descr, onValueChange = { descr = it })
                 // Buttons
                 Row() {
                     // Delete

@@ -1,4 +1,4 @@
-package ru.igormayachenkov.list
+package ru.igormayachenkov.list.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
