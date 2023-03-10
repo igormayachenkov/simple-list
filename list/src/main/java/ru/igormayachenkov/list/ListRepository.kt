@@ -2,8 +2,6 @@ package ru.igormayachenkov.list
 
 import android.content.Context
 import android.util.Log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import ru.igormayachenkov.list.data.DataItem
 
 private const val TAG = "myapp.ListRepository"
@@ -25,7 +23,8 @@ class ListRepository() {
         return Database.loadItem(id) ?: throw Exception("list not found by id=$id")
     }
 
-     fun loadListItems(listId:Long):List<DataItem>{
+    //suspend
+    fun loadListItems(listId:Long):List<DataItem>{
         Log.d(TAG, "loadListItems started $listId")
         var items:List<DataItem>
         //withContext(Dispatchers.IO) {

@@ -17,7 +17,7 @@ class ListViewModel : ViewModel() {
     // LOADED PAGE
     var openList:DataItem by mutableStateOf(listRepository.loadListById(0))
         private set
-    lateinit var lazyListState : LazyListState
+    var lazyListState : LazyListState = LazyListState() // must have an initial value as openList
         private set
     val openListItems = mutableStateListOf<DataItem>()
 
@@ -73,27 +73,26 @@ class ListViewModel : ViewModel() {
         }
     }
 
+    // Do it all sync or all async
+    // because of the list scroll position must be restored on filled list
     private fun loadPage(page:PageStackData, newList:DataItem?=null){
         Log.d(TAG,"loadPage #${page.id} scroll:${page.lazyListState.firstVisibleItemIndex}")
         // Load the list object
         val list = newList ?: listRepository.loadListById(page.id)
         // Change the open list
         openList = list
-        // Update scroll position
-        lazyListState = page.lazyListState
-        // Load items
-        reloadOpenListItems(list.id)
-    }
-    private fun reloadOpenListItems(id:Long){
+        // RELOAD ITEMS
         try {
             // Clear existed
             openListItems.clear()
             // Start loading process
-            // viewModelScope.launch {
-            val items = listRepository.loadListItems(id)
-            openListItems.addAll(items)
-            sortOpenListItems()
-            // }
+            //viewModelScope.launch {
+                val items = listRepository.loadListItems(list.id)
+                openListItems.addAll(items)
+                sortOpenListItems()
+                // Restore scroll position
+                lazyListState = page.lazyListState
+            //}
         }catch(e:Exception){
             Log.e(TAG,e.stackTraceToString())
         }

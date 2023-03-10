@@ -19,11 +19,8 @@ fun ListView(viewModel: ListViewModel) {
     val theItems:List<DataItem> = viewModel.openListItems
     val editingData = viewModel.editorData
 
-    //val scrollState:ScrollState = rememberScrollState()
-    //val lazyListState: LazyListState = rememberLazyListState()
-    val lazyListState = viewModel.lazyListState
+    Log.d(TAG,"=> ${openList.logString} ") // DO NOT print lazyListState here! it causes rerendering
 
-    Log.d(TAG,"=> ${openList.logString} lazyListState: ${lazyListState.firstVisibleItemIndex}")
     Scaffold(
         topBar = { AppBar(
             isRoot   = viewModel.pageStack.isEmpty(),
@@ -35,16 +32,14 @@ fun ListView(viewModel: ListViewModel) {
     ) { innerPadding ->
         // ITEMS LIST
         LazyColumn(
-            state = lazyListState,
+            state = viewModel.lazyListState,
             contentPadding = innerPadding,
             verticalArrangement = Arrangement.spacedBy(3.dp)
         ) {
             items(theItems, { it.id }) { item ->
                 ItemView(
                     item = item,
-                    onClick = {
-                        Log.d(TAG,"=> onListRowClick: ${lazyListState.firstVisibleItemIndex}")
-                        viewModel.onListRowClick(item) },
+                    onClick = { viewModel.onListRowClick(item) },
                     onCheck = { viewModel.checkItem(item) }
                 )
             }
