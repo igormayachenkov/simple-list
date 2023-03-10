@@ -1,10 +1,9 @@
 package ru.igormayachenkov.list
 
 import android.util.Log
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import ru.igormayachenkov.list.data.*
 
 private const val TAG = "myapp.ListViewModel"
@@ -13,16 +12,20 @@ class ListViewModel : ViewModel() {
 
     private val listRepository:ListRepository = App.instance.listRepository
 
+    val pageStack = ArrayList<PageStackData>()
+
+    // LOADED PAGE
     var openList:DataItem by mutableStateOf(listRepository.loadListById(0))
         private set
-
+    lateinit var lazyListState : LazyListState
+        private set
     val openListItems = mutableStateListOf<DataItem>()
 
-    val backStack = ArrayList<Long>()
 
     init {
         Log.d(TAG,"init")
-        reloadOpenListItems()
+        // TODO restore pageStack from memory here
+        loadPage(PageStackData(0, LazyListState()))
     }
 
     //----------------------------------------------------------------------------------------------
@@ -30,8 +33,8 @@ class ListViewModel : ViewModel() {
     private val comparator : Comparator<DataItem> = compareBy<DataItem>{ it.name }
     private fun sortOpenListItems(){
         Log.d(TAG,"sortItems")
-        //openListItems.sortBy { it.name }
-        openListItems.sortWith(comparator)
+        openListItems.sortBy { it.name }
+        //openListItems.sortWith(comparator)
     }
     private fun itemIndexToInsert(item:DataItem):Int{
         val index = openListItems.binarySearch (element=item, comparator=comparator)
@@ -45,8 +48,10 @@ class ListViewModel : ViewModel() {
         Log.d(TAG,"onListRowClick #${item.id}")
         if(item.type.hasChildren){
             // List
-            backStack.add(openList.id)
-            changeOpenList(item)
+            // save existed page
+            pageStack.add(PageStackData(openList.id, lazyListState))
+            // open new page
+            loadPage(PageStackData(item.id, LazyListState()), item)
         }else{
             // Item
             editListItem(item)
@@ -68,21 +73,29 @@ class ListViewModel : ViewModel() {
         }
     }
 
-    private fun changeOpenList(list:DataItem){
-        Log.d(TAG,"changeOpenList #${list.id}")
+    private fun loadPage(page:PageStackData, newList:DataItem?=null){
+        Log.d(TAG,"loadPage #${page.id} scroll:${page.lazyListState.firstVisibleItemIndex}")
+        // Load the list object
+        val list = newList ?: listRepository.loadListById(page.id)
+        // Change the open list
         openList = list
-        reloadOpenListItems()
+        // Update scroll position
+        lazyListState = page.lazyListState
+        // Load items
+        reloadOpenListItems(list.id)
     }
-    private fun reloadOpenListItems(){
-        val id = openList.id
-        Log.d(TAG,"reloadOpenListItems #$id")
-        // Clear existed
-        openListItems.clear()
-        // Start loading process
-        viewModelScope.launch {
+    private fun reloadOpenListItems(id:Long){
+        try {
+            // Clear existed
+            openListItems.clear()
+            // Start loading process
+            // viewModelScope.launch {
             val items = listRepository.loadListItems(id)
             openListItems.addAll(items)
             sortOpenListItems()
+            // }
+        }catch(e:Exception){
+            Log.e(TAG,e.stackTraceToString())
         }
     }
 
@@ -94,13 +107,11 @@ class ListViewModel : ViewModel() {
             return true
         }
         // BACK ON BACKSTACK
-        if(backStack.isNotEmpty()) {
-            // Pop backStack
-            val id = backStack.removeAt(backStack.lastIndex)
-            // Load the list object
-            val list = listRepository.loadListById(id)
-            // Change the open list
-            changeOpenList(list)
+        if(pageStack.isNotEmpty()) {
+            // Pop the page stack
+            val page = pageStack.removeAt(pageStack.lastIndex)
+            // Load page
+            loadPage(page)
             return true
         }
         return false

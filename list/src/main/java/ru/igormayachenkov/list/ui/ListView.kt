@@ -19,10 +19,14 @@ fun ListView(viewModel: ListViewModel) {
     val theItems:List<DataItem> = viewModel.openListItems
     val editingData = viewModel.editorData
 
-    Log.d(TAG,"=>")
+    //val scrollState:ScrollState = rememberScrollState()
+    //val lazyListState: LazyListState = rememberLazyListState()
+    val lazyListState = viewModel.lazyListState
+
+    Log.d(TAG,"=> ${openList.logString} lazyListState: ${lazyListState.firstVisibleItemIndex}")
     Scaffold(
         topBar = { AppBar(
-            isRoot   = viewModel.backStack.isEmpty(),
+            isRoot   = viewModel.pageStack.isEmpty(),
             title    = openList.name,
             onBack   = viewModel::onBackButtonClick,
             onEdit   = viewModel::editListHeader,
@@ -31,13 +35,16 @@ fun ListView(viewModel: ListViewModel) {
     ) { innerPadding ->
         // ITEMS LIST
         LazyColumn(
+            state = lazyListState,
             contentPadding = innerPadding,
             verticalArrangement = Arrangement.spacedBy(3.dp)
         ) {
             items(theItems, { it.id }) { item ->
                 ItemView(
                     item = item,
-                    onClick = { viewModel.onListRowClick(item) },
+                    onClick = {
+                        Log.d(TAG,"=> onListRowClick: ${lazyListState.firstVisibleItemIndex}")
+                        viewModel.onListRowClick(item) },
                     onCheck = { viewModel.checkItem(item) }
                 )
             }

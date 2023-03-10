@@ -25,12 +25,12 @@ class ListRepository() {
         return Database.loadItem(id) ?: throw Exception("list not found by id=$id")
     }
 
-    suspend fun loadListItems(listId:Long):List<DataItem>{
+     fun loadListItems(listId:Long):List<DataItem>{
         Log.d(TAG, "loadListItems started $listId")
         var items:List<DataItem>
-        withContext(Dispatchers.IO) {
+        //withContext(Dispatchers.IO) {
             items = Database.loadListItems(listId)
-        }
+        //}
         Log.d(TAG, "loadListItems finished ${items.toString()}")
         return items
     }
