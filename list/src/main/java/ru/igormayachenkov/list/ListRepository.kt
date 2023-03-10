@@ -17,8 +17,10 @@ class ListRepository() {
     //----------------------------------------------------------------------------------------------
     // LOADERS
     fun loadListById(id: Long): DataItem {
-        if(id.compareTo(0)==0)
-            return DataItem(0, 0, DataItem.Type(true,false), DataItem.State(true),"all lists", null)
+        if(id.compareTo(0)==0) // Fake root list
+            return DataItem(0, 0,
+                DataItem.Type(true,false),
+                DataItem.State(true),"Simple List", null)
 
         return Database.loadItem(id) ?: throw Exception("list not found by id=$id")
     }
@@ -42,6 +44,10 @@ class ListRepository() {
     fun updateItem(item:DataItem){
         Log.d(TAG, "updateItem  $item")
         Database.updateItem(item)
+    }
+    fun updateItemState(item:DataItem){
+        Log.d(TAG, "updateItemState  $item")
+        Database.updateItemState(item)
     }
     fun deleteItem(item:DataItem){
         Log.d(TAG, "deleteItem  $item")

@@ -38,6 +38,22 @@ class ListViewModel : ViewModel() {
             editListItem(item)
         }
     }
+
+    fun checkItem(item:DataItem) {
+        Log.d(TAG, "checkItem #${item.id} ${item.name}")
+        try {
+            // UPDATE
+            val newItem = item.copy(
+                state = item.state.copy(
+                    isChecked = !item.state.isChecked))
+            listRepository.updateItemState(newItem)
+            // Update UI (It is the list item)
+            onItemUpdated(newItem)
+        }catch (e: Exception){
+            Log.e(TAG, e.stackTraceToString())
+        }
+    }
+
     private fun changeOpenList(list:DataItem){
         Log.d(TAG,"changeOpenList #${list.id}")
         openList = list
@@ -55,15 +71,24 @@ class ListViewModel : ViewModel() {
         }
     }
 
-    fun onBackButtonClick(){
+    fun onBackButtonClick():Boolean{
         Log.d(TAG,"onBackButtonClick")
-        if(backStack.isEmpty()) return
-        // Pop backStack
-        val id = backStack.removeAt(backStack.lastIndex)
-        // Load the list object
-        val list = listRepository.loadListById(id)
-        // Change the open list
-        changeOpenList(list)
+        // CLOSE EDITOR
+        if(editorData!=null){
+            onEditorCancel()
+            return true
+        }
+        // BACK ON BACKSTACK
+        if(backStack.isNotEmpty()) {
+            // Pop backStack
+            val id = backStack.removeAt(backStack.lastIndex)
+            // Load the list object
+            val list = listRepository.loadListById(id)
+            // Change the open list
+            changeOpenList(list)
+            return true
+        }
+        return false
     }
 
     //----------------------------------------------------------------------------------------------
