@@ -26,6 +26,20 @@ class ListViewModel : ViewModel() {
     }
 
     //----------------------------------------------------------------------------------------------
+    // SORTING
+    private val comparator : Comparator<DataItem> = compareBy<DataItem>{ it.name }
+    private fun sortOpenListItems(){
+        Log.d(TAG,"sortItems")
+        //openListItems.sortBy { it.name }
+        openListItems.sortWith(comparator)
+    }
+    private fun itemIndexToInsert(item:DataItem):Int{
+        val index = openListItems.binarySearch (element=item, comparator=comparator)
+        return if(index<0) -(index + 1)
+        else index
+    }
+
+    //----------------------------------------------------------------------------------------------
     // EVENTS
     fun onListRowClick(item:DataItem){
         Log.d(TAG,"onListRowClick #${item.id}")
@@ -68,6 +82,7 @@ class ListViewModel : ViewModel() {
         viewModelScope.launch {
             val items = listRepository.loadListItems(id)
             openListItems.addAll(items)
+            sortOpenListItems()
         }
     }
 
@@ -178,14 +193,19 @@ class ListViewModel : ViewModel() {
     // UI UPDATERS
     // LIST ITEM
     private fun onItemInserted(newItem: DataItem){
-        openListItems.add(newItem)
+        openListItems.add(itemIndexToInsert(newItem), newItem)
     }
     private fun onItemUpdated(newItem: DataItem){
         // Find the source item index
         val index = openListItems.indexOfFirst { it.id.compareTo(newItem.id)==0 }
         if(index<0) throw Exception("item not found by id=${newItem.id}")
         // Update UI
-        openListItems[index] = newItem
+        openListItems.removeAt(index)
+        val newIndex = itemIndexToInsert(newItem)
+        Log.d(TAG,"onItemUpdated index: $index => $newIndex")
+        openListItems.add(newIndex,newItem)
+        //openListItems[index] = newItem
+        //sortOpenListItems()
     }
     private fun onItemDeleted(item:DataItem){
         // Find the source item index

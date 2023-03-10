@@ -50,7 +50,7 @@ fun ListRow(item:DataItem){
             contentDescription = "list icon",
             tint = MaterialTheme.colors.onSurface,
             modifier = Modifier.padding(horizontal = 2.dp))
-        Spacer(modifier = Modifier.width(3.dp))
+        Spacer(modifier = Modifier.width(6.dp))
         Text(text = item.name, style = MaterialTheme.typography.h5)
     }
 }

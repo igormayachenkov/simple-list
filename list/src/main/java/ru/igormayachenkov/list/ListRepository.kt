@@ -38,19 +38,19 @@ class ListRepository() {
     //----------------------------------------------------------------------------------------------
     // MODIFIERS
     fun insertItem(item:DataItem){
-        Log.d(TAG, "insertItem  $item")
+        Log.d(TAG, "insertItem  ${item.logString} ")
         Database.insertItem(item)
     }
     fun updateItem(item:DataItem){
-        Log.d(TAG, "updateItem  $item")
+        Log.d(TAG, "updateItem  ${item.logString}")
         Database.updateItem(item)
     }
     fun updateItemState(item:DataItem){
-        Log.d(TAG, "updateItemState  $item")
+        Log.d(TAG, "updateItemState  ${item.logString}")
         Database.updateItemState(item)
     }
     fun deleteItem(item:DataItem){
-        Log.d(TAG, "deleteItem  $item")
+        Log.d(TAG, "deleteItem  ${item.logString}")
         // Cascade children deletion
         deleteChildren(item)
         // Delete the item record

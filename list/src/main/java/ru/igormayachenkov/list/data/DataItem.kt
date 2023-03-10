@@ -10,6 +10,8 @@ data class DataItem(
     val name        : String,
     val description : String?
 ){
+    val logString:String = "#$id $name"
+
     // TYPE FLAGS
     data class Type(
         val hasChildren : Boolean,
