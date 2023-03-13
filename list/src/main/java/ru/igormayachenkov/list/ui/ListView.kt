@@ -36,11 +36,13 @@ fun ListView(viewModel: ListViewModel) {
             contentPadding = innerPadding,
             verticalArrangement = Arrangement.spacedBy(3.dp)
         ) {
-            items(theItems, { it.id }) { item ->
+            items(items=theItems, key={ it.id }) { item ->
                 ItemView(
                     item = item,
-                    onClick = { viewModel.onListRowClick(item) },
-                    onCheck = { viewModel.checkItem(item) }
+                    onClick = viewModel::onListRowClick,
+                    onCheck = viewModel::checkItem
+                    // IMPORTANT: USE STATIC CALLBACKS
+                    // onCheck = { viewModel.checkItem(item) } - CAUSES ALL LIST REDRAWING
                 )
             }
         }

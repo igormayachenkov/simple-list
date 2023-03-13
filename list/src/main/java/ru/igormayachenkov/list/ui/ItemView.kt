@@ -22,20 +22,20 @@ private const val TAG = "myapp.ItemView"
 @Composable
 fun ItemView(
     item:DataItem,
-    onClick:()->Unit,
-    onCheck:()->Unit
+    onClick:(DataItem)->Unit,
+    onCheck:(DataItem)->Unit
 ){
     Log.d(TAG,"=> #${item.id} ${item.name}")
     Box(
         Modifier
             .background(color = MaterialTheme.colors.surface)
             .padding(vertical = 5.dp, horizontal = 3.dp)
-            .clickable(onClick = onClick)
+            .clickable(onClick = {onClick(item)})
     ) {
         if (item.type.hasChildren)
             ListRow(item = item)
         else
-            ItemRow(item = item, onCheck = onCheck)
+            ItemRow(item = item, onCheck = {onCheck(item)})
     }
 }
 
