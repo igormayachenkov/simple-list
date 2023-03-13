@@ -21,13 +21,14 @@ private const val TAG = "myapp.ItemView"
 
 @Composable
 fun ItemView(
+    modifier: Modifier,
     item:DataItem,
     onClick:(DataItem)->Unit,
     onCheck:(DataItem)->Unit
 ){
     Log.d(TAG,"=> #${item.id} ${item.name}")
     Box(
-        Modifier
+        modifier = modifier
             .background(color = MaterialTheme.colors.surface)
             .padding(vertical = 5.dp, horizontal = 3.dp)
             .clickable(onClick = {onClick(item)})
@@ -105,7 +106,7 @@ fun fakeItem():DataItem=DataItem(
 @Composable
 fun ListRowPreview(){
     Surface {
-        ItemView(item = fakeList(), onClick = {}, onCheck = {})
+        ItemView(Modifier,item = fakeList(), onClick = {}, onCheck = {})
     }
 }
 @Preview(name = "ListRow Dark")
@@ -113,7 +114,7 @@ fun ListRowPreview(){
 fun ListRowDarkPreview(){
     ListTheme(darkTheme = true) {
         Surface {
-            ItemView(item = fakeList(), onClick = {}, onCheck = {})
+            ItemView(Modifier,item = fakeList(), onClick = {}, onCheck = {})
         }
     }
 }
@@ -122,7 +123,7 @@ fun ListRowDarkPreview(){
 @Composable
 fun ItemRowPreview(){
     Surface {
-        ItemView(item = fakeItem(), onClick = {}, onCheck = {})
+        ItemView(Modifier,item = fakeItem(), onClick = {}, onCheck = {})
     }
 }
 @Preview(name = "ItemRow Dark")
@@ -130,7 +131,7 @@ fun ItemRowPreview(){
 fun ItemRowDarkPreview(){
     ListTheme(darkTheme = true) {
         Surface {
-            ItemView(item = fakeItem(), onClick = {}, onCheck = {})
+            ItemView(Modifier,item = fakeItem(), onClick = {}, onCheck = {})
         }
     }
 }
