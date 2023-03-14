@@ -2,6 +2,8 @@ package ru.igormayachenkov.list.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -108,20 +110,27 @@ fun Editor(
                     Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp)) {
+
+                    // Cancel
+                    Button(onClick = onClose) {
+                        Icon(Icons.Default.ArrowBack,"close")
+                    }
+
+                    // Spacer
+                    Spacer(modifier = Modifier.weight(1F))
+
                     // Delete
-                    if(!isNew) {
-                        Button(onClick = {
+                    Button(
+                        enabled = !isNew,
+                        onClick = {
                             confirm = if(hasChildren)
                                 "Delete the list and all it's items?"
                             else
                                 "Delete the item?"
-                        }) { Text(text = "Delete") }
+                        }
+                    ) {
+                        Text(text = "Delete")
                     }
-
-                    // Cancel
-//                    Button(onClick = onClose) {
-//                        Text("Close")
-//                    }
 
                     // Spacer
                     Spacer(modifier = Modifier.weight(1F))
