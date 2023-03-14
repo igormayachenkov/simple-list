@@ -8,11 +8,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.igormayachenkov.list.R
 import ru.igormayachenkov.list.data.DataItem
 import ru.igormayachenkov.list.data.EditorData
+import ru.igormayachenkov.list.ui.theme.ListTheme
 
 @Composable
 fun Editor(
@@ -37,32 +40,65 @@ fun Editor(
             .fillMaxSize(),
         color = Color(0x80000040)
     ){
-        Box(
+        Card(
             Modifier
-                //.background(Color.Red)
-                .wrapContentSize(align = Alignment.Center)
+                .padding(top = 50.dp, start = 20.dp, end = 20.dp)
+                .wrapContentHeight(align = Alignment.Top)
         ) {
             Column(
                 Modifier
-                    .background(Color.DarkGray)
                     .padding(all = 16.dp)
+                    .fillMaxWidth()
                 //.padding(all = 16.dp)
             ) {
                 // Header
-                Text((if(isNew)"New element" else "Edit existed"))
-                // List / Item
-                if(isNew) Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Has children")
-                    Switch(checked = hasChildren, onCheckedChange = { hasChildren = it })
+                //Text((if(isNew)"New element" else "Edit existed"))
+
+                // List / Item switch
+                if(isNew) Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+//                    Text(text = "Has children")
+//                    Switch(checked = hasChildren, onCheckedChange = { hasChildren = it })
+                    val colors = ButtonDefaults.buttonColors(
+                        backgroundColor = MaterialTheme.colors.surface,
+                        disabledBackgroundColor = MaterialTheme.colors.primary,
+                        disabledContentColor = MaterialTheme.colors.onPrimary,
+                    )
+                    Button(
+                        modifier = Modifier.weight(1F),
+                        colors = colors,
+                        enabled = !hasChildren,
+                        onClick = {hasChildren=!hasChildren}
+                    ) {
+                        Text("List")
+                    }
+                    Button(
+                        modifier = Modifier.weight(1F),
+                        colors = colors,
+                        enabled = hasChildren,
+                        onClick = {hasChildren=!hasChildren}) {
+                        Text("Item")
+                    }
                 }
 
                 // Name
-                TextField(value = name,  onValueChange = { name = it })
+                TextField(value = name,  onValueChange = { name = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = {Text("<name>")},
+                    textStyle = MaterialTheme.typography.body1
+                )
                 // Description
                 if(!hasChildren)
-                    TextField(value = descr, onValueChange = { descr = it })
+                    TextField(value = descr, onValueChange = { descr = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = {Text("<description>")},
+                        textStyle = MaterialTheme.typography.body2
+                    )
+
                 // Buttons
-                Row() {
+                Row(Modifier.fillMaxWidth().padding(top = 16.dp)) {
                     // Delete
                     if(!isNew) {
                         Button(onClick = {
@@ -71,14 +107,15 @@ fun Editor(
                             else
                                 "Delete the item?"
                         }) { Text(text = "Delete") }
-                        Spacer(modifier = Modifier.width(8.dp))
                     }
 
                     // Cancel
-                    Button(onClick = onClose) {
-                        Text("Close")
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
+//                    Button(onClick = onClose) {
+//                        Text("Close")
+//                    }
+
+                    // Spacer
+                    Spacer(modifier = Modifier.weight(1F))
 
                     // Save
                     Button(onClick = {
@@ -94,6 +131,13 @@ fun Editor(
                     }
                 }
             }
+//            Row(horizontalArrangement = Arrangement.End) {
+//                IconButton(
+//                    modifier = Modifier,
+//                    onClick = onClose) {
+//                    Icon(Icons.Default.Close, contentDescription = "")
+//                }
+//            }
         }
     }
     
@@ -127,9 +171,13 @@ fun Editor(
 @Preview(showBackground = false)
 @Composable
 fun EditorPreview() {
-    Editor(EditorData(true,
-        DataItem(13,0, DataItem.Type(false,true), DataItem.State(true),"name","descr")),
-        {},
-        {null}
-    )
+    ListTheme(darkTheme = true) {
+        Editor(EditorData(
+            true,
+            DataItem(13, 0, DataItem.Type(false, true), DataItem.State(true), "name", "descr")
+        ),
+            {},
+            { null }
+        )
+    }
 }

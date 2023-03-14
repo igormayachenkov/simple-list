@@ -47,40 +47,50 @@ fun ListRow(item:DataItem){
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        // Icon
         Icon(painter = painterResource(id = R.drawable.outline_featured_play_list_24),
             contentDescription = "list icon",
             tint = MaterialTheme.colors.onSurface,
             modifier = Modifier.padding(horizontal = 2.dp))
         Spacer(modifier = Modifier.width(6.dp))
-        Text(text = item.name, style = MaterialTheme.typography.h5)
+        // Name
+        Text(text = item.name, style = MaterialTheme.typography.body1)
     }
 }
 
 @Composable
 fun ItemRow(item:DataItem, onCheck:()->Unit){
-    Column(
+    Row(
         Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            Modifier.fillMaxWidth().weight(1f)
         ) {
-            Text(text = item.name, style = MaterialTheme.typography.h5,
-                modifier = Modifier.weight(1f))
-            if (item.type.isCheckable) {
-                IconButton(onClick = onCheck) {
-                    Icon(
-                        painter = painterResource(id =
-                        if (item.state.isChecked) R.drawable.baseline_check_box_24
-                        else R.drawable.baseline_check_box_outline_blank_24
-                        ),
-                        contentDescription = "",
-                        tint = MaterialTheme.colors.onSurface)
-                }
+            // Name
+            Text(
+                text = item.name, style = MaterialTheme.typography.body1,
+            )
+
+            // Description
+            item.description?.let {
+                Text(text = it, style = MaterialTheme.typography.body2)
             }
         }
-        item.description?.let { Text(text = it) }
+
+        // Checkbox
+        if (item.type.isCheckable) {
+            IconButton(onClick = onCheck) {
+                Icon(
+                    painter = painterResource(id =
+                    if (item.state.isChecked) R.drawable.baseline_check_box_24
+                    else R.drawable.baseline_check_box_outline_blank_24
+                    ),
+                    contentDescription = "",
+                    tint = MaterialTheme.colors.onSurface)
+            }
+        }
     }
 }
 //--------------------------------------------------------------------------------------------
