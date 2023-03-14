@@ -37,7 +37,7 @@ fun ListView(viewModel: ListViewModel) {
         LazyColumn(
             state = viewModel.lazyListState,
             contentPadding = innerPadding,
-            verticalArrangement = Arrangement.spacedBy(3.dp)
+            verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
             items(items=theItems, key={ it.id }) { item ->
                 ItemView(

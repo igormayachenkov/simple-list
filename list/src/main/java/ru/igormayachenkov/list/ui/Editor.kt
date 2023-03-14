@@ -1,6 +1,5 @@
 package ru.igormayachenkov.list.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -8,11 +7,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.igormayachenkov.list.R
 import ru.igormayachenkov.list.data.DataItem
 import ru.igormayachenkov.list.data.EditorData
 import ru.igormayachenkov.list.ui.theme.ListTheme
@@ -28,6 +25,7 @@ fun Editor(
     var name        by rememberSaveable { mutableStateOf<String>(initialItem.name) }
     var descr       by rememberSaveable { mutableStateOf<String>(initialItem.description?:"") }
     var hasChildren by rememberSaveable { mutableStateOf<Boolean>(initialItem.type.hasChildren) }
+    var isCheckable by rememberSaveable { mutableStateOf<Boolean>(initialItem.type.isCheckable) }
     var error       by rememberSaveable { mutableStateOf<String?>(null) }
     var confirm     by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -54,13 +52,10 @@ fun Editor(
                 // Header
                 //Text((if(isNew)"New element" else "Edit existed"))
 
-                // List / Item switch
+                // LIST / ITEM SWITCH
                 if(isNew) Row(
-                    Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                    Modifier.fillMaxWidth()
                 ) {
-//                    Text(text = "Has children")
-//                    Switch(checked = hasChildren, onCheckedChange = { hasChildren = it })
                     val colors = ButtonDefaults.buttonColors(
                         backgroundColor = MaterialTheme.colors.surface,
                         disabledBackgroundColor = MaterialTheme.colors.primary,
@@ -83,22 +78,36 @@ fun Editor(
                     }
                 }
 
+                // INPUTS
                 // Name
                 TextField(value = name,  onValueChange = { name = it },
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = {Text("<name>")},
                     textStyle = MaterialTheme.typography.body1
                 )
-                // Description
-                if(!hasChildren)
-                    TextField(value = descr, onValueChange = { descr = it },
+                if(!hasChildren) { // Item
+                    // Description
+                    TextField(
+                        value = descr, onValueChange = { descr = it },
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = {Text("<description>")},
+                        placeholder = { Text("<description>") },
                         textStyle = MaterialTheme.typography.body2
                     )
+                    // Is Checkable
+                    Row(Modifier.fillMaxWidth().padding(top = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center) {
+                        Text( text = "Is checkable")
+                        Spacer( modifier = Modifier.width(5.dp))
+                        Switch(checked = isCheckable, onCheckedChange = { isCheckable = it })
+                    }
+                }
 
-                // Buttons
-                Row(Modifier.fillMaxWidth().padding(top = 16.dp)) {
+                // BUTTONS
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp)) {
                     // Delete
                     if(!isNew) {
                         Button(onClick = {
@@ -123,7 +132,10 @@ fun Editor(
                             initialItem.copy(
                                 name=name,
                                 description = descr.ifBlank { null },
-                                type = initialItem.type.copy(hasChildren=hasChildren)
+                                type = initialItem.type.copy(
+                                    hasChildren = hasChildren,
+                                    isCheckable = isCheckable
+                                )
                             )
                         )?.let { error=it }
                     }) {

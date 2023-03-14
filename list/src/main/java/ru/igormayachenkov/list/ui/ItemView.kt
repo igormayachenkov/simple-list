@@ -1,7 +1,6 @@
 package ru.igormayachenkov.list.ui
 
 import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -27,10 +26,9 @@ fun ItemView(
     onCheck:(DataItem)->Unit
 ){
     Log.d(TAG,"=> #${item.id} ${item.name}")
-    Box(
+    Card(
         modifier = modifier
-            .background(color = MaterialTheme.colors.surface)
-            .padding(vertical = 5.dp, horizontal = 3.dp)
+        //    .background(color = MaterialTheme.colors.surface)
             .clickable(onClick = {onClick(item)})
     ) {
         if (item.type.hasChildren)
@@ -44,15 +42,14 @@ fun ItemView(
 fun ListRow(item:DataItem){
     Row(
         Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth().padding(vertical = 8.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Icon
         Icon(painter = painterResource(id = R.drawable.outline_featured_play_list_24),
             contentDescription = "list icon",
-            tint = MaterialTheme.colors.onSurface,
-            modifier = Modifier.padding(horizontal = 2.dp))
-        Spacer(modifier = Modifier.width(6.dp))
+            tint = MaterialTheme.colors.onSurface)
+        Spacer(modifier = Modifier.width(8.dp))
         // Name
         Text(text = item.name, style = MaterialTheme.typography.body1)
     }
@@ -62,11 +59,11 @@ fun ListRow(item:DataItem){
 fun ItemRow(item:DataItem, onCheck:()->Unit){
     Row(
         Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth().padding(start = 5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
-            Modifier.fillMaxWidth().weight(1f)
+            Modifier.fillMaxWidth().weight(1f).padding(vertical = 8.dp)
         ) {
             // Name
             Text(
@@ -141,7 +138,7 @@ fun ItemRowPreview(){
 fun ItemRowDarkPreview(){
     ListTheme(darkTheme = true) {
         Surface {
-            ItemView(Modifier,item = fakeItem(), onClick = {}, onCheck = {})
+            ItemView(Modifier,item = fakeItem().copy(description = null), onClick = {}, onCheck = {})
         }
     }
 }
