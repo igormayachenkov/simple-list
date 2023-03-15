@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
                         enabled = true,
                         onBack  = { if(!viewModel.onBackButtonClick()) this.finish() }
                     )
-                    ListView(viewModel)
+                    MainScreen(viewModel)
                 }
             }
         }
