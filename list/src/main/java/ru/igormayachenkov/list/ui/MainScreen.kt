@@ -13,17 +13,16 @@ private const val TAG = "myapp.MainScreen"
 @Composable
 fun MainScreen(viewModel: ListViewModel) {
 
-    val openList = viewModel.openList
-//    val theItems:List<DataItem> = viewModel.openListItems
+    val openList   by viewModel.openList.collectAsState()
     val itemsState by viewModel.itemsState.collectAsState()
     val editingData = viewModel.editorData
 
-    Log.d(TAG,"=> ${openList.logString} ") // DO NOT print lazyListState here! it causes rerendering
+    Log.d(TAG,"=> ${openList.list.logString} ") // DO NOT print lazyListState here! it causes rerendering
 
     Scaffold(
         topBar = { AppBar(
-            isRoot   = viewModel.pageStack.isEmpty(),
-            title    = openList.name,
+            isRoot   = viewModel.isRoot,
+            title    = openList.list.name,
             onBack   = viewModel::onBackButtonClick,
             onEdit   = viewModel::editListHeader,
             onCreate = viewModel::createItem,
@@ -41,7 +40,7 @@ fun MainScreen(viewModel: ListViewModel) {
                     // ITEMS LIST
                     ListView(
                         theItems = (itemsState as ItemsState.Success).items,
-                        lazyListState = viewModel.lazyListState,
+                        lazyListState = openList.lazyListState,
                         onItemClick = viewModel::onListRowClick,
                         onItemCheck = viewModel::checkItem
                         // IMPORTANT: USE STATIC CALLBACKS

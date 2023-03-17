@@ -1,14 +1,11 @@
 package ru.igormayachenkov.list
 
 import android.util.Log
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.igormayachenkov.list.data.*
 
@@ -16,17 +13,20 @@ private const val TAG = "myapp.ListViewModel"
 
 class ListViewModel : ViewModel() {
 
-    private val listRepository:ListRepository = App.instance.listRepository
+    private val listRepository:ListRepository   = App.instance.listRepository
+    private val itemsRepository:ItemsRepository = App.instance.itemsRepository
 
-    val pageStack = ArrayList<PageStackData>()
+    //val pageStack = ArrayList<PageStackData>()
 
     // LOADED PAGE
-    var openList:DataItem by mutableStateOf(listRepository.loadListById(0))
-        private set
-    var lazyListState : LazyListState = LazyListState() // must have an initial value as openList
-        private set
+//    var openList:DataItem by mutableStateOf(itemsRepository.loadListById(0))
+//        private set
+    val openList = listRepository.openList
+//    var lazyListState : LazyListState = LazyListState() // must have an initial value as openList
+//        private set
+    val isRoot:Boolean = listRepository.stack.isEmpty()
 
-    val itemsState = listRepository.itemsState.map {
+    val itemsState = itemsRepository.itemsState.map {
         if(it is ItemsState.Success) it.copy(items= it.items.sortedWith(comparator))
         else it
     }.stateIn(
@@ -34,13 +34,25 @@ class ListViewModel : ViewModel() {
         SharingStarted.WhileSubscribed(),
         initialValue = ItemsState.Loading
     )
-    var loadItemsJob:Job?=null
 
+    var loadItemsJob:Job?=null
+    private fun onListChanged(openList:OpenList){
+        Log.d(TAG,"onListChanged ${openList.list.logString}")
+        // RELOAD ITEMS
+        loadItemsJob?.cancel()
+        loadItemsJob = viewModelScope.launch {
+            itemsRepository.loadItems(listId = openList.list.id)
+        }
+    }
 
     init {
         Log.d(TAG,"init")
-        // TODO restore pageStack from memory here
-        loadPage(PageStackData(0, LazyListState()))
+        //loadPage(PageStackData(0, LazyListState()))
+        viewModelScope.launch {
+            listRepository.openList.collect{
+                onListChanged(it)
+            }
+        }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -53,10 +65,7 @@ class ListViewModel : ViewModel() {
         Log.d(TAG,"onListRowClick #${item.id}")
         if(item.type.hasChildren){
             // List
-            // save existed page
-            pageStack.add(PageStackData(openList.id, lazyListState))
-            // open new page
-            loadPage(PageStackData(item.id, LazyListState()), item)
+            listRepository.setOpenList(item)
         }else{
             // Item
             editListItem(item)
@@ -70,26 +79,11 @@ class ListViewModel : ViewModel() {
             val newItem = item.copy(
                 state = item.state.copy(
                     isChecked = !item.state.isChecked))
-            listRepository.updateItem(newItem, justItemState = true)
+            itemsRepository.updateItem(newItem, justItemState = true)
 //            // Update UI (It is the list item)
 //            onItemUpdated(newItem)
         }catch (e: Exception){
             Log.e(TAG, e.stackTraceToString())
-        }
-    }
-
-    // Do it all sync or all async
-    // because of the list scroll position must be restored on filled list
-    private fun loadPage(page:PageStackData, newList:DataItem?=null){
-        Log.d(TAG,"loadPage #${page.id} scroll:${page.lazyListState.firstVisibleItemIndex}")
-        // Load the list object
-        val list = newList ?: listRepository.loadListById(page.id)
-        // Change the open list
-        openList = list
-        // RELOAD ITEMS
-        loadItemsJob?.cancel()
-        loadItemsJob = viewModelScope.launch {
-            listRepository.loadItems(listId = list.id)
         }
     }
 
@@ -100,12 +94,8 @@ class ListViewModel : ViewModel() {
             onEditorCancel()
             return true
         }
-        // BACK ON BACKSTACK
-        if(pageStack.isNotEmpty()) {
-            // Pop the page stack
-            val page = pageStack.removeAt(pageStack.lastIndex)
-            // Load page
-            loadPage(page)
+        // BACK ON LIST BACKSTACK
+        if(listRepository.goBack()) {
             return true
         }
         return false
@@ -117,14 +107,14 @@ class ListViewModel : ViewModel() {
         private set
 
     fun editListHeader(){
-        editorData = EditorData(false, openList)
+        editorData = EditorData(false, openList.value.list)
     }
     fun createItem(){
         editorData = EditorData(
             isNew = true,
             item = DataItem(
-                id = listRepository.generateItemId(),
-                parent_id = openList.id,
+                id = itemsRepository.generateItemId(),
+                parent_id = openList.value.list.id,
                 type = DataItem.Type(hasChildren = false, isCheckable = true),
                 state = DataItem.State(isChecked = false),
                 name = "",
@@ -141,8 +131,6 @@ class ListViewModel : ViewModel() {
         editorData=null
     }
 
-    // TODO split open list and item modifications
-
     fun onEditorSave(newItem:DataItem?):String?{
         Log.d(TAG,"onEditorSave $newItem")
         editorData?.let { initialData ->
@@ -152,36 +140,38 @@ class ListViewModel : ViewModel() {
                 if (isNew) {
                     if(newItem!=null) {
                         // INSERT
-                        listRepository.insertItem(newItem)
-                        // Update UI
-                        // TODO if list inserted - open it
+                        if (oldItem===openList.value.list) {
+                            // It is the open list
+                            listRepository.insertAndOpenList(newItem)
+                        } else {
+                            // It is the list item
+                            itemsRepository.insertItem(newItem)
+                        }
                     }else{
                         // Wrong case: delete new item
                     }
                 } else {
                     if (newItem != null) {
                         // UPDATE
-                        listRepository.updateItem(newItem, justItemState = false)
-                        // Update UI
                         //if (newItem.id.compareTo(openList.id) == 0) {
-                        if (oldItem===openList) {
+                        if (oldItem===openList.value.list) {
                             // It is the open list
-                            onOpenListUpdated(newItem)
+                            //onOpenListUpdated(newItem)
+                            listRepository.updateOpenList(newItem)
                         } else {
                             // It is the list item
-                            //onItemUpdated(newItem)
+                            itemsRepository.updateItem(newItem, justItemState = false)
                         }
                     }else{
                         // DELETE
                         val item = initialData.item
-                        listRepository.deleteItem(item)
-                        // Update UI
-                        if (oldItem===openList) {
+                        if (oldItem===openList.value.list) {
                             // It is the open list
-                            onOpenListDeleted()
+                            //onOpenListDeleted()
+                            listRepository.deleteAndCloseList(item)
                         } else {
                             // It is the list item
-                            //onItemDeleted(oldItem)
+                            itemsRepository.deleteItem(item)
                         }
                     }
                 }
@@ -195,16 +185,4 @@ class ListViewModel : ViewModel() {
         // Return no-error
         return null
     }
-
-    //----------------------------------------------------------------------------------------------
-    // UI UPDATERS
-    // OPEN LIST
-    private fun onOpenListUpdated(newItem: DataItem){
-        openList = newItem
-        // TODO do something if list => item change
-    }
-    private fun onOpenListDeleted(){
-        onBackButtonClick()
-    }
-
 }

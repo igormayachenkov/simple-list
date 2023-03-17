@@ -43,7 +43,8 @@ class App : Application() {
             }
     }
 
-    val listRepository = ListRepository()
+    val listRepository  = ListRepository()
+    val itemsRepository = ItemsRepository()
 
     override fun onCreate() {
         instance = this
@@ -53,7 +54,7 @@ class App : Application() {
 
         // Init
         //Settings
-        listRepository.open(this)
+        Database.open(context)
         //Logic
     }
 
