@@ -14,7 +14,8 @@ private const val TAG = "myapp.MainScreen"
 fun MainScreen(viewModel: ListViewModel) {
 
     val openList = viewModel.openList
-    val theItems:List<DataItem> = viewModel.openListItems
+//    val theItems:List<DataItem> = viewModel.openListItems
+    val itemsState by viewModel.itemsState.collectAsState()
     val editingData = viewModel.editorData
 
     Log.d(TAG,"=> ${openList.logString} ") // DO NOT print lazyListState here! it causes rerendering
@@ -29,15 +30,25 @@ fun MainScreen(viewModel: ListViewModel) {
         )}
     ) {  innerPadding ->
         Surface(Modifier.padding(innerPadding), color=MaterialTheme.colors.background) {
-            // ITEMS LIST
-            ListView(
-                theItems = theItems,
-                lazyListState = viewModel.lazyListState,
-                onItemClick = viewModel::onListRowClick,
-                onItemCheck = viewModel::checkItem
-                // IMPORTANT: USE STATIC CALLBACKS
-                // onCheck = { viewModel.checkItem(item) } - CAUSES ALL LIST REDRAWING
-            )
+            when(itemsState){
+                ItemsState.Loading -> {
+                    Text(text = "Loading...", style = MaterialTheme.typography.h4)
+                }
+                is ItemsState.Error -> {
+                    Text(text = "Error: ${(itemsState as ItemsState.Error).message} ", style = MaterialTheme.typography.h4)
+                }
+                is ItemsState.Success ->{
+                    // ITEMS LIST
+                    ListView(
+                        theItems = (itemsState as ItemsState.Success).items,
+                        lazyListState = viewModel.lazyListState,
+                        onItemClick = viewModel::onListRowClick,
+                        onItemCheck = viewModel::checkItem
+                        // IMPORTANT: USE STATIC CALLBACKS
+                        // onCheck = { viewModel.checkItem(item) } - CAUSES ALL LIST REDRAWING
+                    )
+                }
+            }
         }
     }
 

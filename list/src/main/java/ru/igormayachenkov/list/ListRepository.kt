@@ -2,7 +2,11 @@ package ru.igormayachenkov.list
 
 import android.content.Context
 import android.util.Log
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import ru.igormayachenkov.list.data.DataItem
+import ru.igormayachenkov.list.data.ItemsState
 
 private const val TAG = "myapp.ListRepository"
 
@@ -12,8 +16,30 @@ class ListRepository() {
         Database.open(context)
     }
 
+    private val _itemsState = MutableStateFlow<ItemsState>(ItemsState.Loading)
+    val itemsState = _itemsState.asStateFlow()
+
     //----------------------------------------------------------------------------------------------
     // LOADERS
+    suspend fun loadItems(listId:Long){
+        withContext(Dispatchers.IO){
+            try {
+                // Start
+                Log.d(TAG, "openList started $listId")
+                _itemsState.emit(ItemsState.Loading)
+                // Progress
+                delay(2000)
+                val items = Database.loadListItems(listId)
+                // Success
+                _itemsState.emit(ItemsState.Success(items))
+            }catch(ex:Exception){
+                // Error
+                _itemsState.emit(ItemsState.Error(ex.stackTraceToString()))
+            }
+            Log.d(TAG, "openList finished")
+        }
+    }
+
     fun loadListById(id: Long): DataItem {
         if(id.compareTo(0)==0) // Fake root list
             return DataItem(0, 0,

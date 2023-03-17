@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import ru.igormayachenkov.list.data.*
 
 private const val TAG = "myapp.ListViewModel"
@@ -20,6 +22,8 @@ class ListViewModel : ViewModel() {
     var lazyListState : LazyListState = LazyListState() // must have an initial value as openList
         private set
     val openListItems = mutableStateListOf<DataItem>()
+
+    val itemsState = listRepository.itemsState
 
 
     init {
@@ -82,20 +86,23 @@ class ListViewModel : ViewModel() {
         // Change the open list
         openList = list
         // RELOAD ITEMS
-        try {
-            // Clear existed
-            openListItems.clear()
-            // Start loading process
-            //viewModelScope.launch {
-                val items = listRepository.loadListItems(list.id)
-                openListItems.addAll(items)
-                sortOpenListItems()
-                // Restore scroll position
-                lazyListState = page.lazyListState
-            //}
-        }catch(e:Exception){
-            Log.e(TAG,e.stackTraceToString())
+        viewModelScope.launch {
+            listRepository.loadItems(listId = list.id)
         }
+//        try {
+//            // Clear existed
+//            openListItems.clear()
+//            // Start loading process
+//            //viewModelScope.launch {
+//                val items = listRepository.loadListItems(list.id)
+//                openListItems.addAll(items)
+//                sortOpenListItems()
+//                // Restore scroll position
+//                lazyListState = page.lazyListState
+//            //}
+//        }catch(e:Exception){
+//            Log.e(TAG,e.stackTraceToString())
+//        }
     }
 
     fun onBackButtonClick():Boolean{
