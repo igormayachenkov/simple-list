@@ -64,22 +64,32 @@ class ListRepository() {
     // MODIFIERS
     fun insertItem(item:DataItem){
         Log.d(TAG, "insertItem  ${item.logString} ")
+        val items = (itemsState.value as ItemsState.Success).items // exception in wrong state
+        // Modify database
         Database.insertItem(item)
+        // Emit new state
+        _itemsState.value = ItemsState.Success(items+item )
     }
-    fun updateItem(item:DataItem){
+    fun updateItem(item:DataItem, justItemState:Boolean){
         Log.d(TAG, "updateItem  ${item.logString}")
-        Database.updateItem(item)
-    }
-    fun updateItemState(item:DataItem){
-        Log.d(TAG, "updateItemState  ${item.logString}")
-        Database.updateItemState(item)
+        val items = (itemsState.value as ItemsState.Success).items // exception in wrong state
+        // Modify database
+        if(justItemState)
+            Database.updateItemState(item)
+        else
+            Database.updateItem(item)
+        // Emit new state
+        _itemsState.value = ItemsState.Success(items.map { if(it.id==item.id) item else it })
     }
     fun deleteItem(item:DataItem){
         Log.d(TAG, "deleteItem  ${item.logString}")
+        val items = (itemsState.value as ItemsState.Success).items // exception in wrong state
         // Cascade children deletion
         deleteChildren(item)
         // Delete the item record
         Database.deleteItem(item.id)
+        // Emit new state
+        _itemsState.value = ItemsState.Success(items.filter { it.id!=item.id })
     }
     private fun deleteChildren(item:DataItem){
         if(item.type.hasChildren){

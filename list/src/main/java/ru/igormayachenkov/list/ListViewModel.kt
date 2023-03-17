@@ -25,7 +25,6 @@ class ListViewModel : ViewModel() {
         private set
     var lazyListState : LazyListState = LazyListState() // must have an initial value as openList
         private set
-    val openListItems = mutableStateListOf<DataItem>()
 
     val itemsState = listRepository.itemsState.map {
         if(it is ItemsState.Success) it.copy(items= it.items.sortedWith(comparator))
@@ -47,16 +46,6 @@ class ListViewModel : ViewModel() {
     //----------------------------------------------------------------------------------------------
     // SORTING
     private val comparator : Comparator<DataItem> = compareBy<DataItem>{ it.name }
-    private fun sortOpenListItems(){
-        Log.d(TAG,"sortItems")
-        openListItems.sortBy { it.name }
-        //openListItems.sortWith(comparator)
-    }
-    private fun itemIndexToInsert(item:DataItem):Int{
-        val index = openListItems.binarySearch (element=item, comparator=comparator)
-        return if(index<0) -(index + 1)
-        else index
-    }
 
     //----------------------------------------------------------------------------------------------
     // EVENTS
@@ -81,9 +70,9 @@ class ListViewModel : ViewModel() {
             val newItem = item.copy(
                 state = item.state.copy(
                     isChecked = !item.state.isChecked))
-            listRepository.updateItemState(newItem)
-            // Update UI (It is the list item)
-            onItemUpdated(newItem)
+            listRepository.updateItem(newItem, justItemState = true)
+//            // Update UI (It is the list item)
+//            onItemUpdated(newItem)
         }catch (e: Exception){
             Log.e(TAG, e.stackTraceToString())
         }
@@ -102,20 +91,6 @@ class ListViewModel : ViewModel() {
         loadItemsJob = viewModelScope.launch {
             listRepository.loadItems(listId = list.id)
         }
-//        try {
-//            // Clear existed
-//            openListItems.clear()
-//            // Start loading process
-//            //viewModelScope.launch {
-//                val items = listRepository.loadListItems(list.id)
-//                openListItems.addAll(items)
-//                sortOpenListItems()
-//                // Restore scroll position
-//                lazyListState = page.lazyListState
-//            //}
-//        }catch(e:Exception){
-//            Log.e(TAG,e.stackTraceToString())
-//        }
     }
 
     fun onBackButtonClick():Boolean{
@@ -166,6 +141,8 @@ class ListViewModel : ViewModel() {
         editorData=null
     }
 
+    // TODO split open list and item modifications
+
     fun onEditorSave(newItem:DataItem?):String?{
         Log.d(TAG,"onEditorSave $newItem")
         editorData?.let { initialData ->
@@ -177,14 +154,14 @@ class ListViewModel : ViewModel() {
                         // INSERT
                         listRepository.insertItem(newItem)
                         // Update UI
-                        onItemInserted(newItem)
+                        // TODO if list inserted - open it
                     }else{
                         // Wrong case: delete new item
                     }
                 } else {
                     if (newItem != null) {
                         // UPDATE
-                        listRepository.updateItem(newItem)
+                        listRepository.updateItem(newItem, justItemState = false)
                         // Update UI
                         //if (newItem.id.compareTo(openList.id) == 0) {
                         if (oldItem===openList) {
@@ -192,7 +169,7 @@ class ListViewModel : ViewModel() {
                             onOpenListUpdated(newItem)
                         } else {
                             // It is the list item
-                            onItemUpdated(newItem)
+                            //onItemUpdated(newItem)
                         }
                     }else{
                         // DELETE
@@ -204,7 +181,7 @@ class ListViewModel : ViewModel() {
                             onOpenListDeleted()
                         } else {
                             // It is the list item
-                            onItemDeleted(oldItem)
+                            //onItemDeleted(oldItem)
                         }
                     }
                 }
@@ -221,29 +198,6 @@ class ListViewModel : ViewModel() {
 
     //----------------------------------------------------------------------------------------------
     // UI UPDATERS
-    // LIST ITEM
-    private fun onItemInserted(newItem: DataItem){
-        openListItems.add(itemIndexToInsert(newItem), newItem)
-    }
-    private fun onItemUpdated(newItem: DataItem){
-        // Find the source item index
-        val index = openListItems.indexOfFirst { it.id.compareTo(newItem.id)==0 }
-        if(index<0) throw Exception("item not found by id=${newItem.id}")
-        // Update UI
-        openListItems.removeAt(index)
-        val newIndex = itemIndexToInsert(newItem)
-        Log.d(TAG,"onItemUpdated index: $index => $newIndex")
-        openListItems.add(newIndex,newItem)
-        //openListItems[index] = newItem
-        //sortOpenListItems()
-    }
-    private fun onItemDeleted(item:DataItem){
-        // Find the source item index
-        val index = openListItems.indexOfFirst { it.id.compareTo(item.id)==0 }
-        if(index<0) throw Exception("item not found by id=${item.id}")
-        // Update UI
-        openListItems.removeAt(index)
-    }
     // OPEN LIST
     private fun onOpenListUpdated(newItem: DataItem){
         openList = newItem
