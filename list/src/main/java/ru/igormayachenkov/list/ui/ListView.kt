@@ -31,14 +31,16 @@ fun ListView(
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         items(items = theItems, key = { it.id }) { item ->
-            ItemView(
-                modifier = Modifier.animateItemPlacement(),
-                item = item,
-                onClick = onItemClick,
-                onCheck = onItemCheck
-                // IMPORTANT: USE STATIC CALLBACKS
-                // onCheck = { viewModel.checkItem(item) } - CAUSES ALL LIST REDRAWING
-            )
+            Box(Modifier.animateItemPlacement()) {
+                ItemView(
+                    item = item,
+                    onClick = onItemClick,
+                    onCheck = onItemCheck
+                    // IMPORTANT: USE STATIC CALLBACKS
+                    // onCheck = { viewModel.checkItem(item) } - CAUSES ALL LIST REDRAWING
+                    // modifier = Modifier.animateItemPlacement() - THE SAME
+                )
+            }
         }
     }
 }
