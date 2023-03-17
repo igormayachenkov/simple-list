@@ -28,7 +28,7 @@ class ListRepository() {
                 Log.d(TAG, "openList started $listId")
                 _itemsState.emit(ItemsState.Loading)
                 // Progress
-                delay(2000)
+                delay(1500)
                 val items = Database.loadListItems(listId)
                 // Success
                 _itemsState.emit(ItemsState.Success(items))

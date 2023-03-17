@@ -5,6 +5,9 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.igormayachenkov.list.data.*
 
@@ -23,7 +26,14 @@ class ListViewModel : ViewModel() {
         private set
     val openListItems = mutableStateListOf<DataItem>()
 
-    val itemsState = listRepository.itemsState
+    val itemsState = listRepository.itemsState.map {
+        if(it is ItemsState.Success) it.copy(items= it.items.sortedWith(comparator))
+        else it
+    }.stateIn(
+        scope = viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        initialValue = ItemsState.Loading
+    )
 
 
     init {
