@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -34,6 +35,7 @@ class ListViewModel : ViewModel() {
         SharingStarted.WhileSubscribed(),
         initialValue = ItemsState.Loading
     )
+    var loadItemsJob:Job?=null
 
 
     init {
@@ -96,7 +98,8 @@ class ListViewModel : ViewModel() {
         // Change the open list
         openList = list
         // RELOAD ITEMS
-        viewModelScope.launch {
+        loadItemsJob?.cancel()
+        loadItemsJob = viewModelScope.launch {
             listRepository.loadItems(listId = list.id)
         }
 //        try {
