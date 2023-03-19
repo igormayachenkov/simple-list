@@ -17,7 +17,7 @@ fun MainScreen(viewModel: ListViewModel) {
     val itemsState by viewModel.itemsState.collectAsState()
     val editingData = viewModel.editorData
 
-    Log.d(TAG,"=> ${openList.list.logString} ") // DO NOT print lazyListState here! it causes rerendering
+    Log.d(TAG,"=> ${openList.list.logString}") // DO NOT print lazyListState here! it causes rerendering
 
     Scaffold(
         topBar = { AppBar(

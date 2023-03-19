@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    val viewModel: ListViewModel = viewModel()
+                    val viewModel: ListViewModel = viewModel(factory = ListViewModel.Factory)
                     BackHandler(
                         enabled = true,
                         onBack  = { if(!viewModel.onBackButtonClick()) this.finish() }

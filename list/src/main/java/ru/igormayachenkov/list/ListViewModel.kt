@@ -2,8 +2,10 @@ package ru.igormayachenkov.list
 
 import android.util.Log
 import androidx.compose.runtime.*
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -11,20 +13,16 @@ import ru.igormayachenkov.list.data.*
 
 private const val TAG = "myapp.ListViewModel"
 
-class ListViewModel : ViewModel() {
-
-    private val listRepository:ListRepository   = App.instance.listRepository
-    private val itemsRepository:ItemsRepository = App.instance.itemsRepository
-
-    //val pageStack = ArrayList<PageStackData>()
+class ListViewModel(
+    private val listRepository:ListRepository,
+    private val itemsRepository:ItemsRepository,
+    private val savedStateHandle: SavedStateHandle
+) : ViewModel() {
 
     // LOADED PAGE
-//    var openList:DataItem by mutableStateOf(itemsRepository.loadListById(0))
-//        private set
     val openList = listRepository.openList
-//    var lazyListState : LazyListState = LazyListState() // must have an initial value as openList
-//        private set
-    val isRoot:Boolean = listRepository.stack.isEmpty()
+    val isRoot:Boolean
+        get() = listRepository.stack.isEmpty()
 
     val itemsState = itemsRepository.itemsState.map {
         if(it is ItemsState.Success) it.copy(items= it.items.sortedWith(comparator))
@@ -36,6 +34,7 @@ class ListViewModel : ViewModel() {
     )
 
     var loadItemsJob:Job?=null
+
     private fun onListChanged(openList:OpenList){
         Log.d(TAG,"onListChanged ${openList.list.logString}")
         // RELOAD ITEMS
@@ -185,4 +184,21 @@ class ListViewModel : ViewModel() {
         // Return no-error
         return null
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Define ViewModel factory in a companion object
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val savedStateHandle = createSavedStateHandle()
+                val app = this[APPLICATION_KEY] as App
+                ListViewModel(
+                    listRepository   =app.listRepository,
+                    itemsRepository  = app.itemsRepository,
+                    savedStateHandle = savedStateHandle
+                )
+            }
+        }
+    }
+
 }
