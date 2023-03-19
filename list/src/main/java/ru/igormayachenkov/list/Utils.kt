@@ -4,8 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import ru.igormayachenkov.list.App.Companion.context
-
 
 object Utils {
     fun areEqual(a: String?, b: String?): Boolean {
@@ -24,22 +22,22 @@ object Utils {
     //----------------------------------------------------------------------------------------------
     // KEYBOARD
     // https://developer.android.com/training/keyboard-input/visibility
-    fun showSoftKeyboard(view: View) {
-        if (view.requestFocus()) {
-            context.getSystemService(Context.INPUT_METHOD_SERVICE)?.let { imm ->
-                if (imm is InputMethodManager) {
-                    imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
-                }
-            }
-        }
-    }
-    fun hideSoftKeyboard(activity: Activity?) {
-        context.getSystemService(Context.INPUT_METHOD_SERVICE)?.let { imm ->
-            if (imm is InputMethodManager) {
-                activity?.currentFocus?.windowToken?.let {
-                    imm.hideSoftInputFromWindow(it, 0)
-                }
-            }
-        }
-    }
+//    fun showSoftKeyboard(view: View) {
+//        if (view.requestFocus()) {
+//            context.getSystemService(Context.INPUT_METHOD_SERVICE)?.let { imm ->
+//                if (imm is InputMethodManager) {
+//                    imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+//                }
+//            }
+//        }
+//    }
+//    fun hideSoftKeyboard(activity: Activity?) {
+//        context.getSystemService(Context.INPUT_METHOD_SERVICE)?.let { imm ->
+//            if (imm is InputMethodManager) {
+//                activity?.currentFocus?.windowToken?.let {
+//                    imm.hideSoftInputFromWindow(it, 0)
+//                }
+//            }
+//        }
+//    }
 }
