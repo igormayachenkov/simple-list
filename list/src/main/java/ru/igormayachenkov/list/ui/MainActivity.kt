@@ -1,6 +1,7 @@
 package ru.igormayachenkov.list.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -12,11 +13,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.runBlocking
+import ru.igormayachenkov.list.App
 import ru.igormayachenkov.list.ListViewModel
 import ru.igormayachenkov.list.ui.theme.ListTheme
 
+private const val TAG = "myapp.MainActivity"
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         setContent {
             ListTheme {
@@ -35,7 +41,34 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "onStart")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "onStop")
+        runBlocking {
+            (application as App).listRepository.saveStack()
+        }
+    }
+
+    // Doesn't work!
+//    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+//        super.onSaveInstanceState(outState, outPersistentState)
+//        Log.d(TAG, "onSaveInstanceState")
+//    }
+//    override fun onRestoreInstanceState(
+//        savedInstanceState: Bundle?,
+//        persistentState: PersistableBundle?
+//    ) {
+//        super.onRestoreInstanceState(savedInstanceState, persistentState)
+//        Log.d(TAG, "onRestoreInstanceState")
+//    }
 }
+
 
 @Composable
 fun Greeting(name: String) {

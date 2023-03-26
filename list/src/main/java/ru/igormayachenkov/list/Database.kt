@@ -133,8 +133,9 @@ object Database {
             null//NAME // order by
         )
         val items = readItems(cursor)
-
-        return items.firstOrNull()
+        val item = items.firstOrNull()
+        Log.d(TAG, "loadItem id:$id => $item")
+        return item
     }
 
     fun loadListItems(listId:Long):List<DataItem> {

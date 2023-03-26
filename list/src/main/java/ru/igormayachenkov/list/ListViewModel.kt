@@ -22,7 +22,7 @@ class ListViewModel(
     // LOADED PAGE
     val openList = listRepository.openList
     val isRoot:Boolean
-        get() = listRepository.stack.isEmpty()
+        get() = listRepository.isRoot
 
     val itemsState = itemsRepository.itemsState.map {
         if(it is ItemsState.Success) it.copy(items= it.items.sortedWith(comparator))
@@ -64,7 +64,7 @@ class ListViewModel(
         Log.d(TAG,"onListRowClick #${item.id}")
         if(item.type.hasChildren){
             // List
-            listRepository.setOpenList(item)
+            listRepository.goForward(item)
         }else{
             // Item
             editListItem(item)
