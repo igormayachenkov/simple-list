@@ -17,6 +17,7 @@ private const val TAG = "myapp.ListView"
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ListView(
+    settings:Settings,
     theItems:List<DataItem>,
     lazyListState : LazyListState,
     onItemClick:(DataItem)->Unit,
@@ -28,7 +29,7 @@ fun ListView(
     LazyColumn(
         state = lazyListState,
 //        contentPadding = PaddingValues(vertical = 5.dp),
-        contentPadding = PaddingValues(0.dp,5.dp,0.dp,60.dp),
+        contentPadding = PaddingValues(0.dp,5.dp,0.dp,if(settings.useFab)60.dp else 5.dp),
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         items(items = theItems, key = { it.id }) { item ->

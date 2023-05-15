@@ -14,10 +14,13 @@ import ru.igormayachenkov.list.data.*
 private const val TAG = "myapp.ListViewModel"
 
 class ListViewModel(
+    private val settingsRepository: SettingsRepository,
     private val listRepository:ListRepository,
     private val itemsRepository:ItemsRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    // SETTINGS
+    val settings = settingsRepository.settings
 
     // LOADED PAGE
     val openList = listRepository.openList
@@ -193,9 +196,10 @@ class ListViewModel(
                 val savedStateHandle = createSavedStateHandle()
                 val app = this[APPLICATION_KEY] as App
                 ListViewModel(
-                    listRepository   =app.listRepository,
-                    itemsRepository  = app.itemsRepository,
-                    savedStateHandle = savedStateHandle
+                    settingsRepository = app.settingsRepository,
+                    listRepository     = app.listRepository,
+                    itemsRepository    = app.itemsRepository,
+                    savedStateHandle   = savedStateHandle
                 )
             }
         }

@@ -18,7 +18,8 @@ fun AppBar(
     title:String,
     onBack:()->Unit,
     onEdit:()->Unit,
-    onCreate:()->Unit
+    onCreate:()->Unit,
+    showOnCreate:Boolean
 ){
     TopAppBar(
         backgroundColor = MaterialTheme.colors.primary,
@@ -43,7 +44,7 @@ fun AppBar(
         },
         actions = {
             // Create Button
-            IconButton(onClick = onCreate) {
+            if(showOnCreate) IconButton(onClick = onCreate) {
                 Icon(Icons.Default.AddCircle,"",
                     tint = MaterialTheme.colors.onPrimary)
             }
@@ -56,7 +57,7 @@ fun AppBar(
 @Composable
 fun AppBarPreview(){
     Surface {
-        AppBar(isRoot = true, title = "The open list name", onBack = {}, onEdit = {}, onCreate = {})
+        AppBar(isRoot = true, title = "The open list name", onBack = {}, onEdit = {}, onCreate = {}, showOnCreate = true)
     }
 }
 @Preview(name = "AppBarDark")
@@ -64,7 +65,7 @@ fun AppBarPreview(){
 fun AppBarDarkPreview(){
     ListTheme(darkTheme = true) {
         Surface {
-            AppBar(isRoot = false, title = "The open list name", onBack = {}, onEdit = {}, onCreate = {})
+            AppBar(isRoot = false, title = "The open list name", onBack = {}, onEdit = {}, onCreate = {}, showOnCreate = true)
         }
     }
 }

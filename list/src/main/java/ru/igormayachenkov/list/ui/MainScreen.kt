@@ -17,6 +17,7 @@ private const val TAG = "myapp.MainScreen"
 @Composable
 fun MainScreen(viewModel: ListViewModel) {
 
+    val settings   by viewModel.settings.collectAsState()
     val openList   by viewModel.openList.collectAsState()
     val itemsState by viewModel.itemsState.collectAsState()
     val editingData = viewModel.editorData
@@ -30,16 +31,19 @@ fun MainScreen(viewModel: ListViewModel) {
             onBack   = viewModel::onBackButtonClick,
             onEdit   = viewModel::editListHeader,
             onCreate = viewModel::createItem,
+            showOnCreate = !settings.useFab
         )},
         floatingActionButton = {
-            IconButton(
-                modifier = Modifier.background(color =MaterialTheme.colors.secondary, shape = CircleShape ),
-                onClick = viewModel::createItem
-            ) {
-                Icon(
-                    Icons.Default.AddCircle, "",
-                    tint = MaterialTheme.colors.onSecondary
-                )
+            if(settings.useFab){
+                IconButton(
+                    modifier = Modifier.background(color =MaterialTheme.colors.secondary, shape = CircleShape ),
+                    onClick = viewModel::createItem
+                ) {
+                    Icon(
+                        Icons.Default.AddCircle, "",
+                        tint = MaterialTheme.colors.onSecondary
+                    )
+                }
             }
         },
         floatingActionButtonPosition = FabPosition.End
@@ -55,6 +59,7 @@ fun MainScreen(viewModel: ListViewModel) {
                 is ItemsState.Success ->{
                     // ITEMS LIST
                     ListView(
+                        settings = settings,
                         theItems = (itemsState as ItemsState.Success).items,
                         lazyListState = openList.lazyListState,
                         onItemClick = viewModel::onListRowClick,
