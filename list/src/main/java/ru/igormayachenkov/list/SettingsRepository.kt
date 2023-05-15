@@ -13,5 +13,8 @@ class SettingsRepository {
 
     //----------------------------------------------------------------------------------------------
     // MODIFIERS
+    fun setSettings(newSettings: Settings){
+        _settings.value = newSettings
+    }
 
 }

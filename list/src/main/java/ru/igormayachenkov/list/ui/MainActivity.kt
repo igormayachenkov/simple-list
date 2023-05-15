@@ -10,6 +10,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,7 +38,28 @@ class MainActivity : ComponentActivity() {
                         enabled = true,
                         onBack  = { if(!viewModel.onBackButtonClick()) this.finish() }
                     )
+                    // Main Screen
                     MainScreen(viewModel)
+
+                    // Editor dialog
+                    viewModel.editorData?.let {
+                        Editor(
+                            initialData = it,
+                            onClose = viewModel::onEditorCancel,
+                            onSave = viewModel::onEditorSave
+                        )
+                    }
+
+                    // Settings dialog
+                    if(viewModel.showSettingsEditor){
+                        val settings   by viewModel.settings.collectAsState()
+                        SettingsEditor(
+                            settings,
+                            onClose = viewModel::onSettingsEditorCancel,
+                            onSave  = viewModel::onSettingsEditorSave
+                        )
+                    }
+
                 }
             }
         }

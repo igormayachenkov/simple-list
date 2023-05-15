@@ -28,6 +28,7 @@ fun MainScreen(viewModel: ListViewModel) {
         topBar = { AppBar(
             isRoot   = viewModel.isRoot,
             title    = openList.list.name,
+            onMenu   = viewModel::onMenuButtonClick,
             onBack   = viewModel::onBackButtonClick,
             onEdit   = viewModel::editListHeader,
             onCreate = viewModel::createItem,
@@ -72,12 +73,12 @@ fun MainScreen(viewModel: ListViewModel) {
         }
     }
 
-    // EDITOR DIALOG
-    editingData?.let {
-        Editor(
-            initialData = it,
-            onClose = viewModel::onEditorCancel,
-            onSave = viewModel::onEditorSave
-        )
-    }
+//    // EDITOR DIALOG
+//    editingData?.let {
+//        Editor(
+//            initialData = it,
+//            onClose = viewModel::onEditorCancel,
+//            onSave = viewModel::onEditorSave
+//        )
+//    }
 }

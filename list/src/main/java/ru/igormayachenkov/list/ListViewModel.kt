@@ -19,8 +19,6 @@ class ListViewModel(
     private val itemsRepository:ItemsRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    // SETTINGS
-    val settings = settingsRepository.settings
 
     // LOADED PAGE
     val openList = listRepository.openList
@@ -89,8 +87,17 @@ class ListViewModel(
         }
     }
 
+    fun onMenuButtonClick(){
+        showSettingsEditor = true
+    }
+
     fun onBackButtonClick():Boolean{
         Log.d(TAG,"onBackButtonClick")
+        // CLOSE Settings EDITOR
+        if(showSettingsEditor){
+            onSettingsEditorCancel()
+            return true
+        }
         // CLOSE EDITOR
         if(editorData!=null){
             onEditorCancel()
@@ -185,6 +192,22 @@ class ListViewModel(
             onEditorCancel()
         }
         // Return no-error
+        return null
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // SETTINGS
+    val settings = settingsRepository.settings
+    var showSettingsEditor by mutableStateOf(false)
+        private set
+
+    fun onSettingsEditorCancel() {
+        showSettingsEditor=false
+    }
+
+    fun onSettingsEditorSave(newSettings:Settings):String?{
+        settingsRepository.setSettings(newSettings)
+        showSettingsEditor=false
         return null
     }
 

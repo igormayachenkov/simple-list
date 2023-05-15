@@ -16,6 +16,7 @@ import ru.igormayachenkov.list.ui.theme.ListTheme
 fun AppBar(
     isRoot:Boolean,
     title:String,
+    onMenu:()->Unit,
     onBack:()->Unit,
     onEdit:()->Unit,
     onCreate:()->Unit,
@@ -26,7 +27,7 @@ fun AppBar(
         navigationIcon = {
             // Back button
             if (isRoot) {
-                IconButton(onClick = { }) {
+                IconButton(onClick = onMenu) {
                     Icon(Icons.Default.Menu, "")
                 }
             }else{
@@ -57,7 +58,7 @@ fun AppBar(
 @Composable
 fun AppBarPreview(){
     Surface {
-        AppBar(isRoot = true, title = "The open list name", onBack = {}, onEdit = {}, onCreate = {}, showOnCreate = true)
+        AppBar(isRoot = true, title = "The open list name", onMenu = {},onBack = {}, onEdit = {}, onCreate = {}, showOnCreate = true)
     }
 }
 @Preview(name = "AppBarDark")
@@ -65,7 +66,7 @@ fun AppBarPreview(){
 fun AppBarDarkPreview(){
     ListTheme(darkTheme = true) {
         Surface {
-            AppBar(isRoot = false, title = "The open list name", onBack = {}, onEdit = {}, onCreate = {}, showOnCreate = true)
+            AppBar(isRoot = false, title = "The open list name", onMenu = {}, onBack = {}, onEdit = {}, onCreate = {}, showOnCreate = true)
         }
     }
 }
