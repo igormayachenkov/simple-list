@@ -27,7 +27,8 @@ fun ListView(
 
     LazyColumn(
         state = lazyListState,
-        contentPadding = PaddingValues(vertical = 5.dp),
+//        contentPadding = PaddingValues(vertical = 5.dp),
+        contentPadding = PaddingValues(0.dp,5.dp,0.dp,60.dp),
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         items(items = theItems, key = { it.id }) { item ->

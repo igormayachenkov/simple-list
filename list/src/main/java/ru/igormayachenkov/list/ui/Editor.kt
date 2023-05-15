@@ -1,6 +1,7 @@
 package ru.igormayachenkov.list.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -63,20 +64,22 @@ fun Editor(
                         disabledBackgroundColor = MaterialTheme.colors.primary,
                         disabledContentColor = MaterialTheme.colors.onPrimary,
                     )
+                    val shape = RoundedCornerShape(20.dp,20.dp,0.dp,0.dp)
                     Button(
                         modifier = Modifier.weight(1F),
                         colors = colors,
-                        enabled = !hasChildren,
-                        onClick = {hasChildren=!hasChildren}
-                    ) {
-                        Text("List")
+                        shape = shape,
+                        enabled = hasChildren,
+                        onClick = {hasChildren=!hasChildren}) {
+                        Text("Item")
                     }
                     Button(
                         modifier = Modifier.weight(1F),
                         colors = colors,
-                        enabled = hasChildren,
-                        onClick = {hasChildren=!hasChildren}) {
-                        Text("Item")
+                        shape = shape,
+                        enabled = !hasChildren,
+                        onClick = {hasChildren=!hasChildren} ) {
+                        Text("List")
                     }
                 }
 

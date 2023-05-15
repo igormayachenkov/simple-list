@@ -1,8 +1,12 @@
 package ru.igormayachenkov.list.ui
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import ru.igormayachenkov.list.ListViewModel
@@ -26,7 +30,19 @@ fun MainScreen(viewModel: ListViewModel) {
             onBack   = viewModel::onBackButtonClick,
             onEdit   = viewModel::editListHeader,
             onCreate = viewModel::createItem,
-        )}
+        )},
+        floatingActionButton = {
+            IconButton(
+                modifier = Modifier.background(color =MaterialTheme.colors.secondary, shape = CircleShape ),
+                onClick = viewModel::createItem
+            ) {
+                Icon(
+                    Icons.Default.AddCircle, "",
+                    tint = MaterialTheme.colors.onSecondary
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End
     ) {  innerPadding ->
         Surface(Modifier.padding(innerPadding), color=MaterialTheme.colors.background) {
             when(itemsState){
