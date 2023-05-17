@@ -28,7 +28,7 @@ fun MainScreen(viewModel: ListViewModel) {
         topBar = { AppBar(
             isRoot   = viewModel.isRoot,
             title    = openList.list.name,
-            onMenu   = viewModel::onMenuButtonClick,
+            onSettings   = viewModel::onSettingsEditorShow,
             onBack   = viewModel::onBackButtonClick,
             onEdit   = viewModel::editListHeader,
             onCreate = viewModel::createItem,

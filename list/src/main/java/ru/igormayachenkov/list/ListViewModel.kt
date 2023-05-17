@@ -87,13 +87,9 @@ class ListViewModel(
         }
     }
 
-    fun onMenuButtonClick(){
-        showSettingsEditor = true
-    }
-
     fun onBackButtonClick():Boolean{
         Log.d(TAG,"onBackButtonClick")
-        // CLOSE Settings EDITOR
+        // CLOSE Settings
         if(showSettingsEditor){
             onSettingsEditorCancel()
             return true
@@ -111,7 +107,7 @@ class ListViewModel(
     }
 
     //----------------------------------------------------------------------------------------------
-    // USE EDITOR
+    // EDITOR
     var editorData:EditorData? by mutableStateOf(null)
         private set
 
@@ -200,6 +196,10 @@ class ListViewModel(
     val settings = settingsRepository.settings
     var showSettingsEditor by mutableStateOf(false)
         private set
+
+    fun onSettingsEditorShow(){
+        showSettingsEditor = true
+    }
 
     fun onSettingsEditorCancel() {
         showSettingsEditor=false
