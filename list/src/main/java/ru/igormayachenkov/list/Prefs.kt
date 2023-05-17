@@ -8,18 +8,21 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.json.JSONArray
+import org.json.JSONObject
 import ru.igormayachenkov.list.data.SavedOpenList
+import ru.igormayachenkov.list.data.Settings
 
 private const val TAG = "myapp.Prefs"
 
-private val STACK = stringPreferencesKey("stack")
+private val STACK       = stringPreferencesKey("stack")
+private val SETTINGS    = stringPreferencesKey("settings")
 
 class Prefs(
     private val prefsDataStore: DataStore<Preferences>
-) : StackDataSource {
+) : StackDataSource, SettingsDataSource {
 
     //----------------------------------------------------------------------------------------------
-    // SAVE/RESTORE STACK
+    // StackDataSource implementation: SAVE/RESTORE STACK
     override suspend fun saveStack(stack: List<SavedOpenList>) {
         Log.d(TAG, "saveStack $stack")
         // Prepare data
@@ -63,4 +66,36 @@ class Prefs(
         return emptyList()
     }
 
+    //----------------------------------------------------------------------------------------------
+    // SettingsDataSource implementation: SAVE/RESTORE SETTINGS
+    override suspend fun saveSettings(settings: Settings) {
+        Log.d(TAG, "saveSettings $settings")
+        // Prepare data
+        val json = JSONObject()
+        json.put("useFab",settings.useFab)
+        // Save
+        prefsDataStore.edit { prefs ->
+            prefs[SETTINGS] = json.toString()
+        }
+    }
+
+    override fun restoreSettings(): Settings {
+        val prefs: Preferences = runBlocking {
+            prefsDataStore.data.first()
+        }
+        prefs[SETTINGS]?.let { string->
+            try {
+                val json = JSONObject(string)
+                Log.d(TAG, "restoreSettings json:$json")
+                val settings = Settings(
+                    json.getBoolean("useFab")
+                )
+                Log.d(TAG, "restoreSettings settings:$settings")
+                return settings
+            } catch (ex: Exception) {
+                Log.e(TAG, "restoreSettings ex:$ex")
+            }
+        }
+        return Settings()
+    }
 }

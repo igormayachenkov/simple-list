@@ -206,7 +206,9 @@ class ListViewModel(
     }
 
     fun onSettingsEditorSave(newSettings:Settings):String?{
-        settingsRepository.setSettings(newSettings)
+        viewModelScope.launch {
+            settingsRepository.setSettings(newSettings)
+        }
         showSettingsEditor=false
         return null
     }

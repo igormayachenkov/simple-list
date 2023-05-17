@@ -14,7 +14,7 @@ val Context.prefsDataStore: DataStore<Preferences> by preferencesDataStore(name 
 class App : Application() {
 
     private val prefs       by lazy { Prefs(prefsDataStore) }
-    val settingsRepository  by lazy { SettingsRepository() }
+    val settingsRepository  by lazy { SettingsRepository(prefs) }
     val listRepository      by lazy { ListRepository(prefs) }
     val itemsRepository     by lazy { ItemsRepository() }
 
