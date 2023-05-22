@@ -18,7 +18,6 @@ private const val TAG = "myapp.DataScreen"
 
 @Composable
 fun DataScreen(dataViewModel: DataViewModel) {
-    if(!dataViewModel.isVisible) return
     BackHandler(enabled = true, onBack = dataViewModel::hide)
     Surface(
         modifier = Modifier
@@ -52,6 +51,6 @@ fun DataScreen(dataViewModel: DataViewModel) {
 @Composable
 fun DataScreenPreview() {
     ListTheme(darkTheme = true) {
-        DataScreen(dataViewModel = DataViewModel(isPreview = true))
+        DataScreen(dataViewModel = DataViewModel())
     }
 }

@@ -70,7 +70,8 @@ class MainActivity : ComponentActivity() {
                     }
 
                     // Data screen
-                    DataScreen(dataViewModel)
+                    if(dataViewModel.isVisible)
+                        DataScreen(dataViewModel)
 
                 }
             }
