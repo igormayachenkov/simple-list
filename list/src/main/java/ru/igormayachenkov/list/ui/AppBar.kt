@@ -3,7 +3,6 @@ package ru.igormayachenkov.list.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -20,7 +19,8 @@ import ru.igormayachenkov.list.ui.theme.ListTheme
 fun AppBar(
     isRoot:Boolean,
     title:String,
-    onSettings:()->Unit,
+    showDataScreen:()->Unit,
+    showSettingsScreen:()->Unit,
     onBack:()->Unit,
     onEdit:()->Unit,
     onCreate:()->Unit,
@@ -63,6 +63,7 @@ fun AppBar(
                 expanded = showMenu,
                 onDismissRequest = { showMenu=false }
             ) {
+                // - Edit
                 if(!isRoot) {
                     DropdownMenuItem(onClick = { onMenuItem(onEdit) }) {
                         Icon(Icons.Default.Edit,"")
@@ -71,7 +72,14 @@ fun AppBar(
                     }
                     Divider()
                 }
-                DropdownMenuItem(onClick = { onMenuItem(onSettings) }) {
+                // - Data
+                DropdownMenuItem(onClick = { onMenuItem(showDataScreen) }) {
+                    Icon(Icons.Default.Info,"")
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Data")
+                }
+                // - Settings
+                DropdownMenuItem(onClick = { onMenuItem(showSettingsScreen) }) {
                     Icon(Icons.Default.Settings,"")
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Settings")
@@ -86,7 +94,7 @@ fun AppBar(
 @Composable
 fun AppBarPreview(){
     Surface {
-        AppBar(isRoot = true, title = "The open list name", onSettings = {},onBack = {}, onEdit = {}, onCreate = {}, showOnCreate = true)
+        AppBar(isRoot = true, title = "The open list name", showDataScreen = {}, showSettingsScreen = {},onBack = {}, onEdit = {}, onCreate = {}, showOnCreate = true)
     }
 }
 @Preview(name = "AppBarDark")
@@ -94,7 +102,7 @@ fun AppBarPreview(){
 fun AppBarDarkPreview(){
     ListTheme(darkTheme = true) {
         Surface {
-            AppBar(isRoot = false, title = "The open list name", onSettings = {}, onBack = {}, onEdit = {}, onCreate = {}, showOnCreate = true)
+            AppBar(isRoot = false, title = "The open list name", showDataScreen = {}, showSettingsScreen = {}, onBack = {}, onEdit = {}, onCreate = {}, showOnCreate = true)
         }
     }
 }

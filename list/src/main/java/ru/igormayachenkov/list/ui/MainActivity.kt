@@ -8,25 +8,32 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.runBlocking
 import ru.igormayachenkov.list.App
+import ru.igormayachenkov.list.Archivator
+import ru.igormayachenkov.list.DataViewModel
 import ru.igormayachenkov.list.ListViewModel
 import ru.igormayachenkov.list.ui.theme.ListTheme
 
 private const val TAG = "myapp.MainActivity"
 
 class MainActivity : ComponentActivity() {
+
+    companion object{
+        var archivator : Archivator? = null
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
+        archivator = Archivator(this)
         setContent {
+            var showSettings by rememberSaveable{ mutableStateOf<Boolean>(false) }
+
             ListTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -34,12 +41,14 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     val viewModel: ListViewModel = viewModel(factory = ListViewModel.Factory)
+                    val dataViewModel:DataViewModel = viewModel()
+
                     BackHandler(
                         enabled = true,
                         onBack  = { if(!viewModel.onBackButtonClick()) this.finish() }
                     )
                     // Main Screen
-                    MainScreen(viewModel)
+                    MainScreen(viewModel,dataViewModel::show)
 
                     // Editor dialog
                     viewModel.editorData?.let {
@@ -59,6 +68,9 @@ class MainActivity : ComponentActivity() {
                             onSave  = viewModel::onSettingsEditorSave
                         )
                     }
+
+                    // Data screen
+                    DataScreen(dataViewModel)
 
                 }
             }
@@ -90,18 +102,6 @@ class MainActivity : ComponentActivity() {
 //        super.onRestoreInstanceState(savedInstanceState, persistentState)
 //        Log.d(TAG, "onRestoreInstanceState")
 //    }
+
 }
 
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    ListTheme {
-        Greeting("Android")
-    }
-}

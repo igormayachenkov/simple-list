@@ -15,7 +15,10 @@ import ru.igormayachenkov.list.data.*
 private const val TAG = "myapp.MainScreen"
 
 @Composable
-fun MainScreen(viewModel: ListViewModel) {
+fun MainScreen(
+    viewModel: ListViewModel,
+    showDataScreen:()->Unit
+) {
 
     val settings   by viewModel.settings.collectAsState()
     val openList   by viewModel.openList.collectAsState()
@@ -28,7 +31,8 @@ fun MainScreen(viewModel: ListViewModel) {
         topBar = { AppBar(
             isRoot   = viewModel.isRoot,
             title    = openList.list.name,
-            onSettings   = viewModel::onSettingsEditorShow,
+            showDataScreen = showDataScreen,
+            showSettingsScreen   = viewModel::onSettingsEditorShow,
             onBack   = viewModel::onBackButtonClick,
             onEdit   = viewModel::editListHeader,
             onCreate = viewModel::createItem,
