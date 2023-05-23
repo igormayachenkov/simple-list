@@ -1,6 +1,7 @@
 package ru.igormayachenkov.list.ui
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -9,15 +10,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import ru.igormayachenkov.list.ListViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.igormayachenkov.list.data.*
 
 private const val TAG = "myapp.MainScreen"
 
 @Composable
 fun MainScreen(
-    viewModel: ListViewModel,
-    showDataScreen:()->Unit
+    viewModel: ListViewModel = viewModel(factory = ListViewModel.Factory),
+    mainViewModel: MainViewModel
 ) {
 
     val settings   by viewModel.settings.collectAsState()
@@ -27,16 +28,21 @@ fun MainScreen(
 
     Log.d(TAG,"=> ${openList.list.logString}") // DO NOT print lazyListState here! it causes rerendering
 
+    BackHandler(
+        enabled = viewModel.isBackHandlerEnabled,
+        onBack  = viewModel::onBackButtonClick
+    )
+
     Scaffold(
         topBar = { AppBar(
             isRoot   = viewModel.isRoot,
             title    = openList.list.name,
-            showDataScreen = showDataScreen,
-            showSettingsScreen   = viewModel::onSettingsEditorShow,
-            onBack   = viewModel::onBackButtonClick,
-            onEdit   = viewModel::editListHeader,
-            onCreate = viewModel::createItem,
-            showOnCreate = !settings.useFab
+            showDataScreen      = mainViewModel::showData,
+            showSettingsScreen  = mainViewModel::showSettings,
+            onBack              = viewModel::onBackButtonClick,
+            onEdit              = viewModel::editListHeader,
+            onCreate            = viewModel::createItem,
+            showOnCreate        = !settings.useFab
         )},
         floatingActionButton = {
             if(settings.useFab){
@@ -77,12 +83,12 @@ fun MainScreen(
         }
     }
 
-//    // EDITOR DIALOG
-//    editingData?.let {
-//        Editor(
-//            initialData = it,
-//            onClose = viewModel::onEditorCancel,
-//            onSave = viewModel::onEditorSave
-//        )
-//    }
+    // EDITOR DIALOG
+    editingData?.let {
+        Editor(
+            initialData = it,
+            onClose = viewModel::onEditorCancel,
+            onSave = viewModel::onEditorSave
+        )
+    }
 }

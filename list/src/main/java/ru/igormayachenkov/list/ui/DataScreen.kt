@@ -11,18 +11,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.igormayachenkov.list.DataViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.igormayachenkov.list.ui.theme.ListTheme
 
-private const val TAG = "myapp.DataScreen"
-
 @Composable
-fun DataScreen(dataViewModel: DataViewModel) {
-    BackHandler(enabled = true, onBack = dataViewModel::hide)
+fun DataScreen(
+    dataViewModel: DataViewModel= viewModel(),
+    onHide:()->Unit
+) {
+    BackHandler(enabled = true, onBack = onHide)
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .clickable { dataViewModel.hide() },
+            .clickable { onHide() },
         color = Color(0x80000040)
     ) {
         Card(
@@ -51,6 +52,6 @@ fun DataScreen(dataViewModel: DataViewModel) {
 @Composable
 fun DataScreenPreview() {
     ListTheme(darkTheme = true) {
-        DataScreen(dataViewModel = DataViewModel())
+        DataScreen(onHide = {})
     }
 }

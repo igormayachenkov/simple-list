@@ -11,18 +11,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.igormayachenkov.list.data.DataItem
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.igormayachenkov.list.data.Settings
 import ru.igormayachenkov.list.ui.theme.ListTheme
+import androidx.activity.compose.BackHandler
+
 
 @Composable
-fun SettingsEditor(
-    settings: Settings,
-    onClose:()->Unit,
-    onSave:(Settings)->String?
+fun SettingsScreen(
+    settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory),
+    onHide:()->Unit
 ) {
+    val settings:Settings by settingsViewModel.settings.collectAsState()
+
     var useFab by rememberSaveable{ mutableStateOf<Boolean>(settings.useFab) }
     val newSettings = Settings(useFab)
+
+    BackHandler(enabled = true, onBack = onHide)
 
     Surface(
         modifier = Modifier
@@ -62,14 +67,14 @@ fun SettingsEditor(
                 )
                 {
                     // Cancel
-                    Button(onClick = onClose) {
+                    Button(onClick = onHide) {
                         Icon(Icons.Default.ArrowBack, "close")
                     }
                     // Spacer
                     Spacer(modifier = Modifier.weight(1F))
                     // Save
                     Button(
-                        onClick = {onSave(newSettings)},
+                        onClick = { settingsViewModel.onSave(newSettings); onHide() },
                         enabled = settings!=newSettings
                     ){
                         Text(text = "Save")
@@ -82,8 +87,8 @@ fun SettingsEditor(
 
 @Preview(showBackground = false)
 @Composable
-fun SettingsEditorPreview() {
+fun SettingsScreenPreview() {
     ListTheme(darkTheme = true) {
-        SettingsEditor(settings = Settings(), onClose={}, onSave={null} )
+        SettingsScreen(onHide={} )
     }
 }
