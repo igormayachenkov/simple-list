@@ -17,6 +17,9 @@ class App : Application() {
     val settingsRepository  by lazy { SettingsRepository(prefs) }
     val listRepository      by lazy { ListRepository(prefs) }
     val itemsRepository     by lazy { ItemsRepository() }
+    companion object {
+        val statisticRepository by lazy { StatisticRepository() }
+    }
 
     override fun onCreate() {
         super.onCreate()
