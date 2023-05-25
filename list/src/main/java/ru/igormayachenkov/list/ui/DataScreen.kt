@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,15 +55,22 @@ fun DataScreen(
                 // STATISTICS
                 when(statistics){
                     Statistics.Loading->Text(text = "Loading...")
-                    is Statistics.Error->Text(text = "Error: ${(statistics as Statistics.Error).message}")
+                    is Statistics.Error->Text(text = "Error: ${(statistics as Statistics.Error).message}", color = MaterialTheme.colors.error)
                     is Statistics.Success->{
                         val (nLists,nItems) = statistics as Statistics.Success
-                        Text("number of lists: $nLists")
-                        Text("number of items: $nItems")
+                        Row(Modifier.fillMaxWidth()) {
+                            Text("number of lists:", Modifier.weight(1F), fontStyle = FontStyle.Italic )
+                            Text("$nLists")
+                        }
+                        Row(Modifier.fillMaxWidth()) {
+                            Text("number of items:", Modifier.weight(1F), fontStyle = FontStyle.Italic )
+                            Text("$nItems")
+                        }
                     }
                 }
 
                 // ACTIONS
+                Spacer(modifier = Modifier.height(32.dp))
                 Button(onClick = dataViewModel::save) {
                     Text("Save all in the archive")
                 }

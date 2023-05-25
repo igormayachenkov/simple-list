@@ -186,6 +186,21 @@ object Database {
         c.close()
         return items
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // STATISTICS
+    fun statistics():Statistics.Success{
+        Log.d(TAG,"statistics")
+        val cursor = db.rawQuery("SELECT $TYPE FROM $TABLE_ITEMS",arrayOf())
+        var nLists = 0
+        var nItems = 0
+        while(cursor.moveToNext()){
+            val type = cursor.getInt(0)
+            if((type and DataItem.Type.MASK_hasChildren)>0) nLists++
+            else nItems++
+        }
+        cursor.close()
+        return Statistics.Success(nLists,nItems)
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // DATABASE STRUCTURE

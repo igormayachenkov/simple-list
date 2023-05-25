@@ -2,7 +2,6 @@ package ru.igormayachenkov.list
 
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
@@ -16,10 +15,14 @@ class StatisticRepository {
 
     suspend fun calculate(){
         Log.d(TAG,"calculate")
+        _state.emit(Statistics.Loading)
         withContext(Dispatchers.IO){
-            _state.emit(Statistics.Loading)
-            delay(2000)
-            _state.emit(Statistics.Success(13,1013))
+            try {
+                val stat = Database.statistics()
+                _state.emit(stat)
+            }catch (e:Exception){
+                _state.emit(Statistics.Error(e.toString()))
+            }
         }
     }
 }
