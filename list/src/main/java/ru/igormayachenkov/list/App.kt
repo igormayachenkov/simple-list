@@ -19,6 +19,7 @@ class App : Application() {
     val itemsRepository     by lazy { ItemsRepository() }
     companion object {
         val statisticRepository by lazy { StatisticRepository() }
+        val saverRepository  by lazy { SaverRepository() }
     }
 
     override fun onCreate() {

@@ -7,7 +7,7 @@ import ru.igormayachenkov.list.App
 import ru.igormayachenkov.list.data.Statistics
 
 class DataViewModel() : ViewModel() {
-    val statisticRepository = App.statisticRepository
+    private val statisticRepository = App.statisticRepository
 
     val statistics : StateFlow<Statistics> = statisticRepository.state
 
@@ -18,8 +18,8 @@ class DataViewModel() : ViewModel() {
     }
 
     fun save(){
-        MainActivity.archivator?.let {
-            it.createDoc.launch("Simple list.json")
+        MainActivity.resultAPI?.let {
+            it.saveAll.launch("Simple list.json")
         }
     }
 

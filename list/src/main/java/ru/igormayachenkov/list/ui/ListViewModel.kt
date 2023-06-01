@@ -203,6 +203,7 @@ class ListViewModel(
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
+                Log.d(TAG,"Factory")
                 //val savedStateHandle = createSavedStateHandle()
                 val app = this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as App
                 ListViewModel(

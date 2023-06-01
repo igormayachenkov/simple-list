@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.runBlocking
 import ru.igormayachenkov.list.App
-import ru.igormayachenkov.list.Archivator
+import ru.igormayachenkov.list.ResultAPI
+import ru.igormayachenkov.list.SaverRepository
 import ru.igormayachenkov.list.ui.theme.ListTheme
 
 private const val TAG = "myapp.MainActivity"
@@ -15,13 +17,13 @@ private const val TAG = "myapp.MainActivity"
 class MainActivity : ComponentActivity() {
 
     companion object{
-        var archivator : Archivator? = null
+        var resultAPI : ResultAPI? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
-        archivator = Archivator(this)
+        resultAPI = ResultAPI(this)
         setContent {
             ListTheme {
                     val mainViewModel: MainViewModel = viewModel()
@@ -33,9 +35,12 @@ class MainActivity : ComponentActivity() {
                     if(mainViewModel.isSettingsVisible)
                         SettingsScreen(onHide = mainViewModel::hideSettings)
 
-                    // Data screen
+                    // Statistics screen
                     if(mainViewModel.isDataVisible)
                         DataScreen(onHide = mainViewModel::hideData)
+
+                    // Saver screen
+                    SaverScreen()
             }
         }
     }
