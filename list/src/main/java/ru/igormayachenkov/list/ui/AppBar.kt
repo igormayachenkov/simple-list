@@ -19,7 +19,7 @@ import ru.igormayachenkov.list.ui.theme.ListTheme
 fun AppBar(
     isRoot:Boolean,
     title:String,
-    showDataScreen:()->Unit,
+    showInfoScreen:()->Unit,
     showSettingsScreen:()->Unit,
     onBack:()->Unit,
     onEdit:()->Unit,
@@ -73,7 +73,7 @@ fun AppBar(
                     Divider()
                 }
                 // - Data
-                DropdownMenuItem(onClick = { onMenuItem(showDataScreen) }) {
+                DropdownMenuItem(onClick = { onMenuItem(showInfoScreen) }) {
                     Icon(Icons.Default.Info,"")
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Data")
@@ -94,7 +94,7 @@ fun AppBar(
 @Composable
 fun AppBarPreview(){
     Surface {
-        AppBar(isRoot = true, title = "The open list name", showDataScreen = {}, showSettingsScreen = {},onBack = {}, onEdit = {}, onCreate = {}, showOnCreate = true)
+        AppBar(isRoot = true, title = "The open list name", showInfoScreen = {}, showSettingsScreen = {},onBack = {}, onEdit = {}, onCreate = {}, showOnCreate = true)
     }
 }
 @Preview(name = "AppBarDark")
@@ -102,7 +102,7 @@ fun AppBarPreview(){
 fun AppBarDarkPreview(){
     ListTheme(darkTheme = true) {
         Surface {
-            AppBar(isRoot = false, title = "The open list name", showDataScreen = {}, showSettingsScreen = {}, onBack = {}, onEdit = {}, onCreate = {}, showOnCreate = true)
+            AppBar(isRoot = false, title = "The open list name", showInfoScreen = {}, showSettingsScreen = {}, onBack = {}, onEdit = {}, onCreate = {}, showOnCreate = true)
         }
     }
 }

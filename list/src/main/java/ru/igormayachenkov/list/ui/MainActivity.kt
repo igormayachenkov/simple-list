@@ -4,12 +4,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.runBlocking
 import ru.igormayachenkov.list.App
 import ru.igormayachenkov.list.ResultAPI
-import ru.igormayachenkov.list.SaverRepository
 import ru.igormayachenkov.list.ui.theme.ListTheme
 
 private const val TAG = "myapp.MainActivity"
@@ -36,8 +34,11 @@ class MainActivity : ComponentActivity() {
                         SettingsScreen(onHide = mainViewModel::hideSettings)
 
                     // Statistics screen
-                    if(mainViewModel.isDataVisible)
-                        DataScreen(onHide = mainViewModel::hideData)
+//                    if(mainViewModel.isDataVisible)
+//                        DataScreen(onHide = mainViewModel::hideData)
+
+                    // Data Info screen
+                    InfoScreen()
 
                     // Saver screen
                     SaverScreen()

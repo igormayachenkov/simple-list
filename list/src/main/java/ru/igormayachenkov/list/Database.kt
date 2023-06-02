@@ -186,10 +186,11 @@ object Database {
         c.close()
         return items
     }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    // STATISTICS
-    fun statistics():Statistics.Success{
-        Log.d(TAG,"statistics")
+    // DATA INFO
+    fun queryInfo():DataInfo{
+        Log.d(TAG,"queryInfo")
         val cursor = db.rawQuery("SELECT $TYPE FROM $TABLE_ITEMS",arrayOf())
         var nLists = 0
         var nItems = 0
@@ -199,7 +200,7 @@ object Database {
             else nItems++
         }
         cursor.close()
-        return Statistics.Success(nLists,nItems)
+        return DataInfo(nLists,nItems)
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,12 +1,12 @@
 package ru.igormayachenkov.list.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.igormayachenkov.list.App
@@ -21,9 +21,10 @@ fun SaverScreen() {
         is SaverRepository.State.Error   -> Error(message = state.message)
         is SaverRepository.State.Success -> Success(message = state.message)
     }
+    BackHandler(enabled = true, onBack = App.saverRepository::reset)
 }
 @Composable
-private fun Body(content: @Composable ColumnScope.() -> Unit){
+private fun Frame(content: @Composable ColumnScope.() -> Unit){
     Surface(
         modifier = Modifier
             .fillMaxSize(),
@@ -45,13 +46,13 @@ private fun Body(content: @Composable ColumnScope.() -> Unit){
 
 @Composable
 private fun Busy(message:String){
-    Body(){
+    Frame(){
         Text(text = message)
     }
 }
 @Composable
 private fun Error(message:String){
-    Body(){
+    Frame(){
         Text(
             text = message,
             color = MaterialTheme.colors.error
@@ -64,7 +65,7 @@ private fun Error(message:String){
 }
 @Composable
 private fun Success(message:String){
-    Body(){
+    Frame(){
         Text(text = message)
         Spacer(modifier = Modifier.height(20.dp))
         Button(onClick = App.saverRepository::reset) {

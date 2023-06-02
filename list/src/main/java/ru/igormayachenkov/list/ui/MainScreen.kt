@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ru.igormayachenkov.list.App
 import ru.igormayachenkov.list.data.*
 
 private const val TAG = "myapp.MainScreen"
@@ -37,7 +38,7 @@ fun MainScreen(
         topBar = { AppBar(
             isRoot   = viewModel.isRoot,
             title    = openList.list.name,
-            showDataScreen      = mainViewModel::showData,
+            showInfoScreen      = App.infoRepository::calculate ,
             showSettingsScreen  = mainViewModel::showSettings,
             onBack              = viewModel::onBackButtonClick,
             onEdit              = viewModel::editListHeader,

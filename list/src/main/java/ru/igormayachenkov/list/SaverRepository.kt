@@ -23,6 +23,7 @@ class SaverRepository {
     //----------------------------------------------------------------------------------------------
     // ACTIONS
     fun reset(){
+        if(state.value is State.Busy) return // do not interrupt!
         _state.value = State.Ready
     }
 
@@ -32,6 +33,8 @@ class SaverRepository {
             _state.emit(State.Busy("Saving all data..."))
             delay(2000)
             _state.emit(State.Success("Data saved successfully"))
+            // Refresh other parts
+            App.infoRepository.refresh()
         }
     }
 

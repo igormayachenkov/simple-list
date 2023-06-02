@@ -18,7 +18,7 @@ class App : Application() {
     val listRepository      by lazy { ListRepository(prefs) }
     val itemsRepository     by lazy { ItemsRepository() }
     companion object {
-        val statisticRepository by lazy { StatisticRepository() }
+        val infoRepository   by lazy { InfoRepository() }
         val saverRepository  by lazy { SaverRepository() }
     }
 
