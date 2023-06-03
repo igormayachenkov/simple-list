@@ -1,6 +1,7 @@
 package ru.igormayachenkov.list
 
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,7 +39,11 @@ class SaverRepository {
             try {
                 // Fill data
                 val json = JSONObject()
-                    .put("root", itemToJson(app.listRepository.fakeRootList))
+                app.version?.let{
+                    json.put("versionCode", it.code)
+                    json.put("versionName", it.name)
+                }
+                json.put("root", itemToJson(app.listRepository.fakeRootList))
                 val bytes = json.toString().toByteArray()
                 Log.d(TAG,"JSON length: ${bytes.size}")
 

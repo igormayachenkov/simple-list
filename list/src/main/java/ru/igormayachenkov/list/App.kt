@@ -2,6 +2,9 @@ package ru.igormayachenkov.list
 
 import android.app.Application
 import android.content.Context
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -31,5 +34,35 @@ class App : Application() {
         // Init
         Database.open(this)
     }
-
+    
+    // PACKAGE INFO
+    val packageInfo: PackageInfo?
+        get() {
+            try {
+                return packageManager?.getPackageInfoCompat(packageName)
+            } catch (e: PackageManager.NameNotFoundException) {
+                e.printStackTrace()
+            }
+            return null
+        }
+    // Version
+    data class Version(val code:Long, val name:String)
+    val version:Version?
+        get() {
+            packageInfo?.let{
+                return Version(
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) it.longVersionCode
+                    else it.versionCode.toLong(),
+                    it.versionName
+                )
+            }
+            return null
+        }
 }
+
+fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int = 0): PackageInfo =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(flags.toLong()))
+    } else {
+        @Suppress("DEPRECATION") getPackageInfo(packageName, flags)
+    }
