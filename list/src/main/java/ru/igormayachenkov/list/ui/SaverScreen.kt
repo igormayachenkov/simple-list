@@ -9,19 +9,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.igormayachenkov.list.App
 import ru.igormayachenkov.list.SaverRepository
+import ru.igormayachenkov.list.app
 import ru.igormayachenkov.list.ui.theme.ListTheme
 
 @Composable
 fun SaverScreen() {
-    when(val state = App.saverRepository.state.collectAsState().value){
+    when(val state = app.saverRepository.state.collectAsState().value){
         SaverRepository.State.Ready -> return
         is SaverRepository.State.Busy    -> Busy(message = state.message)
         is SaverRepository.State.Error   -> Error(message = state.message)
         is SaverRepository.State.Success -> Success(message = state.message)
     }
-    BackHandler(enabled = true, onBack = App.saverRepository::reset)
+    BackHandler(enabled = true, onBack = app.saverRepository::reset)
 }
 @Composable
 private fun Frame(content: @Composable ColumnScope.() -> Unit){
@@ -58,7 +58,7 @@ private fun Error(message:String){
             color = MaterialTheme.colors.error
         )
         Spacer(modifier = Modifier.height(20.dp))
-        Button(onClick = App.saverRepository::reset) {
+        Button(onClick = app.saverRepository::reset) {
             Text(text = "Close")
         }
     }
@@ -68,7 +68,7 @@ private fun Success(message:String){
     Frame(){
         Text(text = message)
         Spacer(modifier = Modifier.height(20.dp))
-        Button(onClick = App.saverRepository::reset) {
+        Button(onClick = app.saverRepository::reset) {
             Text(text = "Close")
         }
     }

@@ -13,7 +13,7 @@ class ResultAPI(activity: ComponentActivity) {
     { uri->
         Log.d(TAG,"saveAll success $uri")
         if(uri!=null){
-            App.saverRepository.saveAll(uri)
+            app.saverRepository.saveAll(uri)
         }
     }
 

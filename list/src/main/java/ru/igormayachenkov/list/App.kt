@@ -11,20 +11,22 @@ private const val TAG = "myapp.App"
 
 val Context.prefsDataStore: DataStore<Preferences> by preferencesDataStore(name = "prefs")
 
+private lateinit var instance:App
+val app:App get() = instance
+
 class App : Application() {
 
     private val prefs       by lazy { Prefs(prefsDataStore) }
     val settingsRepository  by lazy { SettingsRepository(prefs) }
     val listRepository      by lazy { ListRepository(prefs) }
     val itemsRepository     by lazy { ItemsRepository() }
-    companion object {
-        val infoRepository   by lazy { InfoRepository() }
-        val saverRepository  by lazy { SaverRepository() }
-    }
+    val infoRepository      by lazy { InfoRepository() }
+    val saverRepository     by lazy { SaverRepository() }
 
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG, "onCreate")
+        instance = this
 
         // Init
         Database.open(this)

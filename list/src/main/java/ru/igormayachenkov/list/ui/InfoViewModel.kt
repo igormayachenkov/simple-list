@@ -1,10 +1,10 @@
 package ru.igormayachenkov.list.ui
 
 import androidx.lifecycle.*
-import ru.igormayachenkov.list.App
+import ru.igormayachenkov.list.app
 
 class InfoViewModel : ViewModel() {
-    private val infoRepository = App.infoRepository
+    private val infoRepository = app.infoRepository
 
     // DATA
     val state = infoRepository.state

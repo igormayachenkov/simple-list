@@ -15,7 +15,7 @@ class ListRepository(
 ) {
     //----------------------------------------------------------------------------------------------
     // OPEN LIST STACK
-    private val fakeRootList = DataItem(
+    val fakeRootList = DataItem(
         id=0, parent_id = 0,
         DataItem.Type(true,false),
         DataItem.State(true),
