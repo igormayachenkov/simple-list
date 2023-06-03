@@ -1,14 +1,14 @@
 package ru.igormayachenkov.list
 
-import android.app.Application
 import android.net.Uri
 import android.util.Log
-import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import org.json.JSONArray
 import org.json.JSONObject
 import ru.igormayachenkov.list.data.DataItem
+import java.io.FileOutputStream
 
 
 private const val TAG = "myapp.SaverRepository"
@@ -36,23 +36,44 @@ class SaverRepository {
         CoroutineScope(Dispatchers.IO).launch {
             _state.emit(State.Busy("Saving all data..."))
             try {
-                val root = itemToJson(app.listRepository.fakeRootList)
-                delay(2000)
-                _state.emit(State.Success("Data saved successfully"))
+                // Fill data
+                val json = JSONObject()
+                    .put("root", itemToJson(app.listRepository.fakeRootList))
+                val bytes = json.toString().toByteArray()
+                Log.d(TAG,"JSON length: ${bytes.size}")
+
+                // Write to the file
+                val pfd = app.contentResolver.openFileDescriptor(uri,"w")
+                with( FileOutputStream(pfd!!.fileDescriptor) ) {
+                    write(bytes)
+                    close()
+                }
+                pfd.close()
+
+                delay(1000)
+
+                // Success state
+                _state.emit(State.Success("Data saved successfully. ${bytes.size} bytes written"))
             }catch (e:Exception){
                 _state.emit(State.Error(e.toString()))
             }
+
             // Refresh other parts
             app.infoRepository.refresh()
         }
     }
     private fun itemToJson(item:DataItem):JSONObject {
-        val json = JSONObject()
-        json.put("name",item.name)
-        item.description?.let { json.put("description", it) }
-
-
+        val json = item.toJSON()
+        if(item.type.hasChildren){
+            json.put("items", childrenToJSON(item.id))
+        }
         return json
     }
-
+    private fun childrenToJSON(parentId:Long):JSONArray{
+        val json = JSONArray()
+        Database.loadListItems(parentId).forEach { item->
+            json.put(itemToJson(item))
+        }
+        return json
+    }
 }

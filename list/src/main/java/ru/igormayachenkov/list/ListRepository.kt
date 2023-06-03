@@ -18,7 +18,7 @@ class ListRepository(
     val fakeRootList = DataItem(
         id=0, parent_id = 0,
         DataItem.Type(true,false),
-        DataItem.State(true),
+        DataItem.State(false),
         name="Simple List", description = null
     )
 

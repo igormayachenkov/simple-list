@@ -153,7 +153,7 @@ object Database {
         )
         val items = readItems(cursor)
 
-        Log.d(TAG, "loadItems. n:" + items.size)
+        Log.d(TAG, "loadItems. parentId:$listId n:${items.size}")
         return  items
     }
     private fun readItems(c:Cursor):List<DataItem>{

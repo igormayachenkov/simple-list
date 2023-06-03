@@ -1,5 +1,7 @@
 package ru.igormayachenkov.list.data
 
+import org.json.JSONObject
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // ATOMIC DATA OBJECT
 data class DataItem(
@@ -28,6 +30,11 @@ data class DataItem(
         fun toInt():Int =
             (if(hasChildren) MASK_hasChildren else 0) or
                     (if(isCheckable) MASK_isCheckable else 0)
+        fun toJSON():JSONObject{
+            return JSONObject()
+            .put("hasChildren", hasChildren)
+            .put("isCheckable", isCheckable)
+        }
     }
 
     // STATE FLAGS
@@ -42,6 +49,18 @@ data class DataItem(
         )
         fun toInt():Int =
             (if(isChecked) MASK_isChecked else 0)
+        fun toJSON():JSONObject{
+            return JSONObject()
+                .put("isChecked", isChecked)
+        }
     }
 
+    fun toJSON():JSONObject{ // without parent_id
+        return JSONObject()
+            .put    ("id",          id)
+            .put    ("type",        type.toJSON())
+            .put    ("state",       state.toJSON())
+            .put    ("name",        name)
+            .putOpt ("description", description)
+    }
 }
