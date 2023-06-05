@@ -11,13 +11,22 @@ class InfoViewModel : ViewModel() {
 
     //----------------------------------------------------------------------------------------------
     // EVENTS
-    fun onClose(){
+    fun onClose() {
         infoRepository.reset()
     }
 
-    fun onSaveAll(){
+    fun onSaveAll() {
         MainActivity.resultAPI?.let {
             it.saveAll.launch("Simple list.json")
+        }
+    }
+
+    fun onDeleteAll() {
+    }
+
+        fun onLoadAll() {
+        MainActivity.resultAPI?.let {
+            it.loadAll.launch(arrayOf("application/json"))
         }
     }
 }

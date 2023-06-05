@@ -24,7 +24,7 @@ fun InfoScreen(){
         InfoRepository.State.Ready -> return
         InfoRepository.State.Busy -> Busy()
         is InfoRepository.State.Error -> Error(state.message, vm::onClose)
-        is InfoRepository.State.Success -> Success(state.info, vm::onSaveAll)
+        is InfoRepository.State.Success -> Success(state.info, vm::onSaveAll, vm::onDeleteAll, vm::onLoadAll)
     }
     BackHandler(enabled = true, onBack = vm::onClose)
 }
@@ -71,9 +71,16 @@ private fun Error(message:String, onClose:()->Unit){
     }
 }
 @Composable
-private fun Success(info:DataInfo,onSaveAll:()->Unit) {
+private fun Success(info:DataInfo,onSaveAll:()->Unit,onDeleteAll:()->Unit,onLoadAll:()->Unit) {
     Frame(){
         val (nLists,nItems) = info
+        Row(Modifier.fillMaxWidth()) {
+            Text("number of elements:", Modifier.weight(1F), fontStyle = FontStyle.Italic )
+            Text("${nLists+nItems}")
+        }
+        Row(Modifier.fillMaxWidth()) {
+            Text(text = "From them:")
+        }
         Row(Modifier.fillMaxWidth()) {
             Text("number of lists:", Modifier.weight(1F), fontStyle = FontStyle.Italic )
             Text("$nLists")
@@ -85,7 +92,15 @@ private fun Success(info:DataInfo,onSaveAll:()->Unit) {
         // ACTIONS
         Spacer(modifier = Modifier.height(32.dp))
         Button(onClick = onSaveAll) {
-            Text("Save all in the archive")
+            Text("Save data in a file")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = onDeleteAll) {
+            Text("Erase data")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = onLoadAll) {
+            Text("Restore data from the file")
         }
     }
 }
@@ -108,6 +123,6 @@ private fun ErrorPreview() {
 @Composable
 private fun SuccessPreview() {
     ListTheme(darkTheme = true) {
-        Success(DataInfo(13,120),{})
+        Success(DataInfo(13,120),{},{},{})
     }
 }

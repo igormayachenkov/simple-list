@@ -52,7 +52,7 @@ private fun Busy(message:String){
 }
 @Composable
 private fun Error(message:String){
-    Frame(){
+    Frame{
         Text(
             text = message,
             color = MaterialTheme.colors.error
@@ -65,7 +65,7 @@ private fun Error(message:String){
 }
 @Composable
 private fun Success(message:String){
-    Frame(){
+    Frame{
         Text(text = message)
         Spacer(modifier = Modifier.height(20.dp))
         Button(onClick = app.saverRepository::reset) {

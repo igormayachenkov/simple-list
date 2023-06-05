@@ -17,5 +17,12 @@ class ResultAPI(activity: ComponentActivity) {
         }
     }
 
+    val loadAll = activity.registerForActivityResult(ActivityResultContracts.OpenDocument())
+    { uri->
+        Log.d(TAG,"loadAll success $uri")
+        if(uri!=null){
+            app.saverRepository.loadAll(uri)
+        }
+    }
 
 }
