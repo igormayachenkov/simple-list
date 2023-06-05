@@ -14,6 +14,7 @@ data class DataItem(
     val description : String?
 ){
     val logString:String = "#$id $name"
+    val isRoot:Boolean get() = id.compareTo(0L)==0
 
     // TYPE FLAGS
     data class Type(

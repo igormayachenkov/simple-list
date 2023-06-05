@@ -68,11 +68,7 @@ private fun Error(message:String){
 @Composable
 private fun ConfirmLoad(dataFile: DataFile){
     Frame{
-        Text("File info:\nversion: ${dataFile.version}\nfile size: ${dataFile.nBytes}\nnumber of elements: ${dataFile.itemList.size}")
-        Text(
-            text = "The next processing will replace your current data!",
-            color = MaterialTheme.colors.error
-        )
+        Text("File info:\nversion: ${dataFile.version}\nfile size: ${dataFile.nBytes}\nnumber of elements: ${dataFile.items.size}")
         Spacer(modifier = Modifier.height(20.dp))
         Row {
             Button(onClick = app.saverRepository::reset) {
@@ -83,6 +79,10 @@ private fun ConfirmLoad(dataFile: DataFile){
                 Text(text = "Process")
             }
         }
+        Text(
+            text = "The next processing will replace your current data!",
+            color = MaterialTheme.colors.error
+        )
     }
 }
 @Composable

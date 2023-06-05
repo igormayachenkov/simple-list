@@ -15,6 +15,7 @@ import java.io.FileReader
 
 
 private const val TAG = "myapp.SaverRepository"
+private const val VERSION_2_0 = 20000
 
 // SAVE/LOAD DATA TO/FROM JSON FILE
 
@@ -102,15 +103,27 @@ class SaverRepository {
                 val json = JSONObject(text)
                 Log.d(TAG,"parsed to JSON")
 
-                // Process the data: JSON => items
-                val root = json.getJSONObject("root")
-                val itemList = ArrayList<DataItem>()
-                jsonToItem(root, parentId = 0, result = itemList)
+                // PROCESS JSON
+                val versionCode = json.getInt("versionCode")
+                val versionName = json.getString("versionName")
+                // Data depending on the version
+                val items = ArrayList<DataItem>()
+                if(versionCode < VERSION_2_0) {
+                    // Version 1 format
+                    val lists = json.getJSONArray("lists")
+                    for(i in 0 until lists.length()){
+                        jsonToListV1(lists.getJSONObject(i), result = items)
+                    }
+                }else{
+                    // Version 2 format
+                    val root = json.getJSONObject("root")
+                    jsonToItem(root, parentId = 0, result = items)
+                }
 
                 delay(1000)
 
                 // Confirm state
-                _state.emit(State.ConfirmLoad(DataFile("1.0.0", text.length, itemList)))
+                _state.emit(State.ConfirmLoad(DataFile(versionName, text.length, items)))
             } catch (e: Exception) {
                 _state.emit(State.Error(e.toString()))
             }
@@ -124,13 +137,13 @@ class SaverRepository {
                 // Empty database
                 Database.deleteALL()
                 // Write to the database
-                for(item in dataFile.itemList){
+                for(item in dataFile.items){
                     Database.insertItem(item, log=false)
                 }
 
                 delay(1000)
                 // Success state
-                _state.emit(State.Success("Data restored successfully.\n${dataFile.itemList.size} elements added"))
+                _state.emit(State.Success("Data restored successfully.\n${dataFile.items.size} elements added"))
             } catch (e: Exception) {
                 _state.emit(State.Error(e.toString()))
             }
@@ -145,13 +158,14 @@ class SaverRepository {
     // JSON UTILS
     private fun itemToJson(item:DataItem, result:SaveResult):JSONObject {
         val json = item.toJSON()
-        result.nItems++
+        if(!item.isRoot) // skip root
+            result.nItems++
         if(item.type.hasChildren){
             // Children to json
             val array = JSONArray()
-            Database.loadListItems(item.id).forEach { child->
-                array.put(itemToJson(child,result)) // recurrent call
-            }
+            val items = Database.loadListItems(item.id)
+            for(child in items)
+                array.put( itemToJson(child,result) ) // recurrent call
             json.put("items", array)
         }
         return json
@@ -160,7 +174,8 @@ class SaverRepository {
         // Parse the item body
         val item = DataItem(json,parentId)
         //Log.d(TAG,"- jsonToItem: ${item.name}")
-        result.add(item)
+        if(!item.isRoot) // skip root
+            result.add(item)
         // Parse children
         if(item.type.hasChildren){
             val array = json.getJSONArray("items")
@@ -169,6 +184,31 @@ class SaverRepository {
             }
         }
         return item
+    }
+    private fun jsonToListV1(json:JSONObject, result:ArrayList<DataItem>) {
+        // Parse the list body
+        val list = DataItem(
+            id = json.getLong("id"),
+            parent_id = 0L,
+            type = DataItem.Type(hasChildren = true, isCheckable = false),
+            state = DataItem.State(isChecked = false),
+            name = json.getString("name"),
+            description = null
+        )
+        result.add(list)
+        // Parse children as list items
+        val array = json.getJSONArray("items")
+        for(i in 0 until array.length()) {
+            @Suppress("NAME_SHADOWING") val json = array.getJSONObject(i)
+            result.add(DataItem(
+                id = json.getLong("id"),
+                parent_id = list.id,
+                type = DataItem.Type(hasChildren = false, isCheckable = true),
+                state = DataItem.State(isChecked = json.getInt("state")!=0),
+                name = json.getString("name"),
+                description = UtilsJSON.getStringOrNull(json,"description")
+            ))
+        }
     }
 
     //----------------------------------------------------------------------------------------------
