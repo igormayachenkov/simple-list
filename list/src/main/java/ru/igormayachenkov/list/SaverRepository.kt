@@ -50,6 +50,7 @@ class SaverRepository {
 
             // Refresh other parts
             app.infoRepository.refresh()
+            app.listRepository.goRootAndRefresh()
         }
     }
 
@@ -104,7 +105,7 @@ class SaverRepository {
 
                 // Write to the database
                 for(item in itemList){
-                    Database.insertItem(item)
+                    Database.insertItem(item, log=false)
                 }
 
                 delay(1000)
@@ -116,6 +117,7 @@ class SaverRepository {
 
             // Refresh other parts
             app.infoRepository.refresh()
+            app.listRepository.goRootAndRefresh()
         }
     }
 

@@ -33,8 +33,8 @@ object Database {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // INSERTERS
-    fun insertItem(item: DataItem) {
-        Log.d(TAG, "insertItem")
+    fun insertItem(item: DataItem, log:Boolean=true) {
+        if(log) Log.d(TAG, "insertItem")
 
         // Prepare values
         val cv = ContentValues()

@@ -67,6 +67,12 @@ class ListRepository(
         _openList.value = stack.peek()
         return true
     }
+    fun goRootAndRefresh(){
+        Log.d(TAG, "goRootAndRefresh")
+        stack.empty()
+        stack.push(OpenList(fakeRootList)) // create new object to refresh
+        _openList.value = stack.peek()
+    }
     //----------------------------------------------------------------------------------------------
     // MODIFIERS
     fun updateOpenList(list:DataItem){
