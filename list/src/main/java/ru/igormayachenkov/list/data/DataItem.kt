@@ -1,6 +1,7 @@
 package ru.igormayachenkov.list.data
 
 import org.json.JSONObject
+import ru.igormayachenkov.list.UtilsJSON
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // ATOMIC DATA OBJECT
@@ -85,7 +86,7 @@ data class DataItem(
             Type (json.getJSONObject("type")),
             State(json.getJSONObject("state")),
             json.getString("name"),
-            json.optString("description")
+            UtilsJSON.getStringOrNull(json,"description")
     )
 
 }
