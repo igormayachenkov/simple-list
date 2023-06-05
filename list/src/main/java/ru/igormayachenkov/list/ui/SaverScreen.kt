@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.igormayachenkov.list.SaverRepository
 import ru.igormayachenkov.list.app
+import ru.igormayachenkov.list.data.DataFile
 import ru.igormayachenkov.list.ui.theme.ListTheme
 
 @Composable
@@ -19,6 +20,7 @@ fun SaverScreen() {
         SaverRepository.State.Ready -> return
         is SaverRepository.State.Busy    -> Busy(message = state.message)
         is SaverRepository.State.Error   -> Error(message = state.message)
+        is SaverRepository.State.ConfirmLoad   -> ConfirmLoad(dataFile=state.dataFile)
         is SaverRepository.State.Success -> Success(message = state.message)
     }
     BackHandler(enabled = true, onBack = app.saverRepository::reset)
@@ -60,6 +62,26 @@ private fun Error(message:String){
         Spacer(modifier = Modifier.height(20.dp))
         Button(onClick = app.saverRepository::reset) {
             Text(text = "Close")
+        }
+    }
+}
+@Composable
+private fun ConfirmLoad(dataFile: DataFile){
+    Frame{
+        Text("File info:\nversion: ${dataFile.version}\nfile size: ${dataFile.nBytes}\nnumber of elements: ${dataFile.itemList.size}")
+        Text(
+            text = "The next processing will replace your current data!",
+            color = MaterialTheme.colors.error
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        Row {
+            Button(onClick = app.saverRepository::reset) {
+                Text(text = "Cancel")
+            }
+            Spacer(modifier = Modifier.width(20.dp))
+            Button(onClick = {app.saverRepository.loadAllFinish(dataFile)}) {
+                Text(text = "Process")
+            }
         }
     }
 }

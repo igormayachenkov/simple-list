@@ -9,6 +9,8 @@ import ru.igormayachenkov.list.data.ItemsState
 
 private const val TAG = "myapp.ItemsRepository"
 
+// ITEMS FOR THE CURRENT OPEN LIST
+
 class ItemsRepository() {
 
     private val _itemsState = MutableStateFlow<ItemsState>(ItemsState.Loading)

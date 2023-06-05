@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import org.json.JSONArray
 import org.json.JSONObject
 import ru.igormayachenkov.list.data.DataItem
+import ru.igormayachenkov.list.data.DataFile
 import java.io.BufferedReader
 import java.io.FileOutputStream
 import java.io.FileReader
@@ -15,11 +16,14 @@ import java.io.FileReader
 
 private const val TAG = "myapp.SaverRepository"
 
+// SAVE/LOAD DATA TO/FROM JSON FILE
+
 class SaverRepository {
     sealed interface State{
         object Ready : State
         data class Busy   (val message:String) : State
         data class Error  (val message:String) : State
+        data class ConfirmLoad(val dataFile: DataFile) : State
         data class Success(val message:String) : State
     }
 
@@ -89,7 +93,7 @@ class SaverRepository {
     fun loadAll(uri: Uri) {
         Log.d(TAG, "loadAll $uri")
         CoroutineScope(Dispatchers.IO).launch {
-            _state.emit(State.Busy("Restoring data..."))
+            _state.emit(State.Busy("Reading file data..."))
             try {
                 // Read file
                 val text = readFile(uri)
@@ -103,14 +107,30 @@ class SaverRepository {
                 val itemList = ArrayList<DataItem>()
                 jsonToItem(root, parentId = 0, result = itemList)
 
+                delay(1000)
+
+                // Confirm state
+                _state.emit(State.ConfirmLoad(DataFile("1.0.0", text.length, itemList)))
+            } catch (e: Exception) {
+                _state.emit(State.Error(e.toString()))
+            }
+        }
+    }
+    fun loadAllFinish(dataFile: DataFile){
+        Log.d(TAG, "loadAllFinish")
+        CoroutineScope(Dispatchers.IO).launch {
+            _state.emit(State.Busy("Restoring data..."))
+            try {
+                // Empty database
+                Database.deleteALL()
                 // Write to the database
-                for(item in itemList){
+                for(item in dataFile.itemList){
                     Database.insertItem(item, log=false)
                 }
 
                 delay(1000)
                 // Success state
-                _state.emit(State.Success("Data restored successfully.\n${text.length} bytes read\n${itemList.size} elements added"))
+                _state.emit(State.Success("Data restored successfully.\n${dataFile.itemList.size} elements added"))
             } catch (e: Exception) {
                 _state.emit(State.Error(e.toString()))
             }
