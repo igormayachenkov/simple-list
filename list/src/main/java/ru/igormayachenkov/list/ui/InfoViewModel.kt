@@ -5,6 +5,7 @@ import ru.igormayachenkov.list.app
 
 class InfoViewModel : ViewModel() {
     private val infoRepository = app.infoRepository
+    private val saverRepository = app.saverRepository
 
     // DATA
     val state = infoRepository.state
@@ -22,9 +23,10 @@ class InfoViewModel : ViewModel() {
     }
 
     fun onDeleteAll() {
+        saverRepository.deleteAll()
     }
 
-        fun onLoadAll() {
+    fun onLoadAll() {
         MainActivity.resultAPI?.let {
             it.loadAll.launch(arrayOf("application/json"))
         }

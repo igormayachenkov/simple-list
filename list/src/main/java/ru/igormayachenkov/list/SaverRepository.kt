@@ -33,6 +33,26 @@ class SaverRepository {
         _state.value = State.Ready
     }
 
+    fun deleteAll(){
+        Log.d(TAG,"deleteAll")
+        CoroutineScope(Dispatchers.IO).launch {
+            _state.emit(State.Busy("Erasing data..."))
+            try {
+                Database.deleteALL()
+
+                delay(1000)
+
+                // Success state
+                _state.emit(State.Success("Data erased successfully."))
+            } catch (e: Exception) {
+                _state.emit(State.Error(e.toString()))
+            }
+
+            // Refresh other parts
+            app.infoRepository.refresh()
+        }
+    }
+
     class SaveResult(var nItems:Int=0)
     fun saveAll(uri: Uri){
         Log.d(TAG,"saveAll $uri")
@@ -83,7 +103,9 @@ class SaverRepository {
                 jsonToItem(root, parentId = 0, result = itemList)
 
                 // Write to the database
-                //...
+                for(item in itemList){
+                    Database.insertItem(item)
+                }
 
                 delay(1000)
                 // Success state

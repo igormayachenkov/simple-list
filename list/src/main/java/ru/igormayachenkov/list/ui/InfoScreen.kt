@@ -5,6 +5,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -12,6 +13,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.igormayachenkov.list.InfoRepository
 import ru.igormayachenkov.list.data.DataInfo
@@ -72,6 +74,7 @@ private fun Error(message:String, onClose:()->Unit){
 }
 @Composable
 private fun Success(info:DataInfo,onSaveAll:()->Unit,onDeleteAll:()->Unit,onLoadAll:()->Unit) {
+    var confirmDelete by rememberSaveable { mutableStateOf<Boolean>(false) }
     Frame(){
         val (nLists,nItems) = info
         Row(Modifier.fillMaxWidth()) {
@@ -91,17 +94,32 @@ private fun Success(info:DataInfo,onSaveAll:()->Unit,onDeleteAll:()->Unit,onLoad
         }
         // ACTIONS
         Spacer(modifier = Modifier.height(32.dp))
-        Button(onClick = onSaveAll) {
+        Button(onClick = onSaveAll, enabled = !info.isEmpty) {
             Text("Save data in a file")
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onDeleteAll) {
+        Button(onClick = {confirmDelete=true}, enabled = !info.isEmpty) {
             Text("Erase data")
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = onLoadAll) {
             Text("Restore data from the file")
         }
+    }
+
+    if(confirmDelete) {
+        AlertDialog(
+            onDismissRequest = {confirmDelete=false},
+            title = { Text(text = "Confirmation") },
+            text = { Text("Delete all elements?") },
+            buttons = { Row {
+                Button(onClick = { confirmDelete=false }) {
+                    Text("Cancel", fontSize = 22.sp) }
+                Button(onClick = { confirmDelete=false; onDeleteAll() }) {
+                    Text("Process", fontSize = 22.sp) }
+            }}
+        )
+
     }
 }
 
