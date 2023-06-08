@@ -71,8 +71,7 @@ class Prefs(
     override suspend fun saveSettings(settings: Settings) {
         Log.d(TAG, "saveSettings $settings")
         // Prepare data
-        val json = JSONObject()
-        json.put("useFab",settings.useFab)
+        val json = settings.toJson()
         // Save
         prefsDataStore.edit { prefs ->
             prefs[SETTINGS] = json.toString()
@@ -87,15 +86,13 @@ class Prefs(
             try {
                 val json = JSONObject(string)
                 Log.d(TAG, "restoreSettings json:$json")
-                val settings = Settings(
-                    json.getBoolean("useFab")
-                )
+                val settings = Settings(json)
                 Log.d(TAG, "restoreSettings settings:$settings")
                 return settings
             } catch (ex: Exception) {
                 Log.e(TAG, "restoreSettings ex:$ex")
             }
         }
-        return Settings()
+        return Settings.default()
     }
 }

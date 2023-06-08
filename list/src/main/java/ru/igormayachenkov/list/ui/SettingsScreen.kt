@@ -25,7 +25,8 @@ fun SettingsScreen(
     val settings:Settings by settingsViewModel.settings.collectAsState()
 
     var useFab by rememberSaveable{ mutableStateOf<Boolean>(settings.useFab) }
-    val newSettings = Settings(useFab)
+    var useAdd by rememberSaveable{ mutableStateOf<Boolean>(settings.useAdd) }
+    val newSettings = Settings(useFab, useAdd)
 
     BackHandler(enabled = true, onBack = onHide)
 
@@ -47,7 +48,18 @@ fun SettingsScreen(
             ) {
                 Text("Settings")
 
-                // Is Checkable
+                // Add
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center) {
+                    Text( text = "Use Add button")
+                    Spacer( modifier = Modifier.width(5.dp))
+                    Switch(checked = useAdd, onCheckedChange = { useAdd = it })
+                }
+                // Fab
                 Row(
                     Modifier
                         .fillMaxWidth()

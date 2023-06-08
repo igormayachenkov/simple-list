@@ -36,14 +36,14 @@ fun MainScreen(
 
     Scaffold(
         topBar = { AppBar(
-            isRoot   = viewModel.isRoot,
-            title    = openList.list.name,
+            isRoot              = viewModel.isRoot,
+            title               = openList.list.name,
             showInfoScreen      = app.infoRepository::calculate ,
             showSettingsScreen  = mainViewModel::showSettings,
             onBack              = viewModel::onBackButtonClick,
             onEdit              = viewModel::editListHeader,
             onCreate            = viewModel::createItem,
-            showOnCreate        = !settings.useFab
+            showOnCreate        = settings.useAdd
         )},
         floatingActionButton = {
             if(settings.useFab){
