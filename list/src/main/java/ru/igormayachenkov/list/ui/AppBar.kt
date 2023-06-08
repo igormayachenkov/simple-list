@@ -53,13 +53,14 @@ fun AppBar(
 
         // Add (Create) Button
         if(showOnCreate) IconButton(onClick = onCreate) {
-            Icon(Icons.Default.AddCircle,"",
+            Icon(Icons.Default.AddCircle,contentDescription = "add",
                 tint = MaterialTheme.colors.onPrimary)
         }
 
         // Menu Button
         IconButton(onClick = { showMenu=true }) {
-            Icon(Icons.Default.MoreVert, contentDescription = "Localized description")
+            Icon(Icons.Default.MoreVert, contentDescription = "menu",
+                tint = MaterialTheme.colors.onPrimary)
             // Menu
             DropdownMenu(
                 expanded = showMenu,
