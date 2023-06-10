@@ -93,6 +93,6 @@ class Prefs(
                 Log.e(TAG, "restoreSettings ex:$ex")
             }
         }
-        return Settings.default()
+        return Settings()
     }
 }

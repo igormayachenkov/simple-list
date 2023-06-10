@@ -1,14 +1,14 @@
 package ru.igormayachenkov.list
 
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.withContext
-import ru.igormayachenkov.list.data.ItemsState
-import ru.igormayachenkov.list.data.SavedOpenList
+import kotlinx.coroutines.launch
 import ru.igormayachenkov.list.data.Settings
+import ru.igormayachenkov.list.data.SortOrder
 
 private const val TAG = "myapp.SettingsRepository"
 
@@ -22,8 +22,8 @@ class SettingsRepository(
 
     //----------------------------------------------------------------------------------------------
     // MODIFIERS
-    suspend fun setSettings(newSettings: Settings){
-        withContext(Dispatchers.IO){
+    fun setSettings(newSettings: Settings){
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 // Start
                 Log.d(TAG, "setSettings started")
@@ -38,5 +38,9 @@ class SettingsRepository(
             }
             Log.d(TAG, "setSettings finished")
         }
+    }
+    fun setSortOrder(sortOrder: SortOrder){
+        Log.d(TAG, "setSortOrder $sortOrder")
+        setSettings(_settings.value.copy(sortOrder = sortOrder))
     }
 }

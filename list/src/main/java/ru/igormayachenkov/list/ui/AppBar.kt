@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import ru.igormayachenkov.list.data.Settings
+import ru.igormayachenkov.list.data.SortOrder
 import ru.igormayachenkov.list.ui.theme.ListTheme
 
 @Composable
@@ -25,7 +27,8 @@ fun AppBar(
     onBack:()->Unit,
     onEdit:()->Unit,
     onCreate:()->Unit,
-    showOnCreate:Boolean
+    setSortOrder:(SortOrder)->Unit,
+    settings:Settings
 ){
     var showMenu by remember { mutableStateOf(false) }
     fun onMenuItem(handler:()->Unit){showMenu=false; handler()}
@@ -52,7 +55,7 @@ fun AppBar(
                 .clickable(onClick = { if (!isRoot) onEdit() }))
 
         // Add (Create) Button
-        if(showOnCreate) IconButton(onClick = onCreate) {
+        if(settings.useAdd) IconButton(onClick = onCreate) {
             Icon(Icons.Default.AddCircle,contentDescription = "add",
                 tint = MaterialTheme.colors.onPrimary)
         }
@@ -88,6 +91,25 @@ fun AppBar(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Settings")
                 }
+                Divider()
+                // Sort Order NameAsc
+                DropdownMenuItem(
+                    onClick = { setSortOrder(SortOrder.NameAsc); showMenu=false },
+                    enabled = settings.sortOrder!=SortOrder.NameAsc
+                ) {
+                    //Icon(Icons.Default.Check,"")
+                    //Spacer(modifier = Modifier.width(8.dp))
+                    Text("Sort by name A-Z")
+                }
+                // Sort Order NameDesc
+                DropdownMenuItem(
+                    onClick = { setSortOrder(SortOrder.NameDesc); showMenu=false },
+                    enabled = settings.sortOrder!=SortOrder.NameDesc
+                ) {
+                    //Icon(Icons.Default.Check,"")
+                    //Spacer(modifier = Modifier.width(8.dp))
+                    Text("Sort by name Z-A")
+                }
             }
         }
     }
@@ -98,7 +120,9 @@ fun AppBar(
 @Composable
 fun AppBarPreview(){
     Surface {
-        AppBar(isRoot = true, title = "The open list name", showInfoScreen = {}, showSettingsScreen = {},onBack = {}, onEdit = {}, onCreate = {}, showOnCreate = true)
+        AppBar(isRoot = true, title = "The open list name",
+            showInfoScreen = {}, showSettingsScreen = {},onBack = {}, onEdit = {}, onCreate = {}, setSortOrder = {},
+            settings = Settings(useAdd = true))
     }
 }
 @Preview(name = "AppBarDark")
@@ -106,7 +130,9 @@ fun AppBarPreview(){
 fun AppBarDarkPreview(){
     ListTheme(darkTheme = true) {
         Surface {
-            AppBar(isRoot = false, title = "The open list name", showInfoScreen = {}, showSettingsScreen = {}, onBack = {}, onEdit = {}, onCreate = {}, showOnCreate = true)
+            AppBar(isRoot = false, title = "The open list name",
+                showInfoScreen = {}, showSettingsScreen = {}, onBack = {}, onEdit = {}, onCreate = {}, setSortOrder = {},
+                settings = Settings(useAdd = true))
         }
     }
 }

@@ -43,7 +43,8 @@ fun MainScreen(
             onBack              = viewModel::onBackButtonClick,
             onEdit              = viewModel::editListHeader,
             onCreate            = viewModel::createItem,
-            showOnCreate        = settings.useAdd
+            setSortOrder        = app.settingsRepository::setSortOrder,
+            settings            = settings
         )},
         floatingActionButton = {
             if(settings.useFab){

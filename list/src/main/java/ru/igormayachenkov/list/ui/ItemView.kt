@@ -124,7 +124,7 @@ fun fakeItem():DataItem=DataItem(
 @Composable
 fun ListRowPreview(){
     Surface {
-        ItemView(item = fakeList(), onClick = {}, onCheck = {}, settings = Settings.default())
+        ItemView(item = fakeList(), onClick = {}, onCheck = {}, settings = Settings())
     }
 }
 @Preview(name = "ListRow Dark")
@@ -132,7 +132,7 @@ fun ListRowPreview(){
 fun ListRowDarkPreview(){
     ListTheme(darkTheme = true) {
         Surface {
-            ItemView(item = fakeList(), onClick = {}, onCheck = {}, settings = Settings.default())
+            ItemView(item = fakeList(), onClick = {}, onCheck = {}, settings = Settings())
         }
     }
 }
@@ -141,7 +141,7 @@ fun ListRowDarkPreview(){
 @Composable
 fun ItemRowPreview(){
     Surface {
-        ItemView(item = fakeItem(), onClick = {}, onCheck = {}, settings = Settings.default())
+        ItemView(item = fakeItem(), onClick = {}, onCheck = {}, settings = Settings())
     }
 }
 @Preview(name = "ItemRow Dark")
@@ -149,7 +149,7 @@ fun ItemRowPreview(){
 fun ItemRowDarkPreview(){
     ListTheme(darkTheme = true) {
         Surface {
-            ItemView(item = fakeItem().copy(description = null), onClick = {}, onCheck = {}, settings = Settings.default())
+            ItemView(item = fakeItem().copy(description = null), onClick = {}, onCheck = {}, settings = Settings())
         }
     }
 }

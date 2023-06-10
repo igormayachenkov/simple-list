@@ -27,7 +27,7 @@ fun SettingsScreen(
     var useFab by rememberSaveable{ mutableStateOf<Boolean>(settings.useFab) }
     var useAdd by rememberSaveable{ mutableStateOf<Boolean>(settings.useAdd) }
     var useCheckedColor by rememberSaveable{ mutableStateOf<Boolean>(settings.useCheckedColor) }
-    val newSettings = Settings(useFab, useAdd, useCheckedColor)
+    val newSettings = settings.copy(useFab=useFab, useAdd=useAdd, useCheckedColor=useCheckedColor)
 
     BackHandler(enabled = true, onBack = onHide)
 
