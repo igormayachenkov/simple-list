@@ -6,9 +6,6 @@ import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.igormayachenkov.list.App
 import ru.igormayachenkov.list.ItemsRepository
@@ -16,7 +13,6 @@ import ru.igormayachenkov.list.ListRepository
 import ru.igormayachenkov.list.SettingsRepository
 import ru.igormayachenkov.list.data.DataItem
 import ru.igormayachenkov.list.data.EditorData
-import ru.igormayachenkov.list.data.ItemsState
 import ru.igormayachenkov.list.data.OpenList
 
 private const val TAG = "myapp.ListViewModel"
@@ -33,14 +29,7 @@ class ListViewModel(
     val isRoot:Boolean
         get() = listRepository.isRoot
 
-    val itemsState = itemsRepository.itemsState.map {
-        if(it is ItemsState.Success) it.copy(items= it.items.sortedWith(comparator))
-        else it
-    }.stateIn(
-        scope = viewModelScope,
-        SharingStarted.WhileSubscribed(),
-        initialValue = ItemsState.Loading
-    )
+    val itemsState = itemsRepository.itemsState
 
     var loadItemsJob: Job?=null
 
@@ -62,10 +51,6 @@ class ListViewModel(
             }
         }
     }
-
-    //----------------------------------------------------------------------------------------------
-    // SORTING
-    private val comparator : Comparator<DataItem> = compareBy<DataItem>{ it.name }
 
     //----------------------------------------------------------------------------------------------
     // EVENTS

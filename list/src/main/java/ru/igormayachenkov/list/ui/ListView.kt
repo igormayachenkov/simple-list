@@ -26,13 +26,21 @@ fun ListView(
 
     Log.d(TAG,"=> ") // DO NOT print lazyListState here! it causes rerendering
 
+    val comparator : Comparator<DataItem> =
+        when(settings.sortOrder) {
+            SortOrder.NameAsc  -> compareBy<DataItem> { it.name }
+            SortOrder.NameDesc -> compareByDescending<DataItem> { it.name }
+        }
+
+    val sortedItems = theItems.sortedWith(comparator)
+
     LazyColumn(
         state = lazyListState,
 //        contentPadding = PaddingValues(vertical = 5.dp),
         contentPadding = PaddingValues(0.dp,5.dp,0.dp,if(settings.useFab)60.dp else 5.dp),
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
-        items(items = theItems, key = { it.id }) { item ->
+        items(items = sortedItems, key = { it.id }) { item ->
             Box(Modifier.animateItemPlacement()) {
                 ItemView(
                     item = item,
