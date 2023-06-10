@@ -37,7 +37,8 @@ fun ListView(
                 ItemView(
                     item = item,
                     onClick = onItemClick,
-                    onCheck = onItemCheck
+                    onCheck = onItemCheck,
+                    settings = settings
                     // IMPORTANT: USE STATIC CALLBACKS
                     // onCheck = { viewModel.checkItem(item) } - CAUSES ALL LIST REDRAWING
                     // modifier = Modifier.animateItemPlacement() - THE SAME

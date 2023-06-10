@@ -26,7 +26,8 @@ fun SettingsScreen(
 
     var useFab by rememberSaveable{ mutableStateOf<Boolean>(settings.useFab) }
     var useAdd by rememberSaveable{ mutableStateOf<Boolean>(settings.useAdd) }
-    val newSettings = Settings(useFab, useAdd)
+    var useCheckedColor by rememberSaveable{ mutableStateOf<Boolean>(settings.useCheckedColor) }
+    val newSettings = Settings(useFab, useAdd, useCheckedColor)
 
     BackHandler(enabled = true, onBack = onHide)
 
@@ -69,6 +70,17 @@ fun SettingsScreen(
                     Text( text = "Use FAB")
                     Spacer( modifier = Modifier.width(5.dp))
                     Switch(checked = useFab, onCheckedChange = { useFab = it })
+                }
+                // Use checked color
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center) {
+                    Text( text = "Dimm checked items")
+                    Spacer( modifier = Modifier.width(5.dp))
+                    Switch(checked = useCheckedColor, onCheckedChange = { useCheckedColor = it })
                 }
 
                 // BUTTONS

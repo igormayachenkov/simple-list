@@ -8,6 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,9 +23,14 @@ private const val TAG = "myapp.ItemView"
 fun ItemView(
     item:DataItem,
     onClick:(DataItem)->Unit,
-    onCheck:(DataItem)->Unit
+    onCheck:(DataItem)->Unit,
+    settings: Settings
 ){
     Log.d(TAG,"=> #${item.id} ${item.name}")
+    val color:Color =
+        if(item.type.isCheckable && item.state.isChecked && settings.useCheckedColor)
+            MaterialTheme.colors.onPrimary.copy(alpha = 0.5f)
+        else Color.Unspecified
     Card(
         modifier = Modifier
         //    .background(color = MaterialTheme.colors.surface)
@@ -33,7 +39,7 @@ fun ItemView(
         if (item.type.hasChildren)
             ListRow(item = item)
         else
-            ItemRow(item = item, onCheck = {onCheck(item)})
+            ItemRow(item = item, onCheck = {onCheck(item)}, color=color)
     }
 }
 
@@ -55,7 +61,7 @@ fun ListRow(item:DataItem){
 }
 
 @Composable
-fun ItemRow(item:DataItem, onCheck:()->Unit){
+fun ItemRow(item:DataItem, color:Color, onCheck:()->Unit){
     Row(
         Modifier
             .fillMaxWidth().padding(start = 5.dp),
@@ -66,12 +72,18 @@ fun ItemRow(item:DataItem, onCheck:()->Unit){
         ) {
             // Name
             Text(
-                text = item.name, style = MaterialTheme.typography.body1,
+                text = item.name,
+                color = color,
+                style = MaterialTheme.typography.body1,
             )
 
             // Description
             item.description?.let {
-                Text(text = it, style = MaterialTheme.typography.body2)
+                Text(
+                    text = it,
+                    color = color,
+                    style = MaterialTheme.typography.body2
+                )
             }
         }
 
@@ -112,7 +124,7 @@ fun fakeItem():DataItem=DataItem(
 @Composable
 fun ListRowPreview(){
     Surface {
-        ItemView(item = fakeList(), onClick = {}, onCheck = {})
+        ItemView(item = fakeList(), onClick = {}, onCheck = {}, settings = Settings.default())
     }
 }
 @Preview(name = "ListRow Dark")
@@ -120,7 +132,7 @@ fun ListRowPreview(){
 fun ListRowDarkPreview(){
     ListTheme(darkTheme = true) {
         Surface {
-            ItemView(item = fakeList(), onClick = {}, onCheck = {})
+            ItemView(item = fakeList(), onClick = {}, onCheck = {}, settings = Settings.default())
         }
     }
 }
@@ -129,7 +141,7 @@ fun ListRowDarkPreview(){
 @Composable
 fun ItemRowPreview(){
     Surface {
-        ItemView(item = fakeItem(), onClick = {}, onCheck = {})
+        ItemView(item = fakeItem(), onClick = {}, onCheck = {}, settings = Settings.default())
     }
 }
 @Preview(name = "ItemRow Dark")
@@ -137,7 +149,7 @@ fun ItemRowPreview(){
 fun ItemRowDarkPreview(){
     ListTheme(darkTheme = true) {
         Surface {
-            ItemView(item = fakeItem().copy(description = null), onClick = {}, onCheck = {})
+            ItemView(item = fakeItem().copy(description = null), onClick = {}, onCheck = {}, settings = Settings.default())
         }
     }
 }
