@@ -27,7 +27,16 @@ fun SettingsScreen(
     var useFab by rememberSaveable{ mutableStateOf<Boolean>(settings.useFab) }
     var useAdd by rememberSaveable{ mutableStateOf<Boolean>(settings.useAdd) }
     var useCheckedColor by rememberSaveable{ mutableStateOf<Boolean>(settings.useCheckedColor) }
-    val newSettings = settings.copy(useFab=useFab, useAdd=useAdd, useCheckedColor=useCheckedColor)
+    var sortListsUp by rememberSaveable{ mutableStateOf<Boolean>(settings.sortListsUp) }
+    var sortCheckedDown by rememberSaveable{ mutableStateOf<Boolean>(settings.sortCheckedDown) }
+
+    val newSettings = settings.copy(
+        useFab=useFab,
+        useAdd=useAdd,
+        useCheckedColor=useCheckedColor,
+        sortListsUp = sortListsUp,
+        sortCheckedDown = sortCheckedDown
+    )
 
     BackHandler(enabled = true, onBack = onHide)
 
@@ -81,6 +90,28 @@ fun SettingsScreen(
                     Text( text = "Dimm checked items")
                     Spacer( modifier = Modifier.width(5.dp))
                     Switch(checked = useCheckedColor, onCheckedChange = { useCheckedColor = it })
+                }
+                // sortListsUp
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center) {
+                    Text( text = "sortListsUp")
+                    Spacer( modifier = Modifier.width(5.dp))
+                    Switch(checked = sortListsUp, onCheckedChange = { sortListsUp = it })
+                }
+                // sortCheckedDown
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center) {
+                    Text( text = "sortCheckedDown")
+                    Spacer( modifier = Modifier.width(5.dp))
+                    Switch(checked = sortCheckedDown, onCheckedChange = { sortCheckedDown = it })
                 }
 
                 // BUTTONS

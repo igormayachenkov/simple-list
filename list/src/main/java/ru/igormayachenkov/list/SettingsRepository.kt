@@ -26,7 +26,7 @@ class SettingsRepository(
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 // Start
-                Log.d(TAG, "setSettings started")
+                Log.d(TAG, "setSettings started $newSettings")
                 // Progress
                 //delay(1000)
                 dataSource.saveSettings(newSettings)
@@ -36,7 +36,7 @@ class SettingsRepository(
                 // Error
                 Log.e(TAG,ex.stackTraceToString())
             }
-            Log.d(TAG, "setSettings finished")
+            Log.d(TAG, "setSettings finished $newSettings")
         }
     }
     fun setSortOrder(sortOrder: SortOrder){

@@ -90,7 +90,7 @@ class Prefs(
                 Log.d(TAG, "restoreSettings settings:$settings")
                 return settings
             } catch (ex: Exception) {
-                Log.e(TAG, "restoreSettings ex:$ex")
+                Log.e(TAG, "restoreSettings ERROR:$ex")
             }
         }
         return Settings()
