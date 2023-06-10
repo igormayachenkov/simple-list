@@ -15,27 +15,28 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.igormayachenkov.list.data.Settings
 import ru.igormayachenkov.list.ui.theme.ListTheme
 import androidx.activity.compose.BackHandler
+import androidx.compose.ui.text.style.TextAlign
 
 
 @Composable
 fun SettingsScreen(
-    settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory),
+    settingsViewModel: SettingsViewModel = viewModel(),
     onHide:()->Unit
 ) {
     val settings:Settings by settingsViewModel.settings.collectAsState()
 
-    var useFab by rememberSaveable{ mutableStateOf<Boolean>(settings.useFab) }
-    var useAdd by rememberSaveable{ mutableStateOf<Boolean>(settings.useAdd) }
-    var useCheckedColor by rememberSaveable{ mutableStateOf<Boolean>(settings.useCheckedColor) }
-    var sortListsUp by rememberSaveable{ mutableStateOf<Boolean>(settings.sortListsUp) }
-    var sortCheckedDown by rememberSaveable{ mutableStateOf<Boolean>(settings.sortCheckedDown) }
+    val useFab          = rememberSaveable{ mutableStateOf<Boolean>(settings.useFab) }
+    val useAdd          = rememberSaveable{ mutableStateOf<Boolean>(settings.useAdd) }
+    val useCheckedColor = rememberSaveable{ mutableStateOf<Boolean>(settings.useCheckedColor) }
+    val sortListsUp     = rememberSaveable{ mutableStateOf<Boolean>(settings.sortListsUp) }
+    val sortCheckedDown = rememberSaveable{ mutableStateOf<Boolean>(settings.sortCheckedDown) }
 
     val newSettings = settings.copy(
-        useFab=useFab,
-        useAdd=useAdd,
-        useCheckedColor=useCheckedColor,
-        sortListsUp = sortListsUp,
-        sortCheckedDown = sortCheckedDown
+        useFab=useFab.value,
+        useAdd=useAdd.value,
+        useCheckedColor=useCheckedColor.value,
+        sortListsUp = sortListsUp.value,
+        sortCheckedDown = sortCheckedDown.value
     )
 
     BackHandler(enabled = true, onBack = onHide)
@@ -56,63 +57,16 @@ fun SettingsScreen(
                     .fillMaxWidth()
                 //.padding(all = 16.dp)
             ) {
-                Text("Settings")
+                Text(text = "Settings",
+                    Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
 
-                // Add
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center) {
-                    Text( text = "Use Add button")
-                    Spacer( modifier = Modifier.width(5.dp))
-                    Switch(checked = useAdd, onCheckedChange = { useAdd = it })
-                }
-                // Fab
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center) {
-                    Text( text = "Use FAB")
-                    Spacer( modifier = Modifier.width(5.dp))
-                    Switch(checked = useFab, onCheckedChange = { useFab = it })
-                }
-                // Use checked color
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center) {
-                    Text( text = "Dimm checked items")
-                    Spacer( modifier = Modifier.width(5.dp))
-                    Switch(checked = useCheckedColor, onCheckedChange = { useCheckedColor = it })
-                }
-                // sortListsUp
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center) {
-                    Text( text = "sortListsUp")
-                    Spacer( modifier = Modifier.width(5.dp))
-                    Switch(checked = sortListsUp, onCheckedChange = { sortListsUp = it })
-                }
-                // sortCheckedDown
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center) {
-                    Text( text = "sortCheckedDown")
-                    Spacer( modifier = Modifier.width(5.dp))
-                    Switch(checked = sortCheckedDown, onCheckedChange = { sortCheckedDown = it })
-                }
+                SwitcherRow(text = "\"Create\" icon",           state = useAdd)
+                SwitcherRow(text = "\"Create\" floating button",state = useFab)
+                SwitcherRow(text = "Checked items dimming",     state = useCheckedColor)
+                SwitcherRow(text = "Lists on the top",          state = sortListsUp)
+                SwitcherRow(text = "Checked on the bottom",     state = sortCheckedDown)
 
                 // BUTTONS
                 Row(
@@ -140,10 +94,24 @@ fun SettingsScreen(
     }
 }
 
+@Composable
+private fun SwitcherRow(text:String, state:MutableState<Boolean>){
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text( text = text, Modifier.weight(1f))
+        Switch(checked = state.value, onCheckedChange = {state.value=it})
+    }
+
+}
+
 @Preview(showBackground = false)
 @Composable
 fun SettingsScreenPreview() {
     ListTheme(darkTheme = true) {
-        SettingsScreen(onHide={} )
+        SettingsScreen(settingsViewModel = SettingsViewModel(), onHide={} )
     }
 }
