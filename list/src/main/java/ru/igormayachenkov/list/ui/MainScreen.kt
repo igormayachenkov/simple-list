@@ -75,8 +75,8 @@ fun MainScreen(
                         settings = settings,
                         theItems = (itemsState as ItemsState.Success).items,
                         lazyListState = openList.lazyListState,
-                        onItemClick = viewModel::onListRowClick,
-                        onItemCheck = viewModel::checkItem
+                        onOpenItem  = viewModel::openItem,
+                        onCheckItem = viewModel::checkItem
                         // IMPORTANT: USE STATIC CALLBACKS
                         // onCheck = { viewModel.checkItem(item) } - CAUSES ALL LIST REDRAWING
                     )

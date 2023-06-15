@@ -20,8 +20,8 @@ fun ListView(
     settings:Settings,
     theItems:List<DataItem>,
     lazyListState : LazyListState,
-    onItemClick:(DataItem)->Unit,
-    onItemCheck:(DataItem)->Unit
+    onOpenItem:(DataItem)->Unit,
+    onCheckItem:(DataItem)->Unit
 ){
 
     Log.d(TAG,"=> ") // DO NOT print lazyListState here! it causes rerendering
@@ -38,8 +38,8 @@ fun ListView(
             Box(Modifier.animateItemPlacement()) {
                 ItemView(
                     item = item,
-                    onClick = onItemClick,
-                    onCheck = onItemCheck,
+                    onOpenItem = onOpenItem,
+                    onCheckItem = onCheckItem,
                     settings = settings
                     // IMPORTANT: USE STATIC CALLBACKS
                     // onCheck = { viewModel.checkItem(item) } - CAUSES ALL LIST REDRAWING

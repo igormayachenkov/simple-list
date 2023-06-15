@@ -54,8 +54,8 @@ class ListViewModel(
 
     //----------------------------------------------------------------------------------------------
     // EVENTS
-    fun onListRowClick(item: DataItem){
-        Log.d(TAG, "onListRowClick #${item.id}")
+    fun openItem(item: DataItem){
+        Log.d(TAG, "openItem #${item.id}")
         if(item.type.hasChildren){
             // List
             listRepository.goForward(item)

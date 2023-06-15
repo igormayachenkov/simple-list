@@ -1,7 +1,9 @@
 package ru.igormayachenkov.list.ui
 
 import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 
@@ -22,85 +24,166 @@ private const val TAG = "myapp.ItemView"
 @Composable
 fun ItemView(
     item:DataItem,
-    onClick:(DataItem)->Unit,
-    onCheck:(DataItem)->Unit,
+    onOpenItem :(DataItem)->Unit,
+    onCheckItem:(DataItem)->Unit,
     settings: Settings
 ){
     Log.d(TAG,"=> #${item.id} ${item.name}")
-    val color:Color =
-        if(item.type.isCheckable && item.state.isChecked && settings.useCheckedColor)
-            MaterialTheme.colors.onPrimary.copy(alpha = 0.5f)
-        else Color.Unspecified
+    if (item.type.hasChildren)
+        ListRow(item, onOpenItem, onCheckItem, settings)
+    else if (settings.useOldListUi)
+        ItemRowV1(item, onOpenItem, onCheckItem, settings)
+    else
+        ItemRow(item, onOpenItem, onCheckItem, settings)
+}
+
+@Composable
+fun Name(text:String, color:Color = Color.Unspecified){
+    Text(
+        text = text,
+        color = color,
+        style = MaterialTheme.typography.body1,
+    )
+}
+@Composable
+fun Descr(text:String, color:Color){
+    Text(
+        text = text,
+        color = color,
+        style = MaterialTheme.typography.body2,
+    )
+}
+
+@Composable
+fun getCheckedColor() = MaterialTheme.colors.onPrimary.copy(alpha = 0.5f)
+
+@Composable
+fun ListRow(
+    item:DataItem,
+    onOpenItem :(DataItem)->Unit,
+    onCheckItem:(DataItem)->Unit,
+    settings: Settings
+){
     Card(
         modifier = Modifier
+            .clickable(onClick = {onOpenItem(item)})
         //    .background(color = MaterialTheme.colors.surface)
-            .clickable(onClick = {onClick(item)})
     ) {
-        if (item.type.hasChildren)
-            ListRow(item = item)
-        else
-            ItemRow(item = item, onCheck = {onCheck(item)}, color=color)
-    }
-}
-
-@Composable
-fun ListRow(item:DataItem){
-    Row(
-        Modifier
-            .fillMaxWidth().padding(vertical = 8.dp, horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        // Icon
-        Icon(painter = painterResource(id = R.drawable.outline_featured_play_list_24),
-            contentDescription = "list icon",
-            tint = MaterialTheme.colors.onSurface)
-        Spacer(modifier = Modifier.width(8.dp))
-        // Name
-        Text(text = item.name, style = MaterialTheme.typography.body1)
-    }
-}
-
-@Composable
-fun ItemRow(item:DataItem, color:Color, onCheck:()->Unit){
-    Row(
-        Modifier
-            .fillMaxWidth().padding(start = 5.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(
-            Modifier.fillMaxWidth().weight(1f).padding(vertical = 8.dp)
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp, horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Name
-            Text(
-                text = item.name,
-                color = color,
-                style = MaterialTheme.typography.body1,
+            // Icon
+            Icon(
+                painter = painterResource(id = R.drawable.outline_featured_play_list_24),
+                contentDescription = "list icon",
+                tint = MaterialTheme.colors.onSurface
             )
-
-            // Description
-            item.description?.let {
-                Text(
-                    text = it,
-                    color = color,
-                    style = MaterialTheme.typography.body2
-                )
-            }
+            Spacer(modifier = Modifier.width(8.dp))
+            // Name
+            Name(text = item.name)
         }
+    }
+}
 
-        // Checkbox
-        if (item.type.isCheckable) {
-            IconButton(onClick = onCheck) {
-                Icon(
-                    painter = painterResource(id =
-                    if (item.state.isChecked) R.drawable.baseline_check_box_24
-                    else R.drawable.baseline_check_box_outline_blank_24
-                    ),
-                    contentDescription = "",
-                    tint = MaterialTheme.colors.onSurface)
+@Composable
+fun ItemRow(
+    item:DataItem,
+    onOpenItem :(DataItem)->Unit,
+    onCheckItem:(DataItem)->Unit,
+    settings: Settings
+){
+    val color:Color =
+        if(item.type.isCheckable && item.state.isChecked && settings.useCheckedColor)
+            getCheckedColor()
+        else Color.Unspecified
+
+    Card(
+        modifier = Modifier
+            .clickable(onClick = {onOpenItem(item)})
+    ) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(start = 5.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(vertical = 8.dp)
+            ) {
+                // Name
+                Name(text = item.name, color = color)
+                // Description
+                item.description?.let {
+                    Descr(text = it, color = color)
+                }
+            }
+
+            // Checkbox
+            if (item.type.isCheckable) {
+                IconButton(onClick = { onCheckItem(item) }) {
+                    Icon(
+                        painter = painterResource(
+                            id =
+                            if (item.state.isChecked) R.drawable.baseline_check_box_24
+                            else R.drawable.baseline_check_box_outline_blank_24
+                        ),
+                        contentDescription = "",
+                        tint = MaterialTheme.colors.onSurface
+                    )
+                }
             }
         }
     }
 }
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ItemRowV1(
+    item:DataItem,
+    onOpenItem :(DataItem)->Unit,
+    onCheckItem:(DataItem)->Unit,
+    settings: Settings
+){
+    val color:Color =
+        if(item.state.isChecked) getCheckedColor()
+        else Color.Unspecified
+
+    Card(
+        modifier = Modifier
+            .combinedClickable (
+                onClick     = {onCheckItem(item)},
+                onLongClick = {onOpenItem(item)}
+            )
+    ) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(start = 5.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(vertical = 8.dp)
+            ) {
+                // Name
+                Name(text = item.name, color = color)
+                // Description
+                item.description?.let {
+                    Descr(text = it, color = color)
+                }
+            }
+        }
+    }
+}
+
 //--------------------------------------------------------------------------------------------
 // PREVIEW
 fun fakeList():DataItem=DataItem(
@@ -124,7 +207,7 @@ fun fakeItem():DataItem=DataItem(
 @Composable
 fun ListRowPreview(){
     Surface {
-        ItemView(item = fakeList(), onClick = {}, onCheck = {}, settings = Settings())
+        ItemView(item = fakeList(), onOpenItem = {}, onCheckItem = {}, settings = Settings())
     }
 }
 @Preview(name = "ListRow Dark")
@@ -132,7 +215,7 @@ fun ListRowPreview(){
 fun ListRowDarkPreview(){
     ListTheme(darkTheme = true) {
         Surface {
-            ItemView(item = fakeList(), onClick = {}, onCheck = {}, settings = Settings())
+            ItemView(item = fakeList(), onOpenItem = {}, onCheckItem = {}, settings = Settings())
         }
     }
 }
@@ -140,8 +223,10 @@ fun ListRowDarkPreview(){
 @Preview(name = "ItemRow")
 @Composable
 fun ItemRowPreview(){
-    Surface {
-        ItemView(item = fakeItem(), onClick = {}, onCheck = {}, settings = Settings())
+    ListTheme(darkTheme = true) {
+        Surface {
+            ItemView(item = fakeItem(), onOpenItem = {}, onCheckItem = {}, settings = Settings())
+        }
     }
 }
 @Preview(name = "ItemRow Dark")
@@ -149,7 +234,7 @@ fun ItemRowPreview(){
 fun ItemRowDarkPreview(){
     ListTheme(darkTheme = true) {
         Surface {
-            ItemView(item = fakeItem().copy(description = null), onClick = {}, onCheck = {}, settings = Settings())
+            ItemView(item = fakeItem().copy(description = null), onOpenItem = {}, onCheckItem = {}, settings = Settings())
         }
     }
 }
