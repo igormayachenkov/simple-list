@@ -15,7 +15,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.igormayachenkov.list.data.Settings
 import ru.igormayachenkov.list.ui.theme.ListTheme
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 
 
@@ -32,6 +34,8 @@ fun SettingsScreen(
     val useOldListUi    = rememberSaveable{ mutableStateOf<Boolean>(settings.useOldListUi) }
     val sortListsUp     = rememberSaveable{ mutableStateOf<Boolean>(settings.sortListsUp) }
     val sortCheckedDown = rememberSaveable{ mutableStateOf<Boolean>(settings.sortCheckedDown) }
+    val help            = rememberSaveable{ mutableStateOf<String?>(null) }
+
 
     val newSettings = settings.copy(
         useFab=useFab.value,
@@ -65,15 +69,21 @@ fun SettingsScreen(
                     textAlign = TextAlign.Center
                 )
                 SectionTitle(text = "\"Add New\" button")
-                SwitcherRow(text = "as a top bar icon",         state = useAdd)
-                SwitcherRow(text = "as a floating button",      state = useFab)
+                SwitcherRow(text = "as a top bar icon",         state = useAdd, help=help,
+                    helpText="show \"add new\" icon on the top bar")
+                SwitcherRow(text = "as a floating button",      state = useFab, help=help,
+                    helpText="show \"add new\" floating button in the bottom right screen corner")
                 SectionTitle(text = "Sorting")
-                SwitcherRow(text = "Lists on the top",          state = sortListsUp)
-                SwitcherRow(text = "Checked on the bottom",     state = sortCheckedDown)
+                SwitcherRow(text = "lists on the top",          state = sortListsUp, help=help,
+                    helpText="group lists together and keep them on the top of the sorted list")
+                SwitcherRow(text = "checked on the bottom",     state = sortCheckedDown, help=help,
+                    helpText="group checked items together and keep them on the bottom of the sorted list")
                 SectionTitle(text = "List UI")
-                SwitcherRow(text = "Use old (version 1) UI",    state = useOldListUi)
+                SwitcherRow(text = "use old (version 1) UI",    state = useOldListUi, help=help,
+                    helpText="click: check/uncheck the item\nlong click: open the item")
                 if(!useOldListUi.value)
-                    SwitcherRow(text = "Checked items dimming",     state = useCheckedColor)
+                    SwitcherRow(text = "checked items dimming",     state = useCheckedColor, help=help,
+                        helpText="paint the checked elements by gray color")
 
                 // BUTTONS
                 Row(
@@ -96,6 +106,21 @@ fun SettingsScreen(
                         Text(text = "Save")
                     }
                 }
+                // Help text
+                Text(text = "Click the texts to get help",
+                    fontStyle = FontStyle.Italic,
+                    fontWeight = FontWeight.Light,
+                    color = MaterialTheme.colors.onPrimary.copy(alpha = 0.5f)
+                )
+
+                // HELP POPUP
+                help.value?.let { helpText->
+                    AlertDialog(
+                        text = { Text(text = helpText)},
+                        onDismissRequest = { help.value=null },
+                        buttons = { }
+                    )
+                }
             }
         }
     }
@@ -112,14 +137,17 @@ private fun SectionTitle(text:String){
 }
 
 @Composable
-private fun SwitcherRow(text:String, state:MutableState<Boolean>, enabled:Boolean=true){
+private fun SwitcherRow(text:String, helpText:String, state:MutableState<Boolean>, help:MutableState<String?>, enabled:Boolean=true){
     Row(
         Modifier
             .fillMaxWidth()
             .padding(bottom = 0.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text( text = text, Modifier.weight(1f))
+        Text( text = text, Modifier
+            .weight(1f)
+            .clickable { help.value = helpText }
+        )
         Switch(checked = state.value, onCheckedChange = {state.value=it}, enabled = enabled)
     }
 
