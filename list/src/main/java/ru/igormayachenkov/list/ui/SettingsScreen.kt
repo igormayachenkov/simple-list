@@ -15,6 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.igormayachenkov.list.data.Settings
 import ru.igormayachenkov.list.ui.theme.ListTheme
 import androidx.activity.compose.BackHandler
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 
 
@@ -28,6 +29,7 @@ fun SettingsScreen(
     val useFab          = rememberSaveable{ mutableStateOf<Boolean>(settings.useFab) }
     val useAdd          = rememberSaveable{ mutableStateOf<Boolean>(settings.useAdd) }
     val useCheckedColor = rememberSaveable{ mutableStateOf<Boolean>(settings.useCheckedColor) }
+    val useOldListUi    = rememberSaveable{ mutableStateOf<Boolean>(settings.useOldListUi) }
     val sortListsUp     = rememberSaveable{ mutableStateOf<Boolean>(settings.sortListsUp) }
     val sortCheckedDown = rememberSaveable{ mutableStateOf<Boolean>(settings.sortCheckedDown) }
 
@@ -35,6 +37,7 @@ fun SettingsScreen(
         useFab=useFab.value,
         useAdd=useAdd.value,
         useCheckedColor=useCheckedColor.value,
+        useOldListUi=useOldListUi.value,
         sortListsUp = sortListsUp.value,
         sortCheckedDown = sortCheckedDown.value
     )
@@ -61,12 +64,16 @@ fun SettingsScreen(
                     Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
-
-                SwitcherRow(text = "\"Create\" icon",           state = useAdd)
-                SwitcherRow(text = "\"Create\" floating button",state = useFab)
-                SwitcherRow(text = "Checked items dimming",     state = useCheckedColor)
+                SectionTitle(text = "\"Add New\" button")
+                SwitcherRow(text = "as a top bar icon",         state = useAdd)
+                SwitcherRow(text = "as a floating button",      state = useFab)
+                SectionTitle(text = "Sorting")
                 SwitcherRow(text = "Lists on the top",          state = sortListsUp)
                 SwitcherRow(text = "Checked on the bottom",     state = sortCheckedDown)
+                SectionTitle(text = "List UI")
+                SwitcherRow(text = "Use old (version 1) UI",    state = useOldListUi)
+                if(!useOldListUi.value)
+                    SwitcherRow(text = "Checked items dimming",     state = useCheckedColor)
 
                 // BUTTONS
                 Row(
@@ -95,15 +102,25 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SwitcherRow(text:String, state:MutableState<Boolean>){
+private fun SectionTitle(text:String){
+    Text(
+        text = text,
+        fontStyle = FontStyle.Italic,
+        color = MaterialTheme.colors.onPrimary.copy(alpha = 0.6f),
+        modifier = Modifier.padding(top = 16.dp)
+    )
+}
+
+@Composable
+private fun SwitcherRow(text:String, state:MutableState<Boolean>, enabled:Boolean=true){
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp),
+            .padding(bottom = 0.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text( text = text, Modifier.weight(1f))
-        Switch(checked = state.value, onCheckedChange = {state.value=it})
+        Switch(checked = state.value, onCheckedChange = {state.value=it}, enabled = enabled)
     }
 
 }
