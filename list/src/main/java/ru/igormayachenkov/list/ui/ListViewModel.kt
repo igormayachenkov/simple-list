@@ -11,9 +11,7 @@ import ru.igormayachenkov.list.App
 import ru.igormayachenkov.list.ItemsRepository
 import ru.igormayachenkov.list.ListRepository
 import ru.igormayachenkov.list.SettingsRepository
-import ru.igormayachenkov.list.data.DataItem
-import ru.igormayachenkov.list.data.EditorData
-import ru.igormayachenkov.list.data.OpenList
+import ru.igormayachenkov.list.data.*
 
 private const val TAG = "myapp.ListViewModel"
 
@@ -21,7 +19,7 @@ class ListViewModel(
     private val settingsRepository: SettingsRepository,
     private val listRepository: ListRepository,
     private val itemsRepository: ItemsRepository
-) : ViewModel() {
+) : ViewModel(){
     val settings = settingsRepository.settings
 
     // LOADED PAGE
@@ -103,7 +101,7 @@ class ListViewModel(
     var editorData: EditorData? by mutableStateOf(null)
         private set
 
-    fun editListHeader(){
+    fun editOpenList(){
         editorData = EditorData(false, openList.value.list)
     }
     fun createItem(){
@@ -201,5 +199,4 @@ class ListViewModel(
             }
         }
     }
-
 }

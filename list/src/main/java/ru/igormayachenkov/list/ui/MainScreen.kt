@@ -35,17 +35,25 @@ fun MainScreen(
     )
 
     Scaffold(
-        topBar = { AppBar(
-            isRoot              = viewModel.isRoot,
-            title               = openList.list.name,
-            showInfoScreen      = app.infoRepository::calculate ,
-            showSettingsScreen  = mainViewModel::showSettings,
-            onBack              = viewModel::onBackButtonClick,
-            onEdit              = viewModel::editListHeader,
-            onCreate            = viewModel::createItem,
-            setSortOrder        = app.settingsRepository::setSortOrder,
-            settings            = settings
-        )},
+        topBar = {
+            AppBar(
+                isRoot              = viewModel.isRoot,
+                title               = openList.list.name,
+                onBack              = viewModel::onBackButtonClick,
+                onEdit              = viewModel::editOpenList,
+                onCreate            = viewModel::createItem,
+                settings            = settings,
+            ) {
+                Menu(
+                    isRoot              = viewModel.isRoot,
+                    settings            = settings,
+                    showInfoScreen      = app.infoRepository::calculate ,
+                    showSettingsScreen  = mainViewModel::showSettings,
+                    editOpenList        = viewModel::editOpenList,
+                    setSortOrder        = app.settingsRepository::setSortOrder,
+                )
+            }
+        },
         floatingActionButton = {
             if(settings.useFab){
                 IconButton(
