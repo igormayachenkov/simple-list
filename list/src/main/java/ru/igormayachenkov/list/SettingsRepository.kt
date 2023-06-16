@@ -43,4 +43,16 @@ class SettingsRepository(
         Log.d(TAG, "setSortOrder $sortOrder")
         setSettings(_settings.value.copy(sortOrder = sortOrder))
     }
+    fun toggleSortListsUp(){
+        Log.d(TAG, "toggleSortListsUp")
+        _settings.value.let {
+            setSettings(it.copy(sortListsUp = !it.sortListsUp))
+        }
+    }
+    fun toggleSortCheckedDown(){
+        Log.d(TAG, "toggleSortCheckedDown")
+        _settings.value.let {
+            setSettings(it.copy(sortCheckedDown = !it.sortCheckedDown))
+        }
+    }
 }

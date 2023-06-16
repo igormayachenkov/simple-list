@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import ru.igormayachenkov.list.app
 import ru.igormayachenkov.list.data.Settings
 import ru.igormayachenkov.list.data.SortOrder
 
@@ -54,6 +55,28 @@ fun Menu(
                 //Icon(Icons.Default.Check,"")
                 //Spacer(modifier = Modifier.width(8.dp))
                 Text("Sort by name Z-A")
+            }
+            // Keep Lists on the Top
+            DropdownMenuItem(
+                onClick = {  hideMenu(); app.settingsRepository.toggleSortListsUp() },
+                enabled = settings.sortOrder != SortOrder.NameDesc
+            ) {
+                Text("Lists above")
+                if(settings.sortListsUp) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(Icons.Default.Check, "")
+                }
+            }
+            // Keep Checked on the bottom
+            DropdownMenuItem(
+                onClick = { hideMenu(); app.settingsRepository.toggleSortCheckedDown() },
+                enabled = settings.sortOrder != SortOrder.NameDesc
+            ) {
+                Text("Checked below")
+                if(settings.sortCheckedDown) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(Icons.Default.Check, "")
+                }
             }
 
             // OPEN LIST ACTIONS

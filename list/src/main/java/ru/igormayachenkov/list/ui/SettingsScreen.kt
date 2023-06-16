@@ -34,8 +34,8 @@ fun SettingsScreen(
     val useAdd          = rememberSaveable{ mutableStateOf<Boolean>(settings.useAdd) }
     val useCheckedColor = rememberSaveable{ mutableStateOf<Boolean>(settings.useCheckedColor) }
     val useOldListUi    = rememberSaveable{ mutableStateOf<Boolean>(settings.useOldListUi) }
-    val sortListsUp     = rememberSaveable{ mutableStateOf<Boolean>(settings.sortListsUp) }
-    val sortCheckedDown = rememberSaveable{ mutableStateOf<Boolean>(settings.sortCheckedDown) }
+//    val sortListsUp     = rememberSaveable{ mutableStateOf<Boolean>(settings.sortListsUp) }
+//    val sortCheckedDown = rememberSaveable{ mutableStateOf<Boolean>(settings.sortCheckedDown) }
     val help            = rememberSaveable{ mutableStateOf<String?>(null) }
 
 
@@ -44,8 +44,8 @@ fun SettingsScreen(
         useAdd=useAdd.value,
         useCheckedColor=useCheckedColor.value,
         useOldListUi=useOldListUi.value,
-        sortListsUp = sortListsUp.value,
-        sortCheckedDown = sortCheckedDown.value
+        //sortListsUp = sortListsUp.value,
+        //sortCheckedDown = sortCheckedDown.value
     )
 
     BackHandler(enabled = true, onBack = onHide)
@@ -79,11 +79,11 @@ fun SettingsScreen(
                     helpText="show \"add new\" icon on the top bar")
                 SwitcherRow(text = "as a floating button",      state = useFab, help=help,
                     helpText="show \"add new\" floating button in the bottom right screen corner")
-                SectionTitle(text = "Sorting")
-                SwitcherRow(text = "lists on the top",          state = sortListsUp, help=help,
-                    helpText="group lists together and keep them on the top of the sorted list")
-                SwitcherRow(text = "checked on the bottom",     state = sortCheckedDown, help=help,
-                    helpText="group checked items together and keep them on the bottom of the sorted list")
+//                SectionTitle(text = "Sorting")
+//                SwitcherRow(text = "lists on the top",          state = sortListsUp, help=help,
+//                    helpText="group lists together and keep them on the top of the sorted list")
+//                SwitcherRow(text = "checked on the bottom",     state = sortCheckedDown, help=help,
+//                    helpText="group checked items together and keep them on the bottom of the sorted list")
                 SectionTitle(text = "List UI")
                 SwitcherRow(text = "use old (version 1) UI",    state = useOldListUi, help=help,
                     helpText="click: check/uncheck the item\nlong click: open the item")
