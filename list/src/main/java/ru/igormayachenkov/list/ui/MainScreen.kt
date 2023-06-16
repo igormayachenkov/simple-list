@@ -97,6 +97,7 @@ fun MainScreen(
     editingData?.let {
         Editor(
             initialData = it,
+            settings = settings,
             onClose = viewModel::onEditorCancel,
             onSave = viewModel::onEditorSave
         )

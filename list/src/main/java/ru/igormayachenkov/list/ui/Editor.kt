@@ -15,11 +15,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.igormayachenkov.list.data.DataItem
 import ru.igormayachenkov.list.data.EditorData
+import ru.igormayachenkov.list.data.Settings
 import ru.igormayachenkov.list.ui.theme.ListTheme
 
 @Composable
 fun Editor(
     initialData:EditorData,
+    settings: Settings,
     onClose:()->Unit,
     onSave:(DataItem?)->String?
 ){
@@ -41,7 +43,7 @@ fun Editor(
         )
     )
 
-    fun handleDelete(){
+    fun onDelete(){
         onSave(null)?.let { error = it }
     }
 
@@ -108,7 +110,10 @@ fun Editor(
                         textStyle = MaterialTheme.typography.body2
                     )
                     // Is Checkable
-                    Row(Modifier.fillMaxWidth().padding(top = 10.dp),
+                    if(!settings.useOldListUi) Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center) {
                         Text( text = "Is checkable")
@@ -135,10 +140,13 @@ fun Editor(
                     Button(
                         enabled = !isNew,
                         onClick = {
-                            confirm = if(hasChildren)
-                                "Delete the list and all it's items?"
-                            else
-                                "Delete the item?"
+                            if(hasChildren) {
+                                confirm = "Delete the list and all it's items?"
+                            }else if(settings.confirmDelete){
+                                confirm = "Delete the item?"
+                            }else{
+                                onDelete()
+                            }
                         }
                     ) {
                         Text(text = "Delete")
@@ -181,13 +189,14 @@ fun Editor(
     confirm?.let{
         AlertDialog(
             onDismissRequest = {error=null},
-            title = { Text(text = "Confirmation") },
-            text = { Text(it) },
-            buttons = { Row {
+            //title = { Text(text = "Confirmation") },
+            title = { Text(it) },
+            buttons = { Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
                 Button(onClick = { confirm = null }) {
-                    Text("Cancel", fontSize = 22.sp) }
-                Button(onClick = { confirm = null; handleDelete() }) {
-                    Text("OK", fontSize = 22.sp) }
+                    Text("Cancel") }
+                Spacer(modifier = Modifier.weight(1f))
+                Button(onClick = { confirm = null; onDelete() }) {
+                    Text("OK") }
             }}
         )
     }
@@ -199,10 +208,11 @@ fun EditorPreview() {
     ListTheme(darkTheme = true) {
         Editor(EditorData(
             true,
-            DataItem(13, 0, DataItem.Type(false, true), DataItem.State(true), "name", "descr")
-        ),
-            {},
-            { null }
+                DataItem(13, 0, DataItem.Type(false, true), DataItem.State(true), "name", "descr")
+            ),
+            settings = Settings(),
+            onClose = {},
+            onSave = { null }
         )
     }
 }

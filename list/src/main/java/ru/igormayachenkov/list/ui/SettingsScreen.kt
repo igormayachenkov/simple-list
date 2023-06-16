@@ -34,6 +34,7 @@ fun SettingsScreen(
     val useAdd          = rememberSaveable{ mutableStateOf<Boolean>(settings.useAdd) }
     val useCheckedColor = rememberSaveable{ mutableStateOf<Boolean>(settings.useCheckedColor) }
     val useOldListUi    = rememberSaveable{ mutableStateOf<Boolean>(settings.useOldListUi) }
+    val confirmDelete   = rememberSaveable{ mutableStateOf<Boolean>(settings.confirmDelete) }
 //    val sortListsUp     = rememberSaveable{ mutableStateOf<Boolean>(settings.sortListsUp) }
 //    val sortCheckedDown = rememberSaveable{ mutableStateOf<Boolean>(settings.sortCheckedDown) }
     val help            = rememberSaveable{ mutableStateOf<String?>(null) }
@@ -44,6 +45,7 @@ fun SettingsScreen(
         useAdd=useAdd.value,
         useCheckedColor=useCheckedColor.value,
         useOldListUi=useOldListUi.value,
+        confirmDelete=confirmDelete.value
         //sortListsUp = sortListsUp.value,
         //sortCheckedDown = sortCheckedDown.value
     )
@@ -85,6 +87,8 @@ fun SettingsScreen(
 //                SwitcherRow(text = "checked on the bottom",     state = sortCheckedDown, help=help,
 //                    helpText="group checked items together and keep them on the bottom of the sorted list")
                 SectionTitle(text = "List UI")
+                SwitcherRow(text = "confirm delete item",    state = confirmDelete, help=help,
+                    helpText="show confirmation dialog on delete item click")
                 SwitcherRow(text = "use old (version 1) UI",    state = useOldListUi, help=help,
                     helpText="click: check/uncheck the item\nlong click: open the item")
                 if(!useOldListUi.value)
