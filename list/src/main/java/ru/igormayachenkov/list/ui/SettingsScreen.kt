@@ -76,25 +76,23 @@ fun SettingsScreen(
                     Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.subtitle2
                 )
-                SectionTitle(text = "\"Add New\" button")
-                SwitcherRow(text = "as a top bar icon",         state = useAdd, help=help,
+                SwitcherRow(text = "\"new\" icon",         state = useAdd, help=help,
                     helpText="show \"add new\" icon on the top bar")
-                SwitcherRow(text = "as a floating button",      state = useFab, help=help,
+                SwitcherRow(text = "\"new\" floating button",      state = useFab, help=help,
                     helpText="show \"add new\" floating button in the bottom right screen corner")
 //                SectionTitle(text = "Sorting")
 //                SwitcherRow(text = "lists on the top",          state = sortListsUp, help=help,
 //                    helpText="group lists together and keep them on the top of the sorted list")
 //                SwitcherRow(text = "checked on the bottom",     state = sortCheckedDown, help=help,
 //                    helpText="group checked items together and keep them on the bottom of the sorted list")
-                SectionTitle(text = "List UI")
                 SwitcherRow(text = "confirm delete item",    state = confirmDelete, help=help,
                     helpText="show confirmation dialog on delete item click")
+                SwitcherRow(text = "checked items dimming", enabled=!useOldListUi.value, state = useCheckedColor, help=help,
+                    helpText="paint the checked elements by gray color")
                 SwitcherRow(text = "use old (version 1) UI",    state = useOldListUi, help=help,
                     helpText="click: check/uncheck the item\nlong click: open the item")
-                if(!useOldListUi.value)
-                    SwitcherRow(text = "checked items dimming",     state = useCheckedColor, help=help,
-                        helpText="paint the checked elements by gray color")
 
+                //----------------------------------------------------------------------------------
                 // BUTTONS
                 Row(
                     Modifier
@@ -116,6 +114,7 @@ fun SettingsScreen(
                         Text(text = "Save")
                     }
                 }
+
                 // Help text
                 Text(text = "Click the texts to get help",
                     Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
