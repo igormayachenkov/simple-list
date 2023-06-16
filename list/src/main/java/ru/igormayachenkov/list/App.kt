@@ -36,28 +36,27 @@ class App : Application() {
     }
     
     // PACKAGE INFO
-    val packageInfo: PackageInfo?
-        get() {
-            try {
-                return packageManager?.getPackageInfoCompat(packageName)
-            } catch (e: PackageManager.NameNotFoundException) {
-                e.printStackTrace()
-            }
-            return null
+    private fun getPackageInfo():PackageInfo? {
+        try {
+            return packageManager?.getPackageInfoCompat(packageName)
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
         }
+        return null
+    }
     // Version
     data class Version(val code:Long, val name:String)
-    val version:Version?
-        get() {
-            packageInfo?.let{
-                return Version(
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) it.longVersionCode
-                    else it.versionCode.toLong(),
-                    it.versionName
-                )
-            }
-            return null
+    val version by lazy { getAppVersion() }
+    private fun getAppVersion():Version?{
+        getPackageInfo()?.let{
+            return Version(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) it.longVersionCode
+                else it.versionCode.toLong(),
+                it.versionName
+            )
         }
+        return null
+    }
 }
 
 fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int = 0): PackageInfo =

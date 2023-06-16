@@ -16,9 +16,11 @@ import ru.igormayachenkov.list.data.Settings
 import ru.igormayachenkov.list.ui.theme.ListTheme
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import ru.igormayachenkov.list.app
 
 
 @Composable
@@ -55,18 +57,22 @@ fun SettingsScreen(
     ){
         Card(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(vertical = 8.dp, horizontal = 16.dp)
                 .wrapContentHeight(align = Alignment.Top),
         ){
             Column(
                 Modifier
                     .padding(all = 16.dp)
                     .fillMaxWidth()
-                //.padding(all = 16.dp)
+                    .verticalScroll(rememberScrollState()),
             ) {
                 Text(text = "Settings",
-                    Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
+                    Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.h6
+                )
+                Text(text = "app version: ${app.version?.name}",
+                    Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.subtitle2
                 )
                 SectionTitle(text = "\"Add New\" button")
                 SwitcherRow(text = "as a top bar icon",         state = useAdd, help=help,
@@ -108,9 +114,11 @@ fun SettingsScreen(
                 }
                 // Help text
                 Text(text = "Click the texts to get help",
+                    Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
                     fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Light,
-                    color = MaterialTheme.colors.onPrimary.copy(alpha = 0.5f)
+                    color = MaterialTheme.colors.onPrimary.copy(alpha = 0.5f),
+                    style = MaterialTheme.typography.subtitle2
+
                 )
 
                 // HELP POPUP
