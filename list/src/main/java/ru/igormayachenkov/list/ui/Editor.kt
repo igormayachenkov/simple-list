@@ -32,6 +32,15 @@ fun Editor(
     var error       by rememberSaveable { mutableStateOf<String?>(null) }
     var confirm     by rememberSaveable { mutableStateOf<String?>(null) }
 
+    val newItem = initialItem.copy(
+        name = name.trim(),
+        description = descr.trim().ifBlank { null },
+        type = initialItem.type.copy(
+            hasChildren = hasChildren,
+            isCheckable = isCheckable
+        )
+    )
+
     fun handleDelete(){
         onSave(null)?.let { error = it }
     }
@@ -139,18 +148,10 @@ fun Editor(
                     Spacer(modifier = Modifier.weight(1F))
 
                     // Save
-                    Button(onClick = {
-                        onSave(
-                            initialItem.copy(
-                                name=name,
-                                description = descr.ifBlank { null },
-                                type = initialItem.type.copy(
-                                    hasChildren = hasChildren,
-                                    isCheckable = isCheckable
-                                )
-                            )
-                        )?.let { error=it }
-                    }) {
+                    Button(
+                        enabled = isNew || (initialItem!=newItem),
+                        onClick = { onSave(newItem)?.let { error=it } },
+                    ) {
                         Text(text = (if(isNew)"Insert" else "Save"))
                     }
                 }

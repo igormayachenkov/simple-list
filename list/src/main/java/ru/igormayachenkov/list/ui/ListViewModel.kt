@@ -134,6 +134,7 @@ class ListViewModel(
             val isNew   = initialData.isNew
             val oldItem = initialData.item
             try {
+                newItem?.name?.ifEmpty { throw Exception("Name can't be empty") }
                 if (isNew) {
                     if(newItem!=null) {
                         // INSERT
