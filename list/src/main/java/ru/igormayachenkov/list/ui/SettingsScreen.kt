@@ -72,7 +72,7 @@ fun SettingsScreen(
                     Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.h6
                 )
-                Text(text = "app version: ${app.version?.name}",
+                Text(text = "app version: ${app.version}",
                     Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.subtitle2
                 )

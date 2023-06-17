@@ -9,13 +9,14 @@ import org.json.JSONArray
 import org.json.JSONObject
 import ru.igormayachenkov.list.data.DataItem
 import ru.igormayachenkov.list.data.DataFile
+import ru.igormayachenkov.list.data.Version
 import java.io.BufferedReader
 import java.io.FileOutputStream
 import java.io.FileReader
 
 
 private const val TAG = "myapp.SaverRepository"
-private const val VERSION_2_0 = 20000
+private val VERSION_2_0 = Version(2,0,"0")
 
 // SAVE/LOAD DATA TO/FROM JSON FILE
 
@@ -67,10 +68,7 @@ class SaverRepository {
             try {
                 // Fill data
                 val json = JSONObject()
-                app.version?.let{
-                    json.put("versionCode", it.code)
-                    json.put("versionName", it.name)
-                }
+                json.put("version", app.version.toString())
                 val saveResult=SaveResult()
                 json.put("root", itemToJson(app.listRepository.fakeRootList, result = saveResult))
                 val text = json.toString()
@@ -104,11 +102,15 @@ class SaverRepository {
                 Log.d(TAG,"parsed to JSON")
 
                 // PROCESS JSON
-                val versionCode = json.getInt("versionCode")
-                val versionName = json.getString("versionName")
+                val version =
+                    if(json.has("version"))
+                        Version.fromString(json.getString("version"))
+                else if(json.has("versionName"))
+                        Version.fromString(json.getString("versionName"))
+                else throw Exception("version not found")
                 // Data depending on the version
                 val items = ArrayList<DataItem>()
-                if(versionCode < VERSION_2_0) {
+                if(version isBelow VERSION_2_0) {
                     // Version 1 format
                     val lists = json.getJSONArray("lists")
                     for(i in 0 until lists.length()){
@@ -123,9 +125,9 @@ class SaverRepository {
                 delay(1000)
 
                 // Confirm state
-                _state.emit(State.ConfirmLoad(DataFile(versionName, text.length, items)))
+                _state.emit(State.ConfirmLoad(DataFile(version.toString(), text.length, items)))
             } catch (e: Exception) {
-                _state.emit(State.Error(e.toString()))
+                _state.emit(State.Error(e.message.toString()))
             }
         }
     }

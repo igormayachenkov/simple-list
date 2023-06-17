@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import ru.igormayachenkov.list.data.Version
 
 private const val TAG = "myapp.App"
 
@@ -28,8 +29,8 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "onCreate")
         instance = this
+        Log.d(TAG, "onCreate version: $version")
 
         // Init
         Database.open(this)
@@ -44,18 +45,15 @@ class App : Application() {
         }
         return null
     }
-    // Version
-    data class Version(val code:Long, val name:String)
+
     val version by lazy { getAppVersion() }
-    private fun getAppVersion():Version?{
+    private fun getAppVersion(): Version{
         getPackageInfo()?.let{
-            return Version(
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) it.longVersionCode
-                else it.versionCode.toLong(),
-                it.versionName
-            )
+//            code = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) it.longVersionCode
+//            else it.versionCode.toLong(),
+            return Version.fromString(it.versionName)
         }
-        return null
+        return Version()
     }
 }
 
