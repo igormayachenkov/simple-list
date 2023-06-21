@@ -15,7 +15,7 @@ private val DarkColorPalette = darkColors(
     surface         = Color(0xFF333333),
     onPrimary       = Color.White,
     onSurface       = Color.White,
-
+    error           = Color.Yellow//(0xFFCF6679),
     )
 
 private val LightColorPalette = lightColors(
@@ -26,12 +26,14 @@ private val LightColorPalette = lightColors(
     surface         = Color.White,
     onPrimary       = Color.White,
     onSurface       = Color.Black,
+    error           = Color(0xFFB00020)
 
     /* Other default colors to override
     onSecondary = Color.Black,
     onBackground = Color.Black,
     */
 )
+
 
 @Composable
 fun ListTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {

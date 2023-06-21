@@ -17,6 +17,9 @@ object Database {
     private lateinit var db: SQLiteDatabase
     private lateinit var dbHelper: DBHelper
 
+    var versionUpgraded:Boolean = true
+        private set
+
     fun open(context:Context) {
         Log.d(TAG, "open")
         dbHelper = DBHelper(context,
@@ -47,7 +50,7 @@ object Database {
             cv.put(DESCRIPTION, description)
         }
         // Insert
-        val rowID = db.insert(TABLE_ITEMS, null, cv)
+        db.insert(TABLE_ITEMS, null, cv)
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -261,6 +264,7 @@ object Database {
 
         override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
             Log.d(TAG, "ON UPGRADE $oldVersion => $newVersion")
+            versionUpgraded = true
             if(oldVersion<=1){
                 // Legacy "type" field values
                 val typeItem = DataItem.Type(hasChildren = false, isCheckable = true).toInt()

@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.runBlocking
 import ru.igormayachenkov.list.App
+import ru.igormayachenkov.list.Database
 import ru.igormayachenkov.list.ResultAPI
 import ru.igormayachenkov.list.ui.theme.ListTheme
 
@@ -42,6 +43,10 @@ class MainActivity : ComponentActivity() {
 
                     // Saver screen
                     SaverScreen()
+
+                    // Version upgraded screen
+                    if(Database.versionUpgraded)
+                        VersionUpgraded()
             }
         }
     }
