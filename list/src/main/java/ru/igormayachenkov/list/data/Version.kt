@@ -9,7 +9,7 @@ private const val TAG = "myapp.App"
 data class Version(
     val major: Int = 0,
     val minor: Int = 0,
-    val patch: String = "unknown"
+    val patch: String = "0"
 ){
     companion object {
         fun fromString(string: String):Version{

@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.igormayachenkov.list.data.Settings
 import ru.igormayachenkov.list.ui.theme.ListTheme
 import androidx.activity.compose.BackHandler
@@ -25,10 +24,11 @@ import ru.igormayachenkov.list.app
 
 @Composable
 fun SettingsScreen(
-    settingsViewModel: SettingsViewModel = viewModel(),
-    onHide:()->Unit
+    viewModel: SettingsViewModel// = viewModel()
 ) {
-    val settings:Settings by settingsViewModel.settings.collectAsState()
+    if(!viewModel.isVisible) return
+
+    val settings:Settings by viewModel.settings.collectAsState()
 
     val useFab          = rememberSaveable{ mutableStateOf<Boolean>(settings.useFab) }
     val useAdd          = rememberSaveable{ mutableStateOf<Boolean>(settings.useAdd) }
@@ -50,11 +50,12 @@ fun SettingsScreen(
         //sortCheckedDown = sortCheckedDown.value
     )
 
-    BackHandler(enabled = true, onBack = onHide)
+    BackHandler(enabled = true, onBack = viewModel::hideSettings)
 
     Surface(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .clickable(onClick = viewModel::hideSettings),
         color = Color(0x80000040)
     ){
         Card(
@@ -101,14 +102,14 @@ fun SettingsScreen(
                 )
                 {
                     // Cancel
-                    Button(onClick = onHide) {
+                    Button(onClick = viewModel::hideSettings) {
                         Icon(Icons.Default.ArrowBack, "close")
                     }
                     // Spacer
                     Spacer(modifier = Modifier.weight(1F))
                     // Save
                     Button(
-                        onClick = { settingsViewModel.onSave(newSettings); onHide() },
+                        onClick = { viewModel.onSave(newSettings); viewModel.hideSettings() },
                         enabled = settings!=newSettings
                     ){
                         Text(text = "Save")
@@ -168,6 +169,6 @@ private fun SwitcherRow(text:String, helpText:String, state:MutableState<Boolean
 @Composable
 private fun SettingsScreenPreview() {
     ListTheme(darkTheme = true) {
-        SettingsScreen(settingsViewModel = SettingsViewModel(), onHide={} )
+        SettingsScreen(viewModel = SettingsViewModel())
     }
 }

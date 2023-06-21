@@ -25,14 +25,13 @@ class MainActivity : ComponentActivity() {
         resultAPI = ResultAPI(this)
         setContent {
             ListTheme {
-                    val mainViewModel: MainViewModel = viewModel()
+                    val settingsViewModel: SettingsViewModel = viewModel()
 
                     // Main screen
-                    MainScreen(mainViewModel=mainViewModel)
+                    MainScreen(settingsViewModel=settingsViewModel)
 
                     // Settings screen
-                    if(mainViewModel.isSettingsVisible)
-                        SettingsScreen(onHide = mainViewModel::hideSettings)
+                    SettingsScreen(settingsViewModel)
 
                     // Statistics screen
 //                    if(mainViewModel.isDataVisible)

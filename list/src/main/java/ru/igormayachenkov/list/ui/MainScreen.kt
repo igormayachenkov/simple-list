@@ -19,10 +19,10 @@ private const val TAG = "myapp.MainScreen"
 @Composable
 fun MainScreen(
     viewModel: ListViewModel = viewModel(factory = ListViewModel.Factory),
-    mainViewModel: MainViewModel
+    settingsViewModel: SettingsViewModel
 ) {
 
-    val settings   by viewModel.settings.collectAsState()
+    val settings   by settingsViewModel.settings.collectAsState()
     val openList   by viewModel.openList.collectAsState()
     val itemsState by viewModel.itemsState.collectAsState()
     val editingData = viewModel.editorData
@@ -48,7 +48,7 @@ fun MainScreen(
                     isRoot              = viewModel.isRoot,
                     settings            = settings,
                     showInfoScreen      = app.infoRepository::calculate ,
-                    showSettingsScreen  = mainViewModel::showSettings,
+                    showSettingsScreen  = settingsViewModel::showSettings,
                     editOpenList        = viewModel::editOpenList,
                     setSortOrder        = app.settingsRepository::setSortOrder,
                 )
