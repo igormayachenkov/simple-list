@@ -36,9 +36,10 @@ class InfoRepository {
         job = CoroutineScope(Dispatchers.IO).launch {
             Log.d(TAG, "calculate")
             _state.emit(State.Busy)
-            delay(500)
+            val timer = ActionTimer()
             try {
                 val info = Database.queryInfo()
+                timer.pauseIfNeed()
                 _state.emit(State.Success(info))
             } catch (e: Exception) {
                 _state.emit(State.Error(e.toString()))

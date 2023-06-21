@@ -43,11 +43,10 @@ class SaverRepository {
         Log.d(TAG,"deleteAll")
         CoroutineScope(Dispatchers.IO).launch {
             _state.emit(State.Busy("Erasing data..."))
+            val timer = ActionTimer()
             try {
                 Database.deleteALL()
-
-                delay(1000)
-
+                timer.pauseIfNeed(1000)
                 // Success state
                 _state.emit(State.Success("Data erased successfully."))
             } catch (e: Exception) {
@@ -65,6 +64,7 @@ class SaverRepository {
         Log.d(TAG,"saveAll $uri")
         CoroutineScope(Dispatchers.IO).launch {
             _state.emit(State.Busy("Saving data..."))
+            val timer = ActionTimer()
             try {
                 // Fill data
                 val json = JSONObject()
@@ -77,7 +77,7 @@ class SaverRepository {
                 // Write to the file
                 val nBytes = writeFile(uri, text)
 
-                delay(1000)
+                timer.pauseIfNeed(1000)
 
                 // Success state
                 _state.emit(State.Success("Data saved successfully.\n${saveResult.nItems} elements saved\n$nBytes bytes written"))
@@ -93,6 +93,7 @@ class SaverRepository {
         Log.d(TAG, "loadAll $uri")
         CoroutineScope(Dispatchers.IO).launch {
             _state.emit(State.Busy("Reading file data..."))
+            val timer = ActionTimer()
             try {
                 // Read file
                 val text = readFile(uri)
@@ -122,7 +123,7 @@ class SaverRepository {
                     jsonToItem(root, parentId = 0, result = items)
                 }
 
-                delay(1000)
+                timer.pauseIfNeed(1000)
 
                 // Confirm state
                 _state.emit(State.ConfirmLoad(DataFile(version.toString(), text.length, items)))
@@ -135,6 +136,7 @@ class SaverRepository {
         Log.d(TAG, "loadAllFinish")
         CoroutineScope(Dispatchers.IO).launch {
             _state.emit(State.Busy("Restoring data..."))
+            val timer = ActionTimer()
             try {
                 // Empty database
                 Database.deleteALL()
@@ -143,7 +145,7 @@ class SaverRepository {
                     Database.insertItem(item, log=false)
                 }
 
-                delay(1000)
+                timer.pauseIfNeed(1000)
                 // Success state
                 _state.emit(State.Success("Data restored successfully.\n${dataFile.items.size} elements added"))
             } catch (e: Exception) {

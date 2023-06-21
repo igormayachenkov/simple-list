@@ -1,23 +1,29 @@
 package ru.igormayachenkov.list
 
-import android.app.Activity
-import android.content.Context
-import android.view.View
-import android.view.inputmethod.InputMethodManager
+import kotlinx.coroutines.delay
 
-object Utils {
-    fun areEqual(a: String?, b: String?): Boolean {
-        if(a.isNullOrEmpty() and b.isNullOrEmpty()) return true
-        if (a != null && b != null)
-            return a.compareTo(b) == 0
-        if (a == null && b == null)
-            return true
-        return false
-    }
+class ActionTimer(){
+    private val start = System.currentTimeMillis()
 
-    fun areNotEqual(a: String?, b: String?): Boolean {
-        return !areEqual(a, b)
+    suspend fun pauseIfNeed(minTime:Long=800){
+        val spent = System.currentTimeMillis()-start
+        if(spent < minTime)
+            delay(minTime-spent)
     }
+}
+
+//    fun areEqual(a: String?, b: String?): Boolean {
+//        if(a.isNullOrEmpty() and b.isNullOrEmpty()) return true
+//        if (a != null && b != null)
+//            return a.compareTo(b) == 0
+//        if (a == null && b == null)
+//            return true
+//        return false
+//    }
+//
+//    fun areNotEqual(a: String?, b: String?): Boolean {
+//        return !areEqual(a, b)
+//    }
 
     //----------------------------------------------------------------------------------------------
     // KEYBOARD
@@ -40,4 +46,4 @@ object Utils {
 //            }
 //        }
 //    }
-}
+
