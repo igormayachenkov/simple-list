@@ -42,8 +42,10 @@ class App : Application() {
 
         Log.d(TAG, "onCreate version: $version  prevVersion: $prevVersion")
 
-        // Init
+        // Open database
         Database.open(this)
+        if(Database.isCreated)
+            fillMockData()
     }
 
     override fun onTerminate() { // will never call!
@@ -79,3 +81,4 @@ fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int = 0): Pa
     } else {
         @Suppress("DEPRECATION") getPackageInfo(packageName, flags)
     }
+

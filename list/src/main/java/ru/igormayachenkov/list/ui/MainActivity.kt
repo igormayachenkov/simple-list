@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
                     SaverScreen()
 
                     // Version upgraded screen
-                    if(Database.versionUpgraded)
+                    if(Database.isUpgraded)
                         VersionUpgraded()
             }
         }

@@ -17,11 +17,14 @@ object Database {
     private lateinit var db: SQLiteDatabase
     private lateinit var dbHelper: DBHelper
 
-    var versionUpgraded:Boolean = false
-        private set
+    // Open results
+    var isUpgraded:Boolean = false; private set
+    var isCreated :Boolean = false; private set
 
     fun open(context:Context) {
         Log.d(TAG, "open")
+        isUpgraded= false
+        isCreated = false
         dbHelper = DBHelper(context,
                 "maindatabase.db",  // name
                 2 // version
@@ -234,6 +237,7 @@ object Database {
     class DBHelper(context: Context?, name: String?, version: Int) : SQLiteOpenHelper(context, name, null, version) {
         override fun onCreate(db: SQLiteDatabase) {
             Log.d(TAG, "onCreate")
+            isCreated = true
             // Create table lists
 //            db.execSQL("CREATE TABLE " + TABLE_LISTS + " ("
 //                    + LIST_ID + " INTEGER PRIMARY KEY,"
@@ -264,7 +268,7 @@ object Database {
 
         override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
             Log.d(TAG, "ON UPGRADE $oldVersion => $newVersion")
-            versionUpgraded = true
+            isUpgraded = true
             if(oldVersion<=1){
                 // Legacy "type" field values
                 val typeItem = DataItem.Type(hasChildren = false, isCheckable = true).toInt()

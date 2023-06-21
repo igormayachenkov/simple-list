@@ -166,7 +166,7 @@ private fun SwitcherRow(text:String, helpText:String, state:MutableState<Boolean
 
 @Preview(showBackground = false)
 @Composable
-fun SettingsScreenPreview() {
+private fun SettingsScreenPreview() {
     ListTheme(darkTheme = true) {
         SettingsScreen(settingsViewModel = SettingsViewModel(), onHide={} )
     }
