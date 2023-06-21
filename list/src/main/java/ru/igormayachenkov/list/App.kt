@@ -45,6 +45,12 @@ class App : Application() {
         // Init
         Database.open(this)
     }
+
+    override fun onTerminate() { // will never call!
+        Log.d(TAG, "onTerminate")
+        Database.close()
+        super.onTerminate()
+    }
     
     // PACKAGE INFO
     private fun getPackageInfo():PackageInfo? {
