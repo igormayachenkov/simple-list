@@ -27,10 +27,20 @@ class App : Application() {
     val infoRepository      by lazy { InfoRepository() }
     val saverRepository     by lazy { SaverRepository() }
 
+    lateinit var version:Version
+        private set
+    var prevVersion:Version?=null
+        private set
+
     override fun onCreate() {
         super.onCreate()
         instance = this
-        Log.d(TAG, "onCreate version: $version")
+
+        // Read and remember Version info
+        version = getAppVersion()
+        prevVersion = prefs.readWriteVersion(version)
+
+        Log.d(TAG, "onCreate version: $version  prevVersion: $prevVersion")
 
         // Init
         Database.open(this)
@@ -46,7 +56,6 @@ class App : Application() {
         return null
     }
 
-    val version by lazy { getAppVersion() }
     private fun getAppVersion(): Version{
         getPackageInfo()?.let{
 //            code = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) it.longVersionCode
@@ -55,6 +64,7 @@ class App : Application() {
         }
         return Version()
     }
+
 }
 
 fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int = 0): PackageInfo =

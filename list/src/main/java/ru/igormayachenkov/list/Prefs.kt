@@ -11,15 +11,19 @@ import org.json.JSONArray
 import org.json.JSONObject
 import ru.igormayachenkov.list.data.SavedOpenList
 import ru.igormayachenkov.list.data.Settings
+import ru.igormayachenkov.list.data.Version
 
 private const val TAG = "myapp.Prefs"
 
 private val STACK       = stringPreferencesKey("stack")
 private val SETTINGS    = stringPreferencesKey("settings")
+private val VERSION     = stringPreferencesKey("version")
 
 class Prefs(
     private val prefsDataStore: DataStore<Preferences>
-) : StackDataSource, SettingsDataSource {
+) : StackDataSource,
+    SettingsDataSource
+{
 
     //----------------------------------------------------------------------------------------------
     // StackDataSource implementation: SAVE/RESTORE STACK
@@ -94,5 +98,32 @@ class Prefs(
             }
         }
         return Settings()
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Version
+    fun readWriteVersion(version: Version): Version? {
+        val prefs: Preferences = runBlocking {
+            prefsDataStore.data.first()
+        }
+        // READ previous version
+        var prevVersion:Version?=null
+        prefs[VERSION]?.let { string->
+            try {
+                prevVersion = Version.fromString(string)
+            } catch (ex: Exception) {
+                Log.e(TAG, "read version ERROR:$ex")
+            }
+        }
+        // WRITE new one
+        if(version != prevVersion) {
+            Log.d(TAG, "version upgraded $prevVersion -> $version")
+            runBlocking {
+                prefsDataStore.edit { prefs ->
+                    prefs[VERSION] = version.toString()
+                }
+            }
+        }
+        return prevVersion
     }
 }
