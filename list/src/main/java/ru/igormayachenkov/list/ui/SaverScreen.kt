@@ -7,6 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,7 +51,7 @@ private fun Frame(content: @Composable ColumnScope.() -> Unit){
 @Composable
 private fun Busy(message:String){
     Frame(){
-        Text(text = message)
+        Text(text = message, modifier = Modifier.padding(vertical = 70.dp))
     }
 }
 @Composable
@@ -69,7 +70,22 @@ private fun Error(message:String){
 @Composable
 private fun ConfirmLoad(dataFile: DataFile){
     Frame{
-        Text("File info:\nversion: ${dataFile.version}\nfile size: ${dataFile.nBytes}\nnumber of elements: ${dataFile.items.size}")
+        Text(text = "File info",
+            Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.h6
+        )
+        Row(Modifier.fillMaxWidth()) {
+            Text("app version:", Modifier.weight(1F), fontStyle = FontStyle.Italic )
+            Text(dataFile.version)
+        }
+        Row(Modifier.fillMaxWidth()) {
+            Text("file size, bytes:", Modifier.weight(1F), fontStyle = FontStyle.Italic )
+            Text("${dataFile.nBytes}")
+        }
+        Row(Modifier.fillMaxWidth()) {
+            Text("number of elements:", Modifier.weight(1F), fontStyle = FontStyle.Italic )
+            Text("${dataFile.items.size}")
+        }
         Spacer(modifier = Modifier.height(20.dp))
         Row {
             Button(onClick = app.saverRepository::reset) {
