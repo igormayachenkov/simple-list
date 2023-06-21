@@ -17,7 +17,7 @@ object Database {
     private lateinit var db: SQLiteDatabase
     private lateinit var dbHelper: DBHelper
 
-    var versionUpgraded:Boolean = true
+    var versionUpgraded:Boolean = false
         private set
 
     fun open(context:Context) {
