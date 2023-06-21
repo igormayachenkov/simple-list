@@ -28,7 +28,7 @@ fun AppBar(
     Row(
         Modifier
             .background(color = MaterialTheme.colors.primary)
-            .defaultMinSize(minHeight = 48.dp),
+            .defaultMinSize(minHeight = 56.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Back button (Navigation icon)
