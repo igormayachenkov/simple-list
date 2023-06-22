@@ -10,9 +10,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import ru.igormayachenkov.list.R
+import ru.igormayachenkov.list.app
 import ru.igormayachenkov.list.data.DataItem
 import ru.igormayachenkov.list.data.EditorData
 import ru.igormayachenkov.list.data.Settings
@@ -54,7 +56,7 @@ fun Editor(
     ){
         Card(
             Modifier
-                .padding(top = 50.dp, start = 20.dp, end = 20.dp)
+                .padding(top = 52.dp, start = 10.dp, end = 10.dp)
                 .wrapContentHeight(align = Alignment.Top)
         ) {
             Column(
@@ -82,7 +84,7 @@ fun Editor(
                         shape = shape,
                         enabled = hasChildren,
                         onClick = {hasChildren=!hasChildren}) {
-                        Text("Item")
+                        Text(stringResource(R.string.editor_tab_item))
                     }
                     Button(
                         modifier = Modifier.weight(1F),
@@ -90,7 +92,7 @@ fun Editor(
                         shape = shape,
                         enabled = !hasChildren,
                         onClick = {hasChildren=!hasChildren} ) {
-                        Text("List")
+                        Text(stringResource(R.string.editor_tab_list))
                     }
                 }
 
@@ -98,7 +100,7 @@ fun Editor(
                 // Name
                 TextField(value = name,  onValueChange = { name = it },
                     modifier = Modifier.fillMaxWidth(),
-                    placeholder = {Text("<name>")},
+                    placeholder = {Text(stringResource(R.string.editor_hint_name))},
                     textStyle = MaterialTheme.typography.body1
                 )
                 if(!hasChildren) { // Item
@@ -106,7 +108,7 @@ fun Editor(
                     TextField(
                         value = descr, onValueChange = { descr = it },
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text("<description>") },
+                        placeholder = { Text(stringResource(R.string.editor_hint_description)) },
                         textStyle = MaterialTheme.typography.body2
                     )
                     // Is Checkable
@@ -116,7 +118,8 @@ fun Editor(
                             .padding(top = 10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center) {
-                        Text( text = "Is checkable")
+                        Text( stringResource(R.string.editor_checkbox_checkable),
+                            style=MaterialTheme.typography.body2)
                         Spacer( modifier = Modifier.width(5.dp))
                         Switch(checked = isCheckable, onCheckedChange = { isCheckable = it })
                     }
@@ -130,7 +133,7 @@ fun Editor(
 
                     // Cancel
                     Button(onClick = onClose) {
-                        Icon(Icons.Default.ArrowBack,"close")
+                        Icon(Icons.Default.ArrowBack,"")
                     }
 
                     // Spacer
@@ -141,15 +144,15 @@ fun Editor(
                         enabled = !isNew,
                         onClick = {
                             if(hasChildren) {
-                                confirm = "Delete the list and all it's items?"
+                                confirm = app.getString(R.string.editor_confirm_delete_list)
                             }else if(settings.confirmDelete){
-                                confirm = "Delete the item?"
+                                confirm = app.getString(R.string.editor_confirm_delete_item)
                             }else{
                                 onDelete()
                             }
                         }
                     ) {
-                        Text(text = "Delete")
+                        Text(text = stringResource(R.string.editor_button_delete))
                     }
 
                     // Spacer
@@ -160,28 +163,30 @@ fun Editor(
                         enabled = isNew || (initialItem!=newItem),
                         onClick = { onSave(newItem)?.let { error=it } },
                     ) {
-                        Text(text = (if(isNew)"Insert" else "Save"))
+                        Text(text = (if(isNew) stringResource(R.string.editor_button_insert)
+                                    else stringResource(R.string.editor_button_save)))
                     }
                 }
             }
-//            Row(horizontalArrangement = Arrangement.End) {
-//                IconButton(
-//                    modifier = Modifier,
-//                    onClick = onClose) {
-//                    Icon(Icons.Default.Close, contentDescription = "")
-//                }
-//            }
         }
     }
     
     error?.let{
         AlertDialog(
             onDismissRequest = {error=null},
-            title = { Text(text = "Error") },
+            title = { Text(stringResource(R.string.common_title_error)) },
             text = { Text(it) },
             buttons = {
-                Button(onClick = {error=null}) {
-                    Text("OK", fontSize = 22.sp) }
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(onClick = { error = null }) {
+                        Text(stringResource(R.string.common_button_ok))
+                    }
+                }
             }
         )
     }
@@ -189,15 +194,21 @@ fun Editor(
     confirm?.let{
         AlertDialog(
             onDismissRequest = {error=null},
-            //title = { Text(text = "Confirmation") },
             title = { Text(it) },
-            buttons = { Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
-                Button(onClick = { confirm = null }) {
-                    Text("Cancel") }
-                Spacer(modifier = Modifier.weight(1f))
-                Button(onClick = { confirm = null; onDelete() }) {
-                    Text("OK") }
-            }}
+            buttons = {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(onClick = { confirm = null }) {
+                        Text(stringResource(R.string.common_button_cancel)) }
+                    Spacer(modifier = Modifier.weight(1f))
+                    Button(onClick = { confirm = null; onDelete() }) {
+                        Text(stringResource(R.string.common_button_ok)) }
+                }
+            }
         )
     }
 }
