@@ -1,5 +1,19 @@
-<resources>
-    <string name="app_name">Список</string>
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="TypographyEllipsis">
+    <string name="app_name">Простой Список</string>
+
+    <string name="menu_sorting">сортировка:</string>
+    <string name="menu_sorting_name_asc">по названию А -> Я</string>
+    <string name="menu_sorting_name_desc">по названию Я -> А</string>
+    <string name="menu_sorting_lists_above">списки сверху</string>
+    <string name="menu_sorting_checked_below">выполненные снизу</string>
+    <string name="menu_list">Список...</string>
+    <string name="menu_data">Данные...</string>
+    <string name="menu_settings">Настройки...</string>
+
+
+
 
     <string name="bytes_saved">байт записано в файл</string>
     <string name="lists_updated">списков обновлено</string>

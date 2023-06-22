@@ -1,5 +1,19 @@
-<resources>
-    <string name="app_name">List</string>
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="TypographyEllipsis">
+    <string name="app_name">Simple List</string>
+
+    <string name="menu_sorting">sorting:</string>
+    <string name="menu_sorting_name_asc">by name A -> Z</string>
+    <string name="menu_sorting_name_desc">by name Z -> A</string>
+    <string name="menu_sorting_lists_above">lists above</string>
+    <string name="menu_sorting_checked_below">completed below</string>
+    <string name="menu_list">List...</string>
+    <string name="menu_data">Data...</string>
+    <string name="menu_settings">Settings...</string>
+
+
+
 
     <string name="bytes_saved">bytes written into the file</string>
     <string name="lists_updated">lists updated</string>
