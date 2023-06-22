@@ -4,7 +4,9 @@
     <string name="app_name">Simple List</string>
 
     <string name="common_button_ok">OK</string>
+    <string name="common_button_process">Process</string>
     <string name="common_button_cancel">Cancel</string>
+    <string name="common_button_close">Close</string>
     <string name="common_button_save">Save</string>
     <string name="common_title_error">Error</string>
     <string name="common_version">app version:</string>
@@ -40,6 +42,16 @@
     <string name="settings_oldui_text">Old list UI</string>
     <string name="settings_oldui_help">Use old interface (without checkboxes) to list items control:\nclick - check/uncheck the item\nlong click - open the item</string>
     <string name="settings_help_label">Click the texts to get help</string>
+
+    <string name="info_title">Your data status</string>
+    <string name="info_lists">number of lists:</string>
+    <string name="info_items">number of items:</string>
+    <string name="info_total">total:</string>
+    <string name="info_button_archive">Archive to file</string>
+    <string name="info_button_restore">Restore from file</string>
+    <string name="info_button_empty">Empty</string>
+    <string name="info_busy">Fetching info...</string>
+    <string name="info_confirm_erase">ERASE ALL DATA?</string>
 
 
 

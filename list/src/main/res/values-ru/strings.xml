@@ -4,7 +4,9 @@
     <string name="app_name">Простой Список</string>
 
     <string name="common_button_ok">OK</string>
+    <string name="common_button_process">Продолжить</string>
     <string name="common_button_cancel">Отмена</string>
+    <string name="common_button_close">Закрыть</string>
     <string name="common_button_save">Сохранить</string>
     <string name="common_title_error">Ошибка</string>
     <string name="common_version">версия приложения:</string>
@@ -40,6 +42,17 @@
     <string name="settings_oldui_text">Старый интерфейс</string>
     <string name="settings_oldui_help">Использовать старый интерфейс (без галочек) для элементов списка:\nclick - изметить отметку о выполнении\nlong click - открыть элемент</string>
     <string name="settings_help_label">Для справки нажмите текст</string>
+
+    <string name="info_title">Данные приложения</string>
+    <string name="info_lists">число списков:</string>
+    <string name="info_items">число элементов:</string>
+    <string name="info_total">всего:</string>
+    <string name="info_button_archive">Сохранить в файл</string>
+    <string name="info_button_restore">Загрузить из файла</string>
+    <string name="info_button_empty">Очистить</string>
+    <string name="info_busy">Чтение данных...</string>
+    <string name="info_confirm_erase">УДАЛИТЬ ВСЕ ДАННЫЕ?</string>
+
 
 
 
