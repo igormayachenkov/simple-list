@@ -17,8 +17,10 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
+import ru.igormayachenkov.list.R
 import ru.igormayachenkov.list.app
 
 
@@ -60,50 +62,51 @@ fun SettingsScreen(
     ){
         Card(
             modifier = Modifier
-                .padding(vertical = 8.dp, horizontal = 16.dp)
+                .padding(vertical = 8.dp, horizontal = 10.dp)
                 .wrapContentHeight(align = Alignment.Top),
         ){
             Column(
                 Modifier
-                    .padding(all = 16.dp)
+                    .padding(all = 10.dp)
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState()),
             ) {
-                Text(text = "Settings",
+                Text(text = stringResource(R.string.settings_title),
                     Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.h6
                 )
-                Text(text = "app version: ${app.version}",
+                Text(text = stringResource(R.string.common_version)+" "+app.version,
                     Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.subtitle2
                 )
-                SwitcherRow(text = "\"new\" icon",         state = useAdd, help=help,
-                    helpText="show \"add new\" icon on the top bar")
-                SwitcherRow(text = "\"new\" floating button",      state = useFab, help=help,
-                    helpText="show \"add new\" floating button in the bottom right screen corner")
+                Spacer(modifier = Modifier.height(8.dp))
+                SwitcherRow(text = stringResource(R.string.settings_useadd_text), state = useAdd, help=help,
+                        helpText = stringResource(R.string.settings_useadd_help))
+                SwitcherRow(text = stringResource(R.string.settings_usefab_text),      state = useFab, help=help,
+                        helpText = stringResource(R.string.settings_usefab_help))
 //                SectionTitle(text = "Sorting")
 //                SwitcherRow(text = "lists on the top",          state = sortListsUp, help=help,
 //                    helpText="group lists together and keep them on the top of the sorted list")
 //                SwitcherRow(text = "checked on the bottom",     state = sortCheckedDown, help=help,
 //                    helpText="group checked items together and keep them on the bottom of the sorted list")
-                SwitcherRow(text = "confirm delete item",    state = confirmDelete, help=help,
-                    helpText="show confirmation dialog on delete item click")
-                SwitcherRow(text = "checked items dimming", enabled=!useOldListUi.value, state = useCheckedColor, help=help,
-                    helpText="paint the checked elements by gray color")
-                SwitcherRow(text = "use old (version 1) UI",    state = useOldListUi, help=help,
-                    helpText="click: check/uncheck the item\nlong click: open the item")
+                SwitcherRow(text = stringResource(R.string.settings_confirmdelete_text),    state = confirmDelete, help=help,
+                        helpText = stringResource(R.string.settings_confirmdelete_help))
+                SwitcherRow(text = stringResource(R.string.settings_checkedcolor_text), enabled=!useOldListUi.value, state = useCheckedColor, help=help,
+                        helpText = stringResource(R.string.settings_checkedcolor_help))
+                SwitcherRow(text = stringResource(R.string.settings_oldui_text),    state = useOldListUi, help=help,
+                        helpText = stringResource(R.string.settings_oldui_help))
 
                 //----------------------------------------------------------------------------------
                 // BUTTONS
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp)
+                        .padding(top = 10.dp)
                 )
                 {
                     // Cancel
                     Button(onClick = viewModel::hideSettings) {
-                        Icon(Icons.Default.ArrowBack, "close")
+                        Icon(Icons.Default.ArrowBack, "")
                     }
                     // Spacer
                     Spacer(modifier = Modifier.weight(1F))
@@ -112,12 +115,12 @@ fun SettingsScreen(
                         onClick = { viewModel.onSave(newSettings); viewModel.hideSettings() },
                         enabled = settings!=newSettings
                     ){
-                        Text(text = "Save")
+                        Text(text = stringResource(R.string.common_button_save))
                     }
                 }
 
                 // Help text
-                Text(text = "Click the texts to get help",
+                Text(text = stringResource(R.string.settings_help_label),
                     Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
                     fontStyle = FontStyle.Italic,
                     color = MaterialTheme.colors.onPrimary.copy(alpha = 0.5f),
@@ -162,6 +165,7 @@ private fun SwitcherRow(text:String, helpText:String, state:MutableState<Boolean
         )
         Switch(checked = state.value, onCheckedChange = {state.value=it}, enabled = enabled)
     }
+    Spacer(modifier = Modifier.height(5.dp))
 
 }
 

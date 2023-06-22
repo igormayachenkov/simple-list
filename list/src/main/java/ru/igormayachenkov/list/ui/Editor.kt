@@ -164,7 +164,7 @@ fun Editor(
                         onClick = { onSave(newItem)?.let { error=it } },
                     ) {
                         Text(text = (if(isNew) stringResource(R.string.editor_button_insert)
-                                    else stringResource(R.string.editor_button_save)))
+                                    else stringResource(R.string.common_button_save)))
                     }
                 }
             }

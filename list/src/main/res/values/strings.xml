@@ -5,7 +5,9 @@
 
     <string name="common_button_ok">OK</string>
     <string name="common_button_cancel">Cancel</string>
+    <string name="common_button_save">Save</string>
     <string name="common_title_error">Error</string>
+    <string name="common_version">app version:</string>
 
     <string name="menu_sorting">sorting:</string>
     <string name="menu_sorting_name_asc">by name A -> Z</string>
@@ -22,10 +24,22 @@
     <string name="editor_hint_description">Description</string>
     <string name="editor_checkbox_checkable">is completable</string>
     <string name="editor_button_delete">Delete</string>
-    <string name="editor_button_save">Save</string>
     <string name="editor_button_insert">Add</string>
     <string name="editor_confirm_delete_item">Delete the item?</string>
     <string name="editor_confirm_delete_list">Delete the list and all it\'s items?</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_useadd_text">Top bar icon \"+\"</string>
+    <string name="settings_useadd_help">Show \"Add\" button as an icon in the top bar.</string>
+    <string name="settings_usefab_text">Floating button \"+\"</string>
+    <string name="settings_usefab_help">Show \"Add\" button as a floating button in the bottom right screen corner.</string>
+    <string name="settings_confirmdelete_text">Confirmation of deletion</string>
+    <string name="settings_confirmdelete_help">Show confirmation dialog before item deletion.</string>
+    <string name="settings_checkedcolor_text">Gray completed</string>
+    <string name="settings_checkedcolor_help">Use gray color for completed items.</string>
+    <string name="settings_oldui_text">Old list UI</string>
+    <string name="settings_oldui_help">Use old interface (without checkboxes) to list items control:\nclick - check/uncheck the item\nlong click - open the item</string>
+    <string name="settings_help_label">Click the texts to get help</string>
 
 
 
@@ -37,7 +51,6 @@
     <string name="load_to_update">lists to update:</string>
     <string name="load_success">Data successfully updated</string>
 
-    <string name="settings">Settings</string>
 
     <!-- MAIN -->
     <string name="main_title">All lists</string>

@@ -5,7 +5,9 @@
 
     <string name="common_button_ok">OK</string>
     <string name="common_button_cancel">Отмена</string>
+    <string name="common_button_save">Сохранить</string>
     <string name="common_title_error">Ошибка</string>
+    <string name="common_version">версия приложения:</string>
 
     <string name="menu_sorting">сортировка:</string>
     <string name="menu_sorting_name_asc">по названию А -> Я</string>
@@ -22,10 +24,22 @@
     <string name="editor_hint_description">Описание</string>
     <string name="editor_checkbox_checkable">с галочкой\nо выполнении</string>
     <string name="editor_button_delete">Удалить</string>
-    <string name="editor_button_save">Сохранить</string>
     <string name="editor_button_insert">Добавить</string>
     <string name="editor_confirm_delete_item">Удалить элемент?</string>
     <string name="editor_confirm_delete_list">Удалить список и все его элементы?</string>
+
+    <string name="settings_title">Настройки</string>
+    <string name="settings_useadd_text">Иконка \"+\"</string>
+    <string name="settings_useadd_help">Показывать кнопку \"Добавить\" как иконку в верхней строке.</string>
+    <string name="settings_usefab_text">Плавающая кнопка \"+\"</string>
+    <string name="settings_usefab_help">Показывать плавающую кнопку \"Добавить\" в правом нижнем углу экрана.</string>
+    <string name="settings_confirmdelete_text">Подтверждать удаление</string>
+    <string name="settings_confirmdelete_help">Запрашивать подтверждение пользователя перед удалением элемента.</string>
+    <string name="settings_checkedcolor_text">Выполненное серым</string>
+    <string name="settings_checkedcolor_help">Выделять выполненные элементы серым цветом.</string>
+    <string name="settings_oldui_text">Старый интерфейс</string>
+    <string name="settings_oldui_help">Использовать старый интерфейс (без галочек) для элементов списка:\nclick - изметить отметку о выполнении\nlong click - открыть элемент</string>
+    <string name="settings_help_label">Для справки нажмите текст</string>
 
 
 
@@ -86,7 +100,6 @@
     <string name="item_checked_text">Выполнено</string>
     <string name="item_button_delete">Удалить</string>
     <string name="item_button_save">Сохранить</string>
-    <string name="settings">Настройки</string>
 
 
 </resources>
