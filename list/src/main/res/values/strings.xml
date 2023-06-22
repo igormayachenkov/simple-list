@@ -53,6 +53,10 @@
     <string name="info_busy">Fetching info...</string>
     <string name="info_confirm_erase">ERASE ALL DATA?</string>
 
+    <string name="saver_restore_title">File data info:</string>
+    <string name="saver_file_size">file size, bytes:</string>
+    <string name="saver_elements_number">number of elements:</string>
+    <string name="saver_confirm_restore">The next processing will replace your current data!</string>
 
 
 

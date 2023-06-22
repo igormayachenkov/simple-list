@@ -53,6 +53,10 @@
     <string name="info_busy">Чтение данных...</string>
     <string name="info_confirm_erase">УДАЛИТЬ ВСЕ ДАННЫЕ?</string>
 
+    <string name="saver_restore_title">Данные из файла:</string>
+    <string name="saver_file_size">размер файла, байт:</string>
+    <string name="saver_elements_number">число элементов:</string>
+    <string name="saver_confirm_restore">Дальнейшее продолжение операции удалит все текущие данные!</string>
 
 
 
