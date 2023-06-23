@@ -58,4 +58,14 @@
     <string name="saver_elements_number">number of elements:</string>
     <string name="saver_confirm_restore">The next processing will replace your current data!</string>
 
+    <string name="news_title">Changes in the new version:</string>
+    <string-array name="news">
+        <item>Nested lists</item>
+        <item>More sorting parameters</item>
+        <item>More settings added</item>
+        <item>More clear data saving/restoring</item>
+        <item>More convenient UI</item>
+    </string-array>
+    <string name="news_help">You could restore the old UI in settings!</string>
+
 </resources>

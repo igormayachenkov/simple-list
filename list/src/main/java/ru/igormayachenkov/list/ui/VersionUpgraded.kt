@@ -9,22 +9,26 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.igormayachenkov.list.R
 import ru.igormayachenkov.list.ui.theme.ListTheme
 
 @Composable
 fun VersionUpgradedContent() {
-    val modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp)
-    val textStyle = MaterialTheme.typography.body1
-    Text("Nested lists", modifier, style = textStyle)
-    Text("More sorting parameters", modifier, style = textStyle)
-    Text("More settings added", modifier, style = textStyle)
-    Text("More clear data saving/restoring", modifier, style = textStyle)
-    //Text("More convenient UI. If you don't think so you could restore the old one in settings :-)", modifier, style = textStyle)
-    Text("More convenient UI", modifier=Modifier.fillMaxWidth(), style = textStyle)
-    Text("You could restore the old UI in settings!",
-        modifier, style = MaterialTheme.typography.body2, color = MaterialTheme.colors.error)
+    stringArrayResource(id = R.array.news).forEach {
+        Text(text = it,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 5.dp),
+            style = MaterialTheme.typography.body1)
+    }
+    Text(text = stringResource(id = R.string.news_help),
+        modifier = Modifier.fillMaxWidth(),
+        style = MaterialTheme.typography.body2,
+        color = MaterialTheme.colors.error)
 }
 
 @Composable
@@ -46,12 +50,12 @@ fun VersionUpgraded(){
                 .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ){
-                Text("In the new version:")
+                Text(stringResource(id = R.string.news_title), style = MaterialTheme.typography.h6)
                 Spacer(modifier = Modifier.height(16.dp))
                 VersionUpgradedContent()
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = { isVisible=false }) {
-                    Text(text = "Close")
+                    Text(text = stringResource(id = R.string.common_button_close))
                 }
             }
         }

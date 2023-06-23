@@ -58,4 +58,14 @@
     <string name="saver_elements_number">число элементов:</string>
     <string name="saver_confirm_restore">Дальнейшее продолжение операции удалит все текущие данные!</string>
 
+    <string name="news_title">Изменения в новой версии:</string>
+    <string-array name="news">
+        <item>Вложенные списки</item>
+        <item>Больше параметров сортировки</item>
+        <item>Больше настроек</item>
+        <item>Более простое сохранение/восстановление данных</item>
+        <item>Более удобный интерфейс</item>
+    </string-array>
+    <string name="news_help">Вы можете восстановить старый интерфейс в настройках</string>
+
 </resources>
