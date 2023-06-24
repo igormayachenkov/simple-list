@@ -33,10 +33,11 @@ fun AppBar(
     ) {
         // Back button (Navigation icon)
         if (isRoot)
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(10.dp))
         else
             IconButton(onClick = onBack) {
-                Icon(Icons.Default.ArrowBack,"")
+                Icon(Icons.Default.ArrowBack,"",
+                    tint = MaterialTheme.colors.onPrimary)
             }
 
 

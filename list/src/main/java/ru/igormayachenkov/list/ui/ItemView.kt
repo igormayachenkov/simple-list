@@ -55,7 +55,7 @@ fun Descr(text:String, color:Color){
 }
 
 @Composable
-fun getCheckedColor() = MaterialTheme.colors.onPrimary.copy(alpha = 0.5f)
+fun getCheckedColor() = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
 
 @Composable
 fun ListRow(
@@ -198,7 +198,7 @@ fun fakeItem():DataItem=DataItem(
     13,
     0,
     DataItem.Type(false, true),
-    DataItem.State(true),
+    DataItem.State(false),
     "The Item",
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque faucibus, sapien eget tristique commodo, magna nibh rutrum mauris, et tempor neque libero et lectus. Etiam vitae maximus diam, eu pulvinar nibh. Fusce sodales at nibh id accumsan."
 )
@@ -223,7 +223,7 @@ fun ListRowDarkPreview(){
 @Preview(name = "ItemRow")
 @Composable
 fun ItemRowPreview(){
-    ListTheme(darkTheme = true) {
+    ListTheme(darkTheme = false) {
         Surface {
             ItemView(item = fakeItem(), onOpenItem = {}, onCheckItem = {}, settings = Settings())
         }
