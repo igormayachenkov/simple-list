@@ -24,7 +24,7 @@
     <string name="editor_tab_list">Список</string>
     <string name="editor_hint_name">Название</string>
     <string name="editor_hint_description">Описание</string>
-    <string name="editor_checkbox_checkable">с галочкой\nо выполнении</string>
+    <string name="editor_checkbox_checkable">показывать галочку</string>
     <string name="editor_button_delete">Удалить</string>
     <string name="editor_button_insert">Добавить</string>
     <string name="editor_confirm_delete_item">Удалить элемент?</string>
@@ -67,5 +67,23 @@
         <item>Более удобный интерфейс</item>
     </string-array>
     <string name="news_help">Вы можете восстановить старый интерфейс в настройках</string>
+
+    <string name="mock_todo_list">Пример списка дел</string>
+    <string name="mock_todo_1">купить продукты</string>
+    <string name="mock_todo_2">позвонить маме</string>
+    <string name="mock_todo_3">делать зарядку (каждый день!)</string>
+    <string name="mock_todo_3_descr">Пример незавершаемой задачи (без галочки)</string>
+
+    <string name="mock_shopping_list">Пример списка покупок</string>
+    <string name="mock_shopping_s1">Фрукты</string>
+    <string name="mock_shopping_s1_1">Манго</string>
+    <string name="mock_shopping_s1_2">Яблоко</string>
+    <string name="mock_shopping_s1_3">Апельсин</string>
+    <string name="mock_shopping_s1_3_descr">Завершенные задачи перемещаются в конец списка</string>
+    <string name="mock_shopping_s2">Овощи</string>
+    <string name="mock_shopping_s2_1">Лук</string>
+    <string name="mock_shopping_s2_2">Картошка</string>
+    <string name="mock_shopping_3">Хлеб</string>
+    <string name="mock_shopping_3_descr">Списки и элементы могут быть вперемешку</string>
 
 </resources>

@@ -3,14 +3,14 @@ package ru.igormayachenkov.list
 import ru.igormayachenkov.list.data.DataItem
 
 fun fillMockData(){
-    // SHOPPING LIST
+    // TO-DO LIST
     Database.insertItem(
         DataItem(
             id = 13,
             parent_id = 0,
             DataItem.Type(hasChildren = true, isCheckable = false),
             DataItem.State(isChecked = false),
-            name = "A shopping list example",
+            name = app.getString(R.string.mock_todo_list),
             description = null
         )
     )
@@ -20,17 +20,7 @@ fun fillMockData(){
             parent_id = 13,
             DataItem.Type(hasChildren = false, isCheckable = true),
             DataItem.State(isChecked = false),
-            name = "bread",
-            description = null
-        )
-    )
-    Database.insertItem(
-        DataItem(
-            id = 1301,
-            parent_id = 13,
-            DataItem.Type(hasChildren = false, isCheckable = true),
-            DataItem.State(isChecked = false),
-            name = "butter",
+            name = app.getString(R.string.mock_todo_1),
             description = null
         )
     )
@@ -40,8 +30,8 @@ fun fillMockData(){
             parent_id = 13,
             DataItem.Type(hasChildren = false, isCheckable = true),
             DataItem.State(isChecked = false),
-            name = "fresh milk",
-            description = "Check expiration date!"
+            name = app.getString(R.string.mock_todo_2),
+            description = null
         )
     )
     Database.insertItem(
@@ -50,39 +40,31 @@ fun fillMockData(){
             parent_id = 13,
             DataItem.Type(hasChildren = false, isCheckable = false),
             DataItem.State(isChecked = false),
-            name = "ice cream every day",
-            description = "the checkbox is not required here, it can't be completed"
-        )
-    )
-    Database.insertItem(
-        DataItem(
-            id = 1304,
-            parent_id = 13,
-            DataItem.Type(hasChildren = false, isCheckable = true),
-            DataItem.State(isChecked = true),
-            name = "avocado",
-            description = "already bought, so at the end of the list"
+            name = app.getString(R.string.mock_todo_3),
+            description = app.getString(R.string.mock_todo_3_descr),
         )
     )
 
-    // NESTED LISTS
+
+    // SHOPPING LIST (NESTED LIST)
     Database.insertItem(
         DataItem(
             id = 14,
             parent_id = 0,
             DataItem.Type(hasChildren = true, isCheckable = false),
             DataItem.State(isChecked = false),
-            name = "Nested lists example",
+            name = app.getString(R.string.mock_shopping_list),
             description = null
         )
     )
+    // Sublist 1
     Database.insertItem(
         DataItem(
             id = 1410,
             parent_id = 14,
             DataItem.Type(hasChildren = true, isCheckable = false),
             DataItem.State(isChecked = false),
-            name = "Sublist A",
+            name = app.getString(R.string.mock_shopping_s1),
             description = null
         )
     )
@@ -92,7 +74,7 @@ fun fillMockData(){
             parent_id = 1410,
             DataItem.Type(hasChildren = false, isCheckable = true),
             DataItem.State(isChecked = false),
-            name = "Sublist A. Item 1",
+            name = app.getString(R.string.mock_shopping_s1_1),
             description = null
         )
     )
@@ -102,28 +84,60 @@ fun fillMockData(){
             parent_id = 1410,
             DataItem.Type(hasChildren = false, isCheckable = true),
             DataItem.State(isChecked = false),
-            name = "Sublist A. Item 2",
+            name = app.getString(R.string.mock_shopping_s1_2),
             description = null
         )
     )
+    Database.insertItem(
+        DataItem(
+            id = 1413,
+            parent_id = 1410,
+            DataItem.Type(hasChildren = false, isCheckable = true),
+            DataItem.State(isChecked = true),
+            name = app.getString(R.string.mock_shopping_s1_3),
+            description = app.getString(R.string.mock_shopping_s1_3_descr)
+        )
+    )
+    // Sublist 2
     Database.insertItem(
         DataItem(
             id = 1420,
             parent_id = 14,
             DataItem.Type(hasChildren = true, isCheckable = false),
             DataItem.State(isChecked = false),
-            name = "Sublist B",
+            name = app.getString(R.string.mock_shopping_s2),
             description = null
         )
     )
+    Database.insertItem(
+        DataItem(
+            id = 1421,
+            parent_id = 1420,
+            DataItem.Type(hasChildren = false, isCheckable = true),
+            DataItem.State(isChecked = false),
+            name = app.getString(R.string.mock_shopping_s2_1),
+            description = null
+        )
+    )
+    Database.insertItem(
+        DataItem(
+            id = 1422,
+            parent_id = 1420,
+            DataItem.Type(hasChildren = false, isCheckable = true),
+            DataItem.State(isChecked = false),
+            name = app.getString(R.string.mock_shopping_s2_2),
+            description = null
+        )
+    )
+    // Root Item
     Database.insertItem(
         DataItem(
             id = 1430,
             parent_id = 14,
             DataItem.Type(hasChildren = false, isCheckable = true),
             DataItem.State(isChecked = false),
-            name = "A simple checkable item also can be here",
-            description = null
+            name = app.getString(R.string.mock_shopping_3),
+            description = app.getString(R.string.mock_shopping_3_descr)
         )
     )
 }

@@ -68,4 +68,25 @@
     </string-array>
     <string name="news_help">You could restore the old UI in settings!</string>
 
+    <string name="mock_todo_list">Todo list example</string>
+    <string name="mock_todo_1">buy some food</string>
+    <string name="mock_todo_2">call mom</string>
+    <string name="mock_todo_3">make morning exercises (everyday!)</string>
+    <string name="mock_todo_3_descr">The task can not be completed, so the checkbox is absent here</string>
+
+    <string name="mock_shopping_list">Shopping list example</string>
+    <string name="mock_shopping_s1">Fruits</string>
+    <string name="mock_shopping_s1_1">mango</string>
+    <string name="mock_shopping_s1_2">orange</string>
+    <string name="mock_shopping_s1_3">apple</string>
+    <string name="mock_shopping_s1_3_descr">Completed items are moved to the end of the list</string>
+    <string name="mock_shopping_s2">Vegetables</string>
+    <string name="mock_shopping_s2_1">Onion</string>
+    <string name="mock_shopping_s2_2">Potato</string>
+    <string name="mock_shopping_3">Bread</string>
+    <string name="mock_shopping_3_descr">Lists and items can be mixed.</string>
+
+
+
+
 </resources>
