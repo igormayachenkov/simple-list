@@ -57,6 +57,16 @@
     <string name="saver_file_size">file size, bytes:</string>
     <string name="saver_elements_number">number of elements:</string>
     <string name="saver_confirm_restore">The next processing will replace your current data!</string>
+    <string name="saver_restored">Data has been successfully restored.</string>
+    <string name="saver_restored_total">elements added.</string>
+    <string name="saver_reading_file">Reading the file...</string>
+    <string name="saver_writing_file">Writing to the file...</string>
+    <string name="saver_writing_database">Writing to the database...</string>
+    <string name="saver_erasing">Erasing data...</string>
+    <string name="saver_erased">Data erased.</string>
+    <string name="saver_written">Data written successfully.</string>
+    <string name="saver_written_total">elements</string>
+    <string name="saver_written_bytes">bytes</string>
 
     <string name="news_title">Changes in the new version:</string>
     <string-array name="news">

@@ -42,13 +42,13 @@ class SaverRepository {
     fun deleteAll(){
         Log.d(TAG,"deleteAll")
         CoroutineScope(Dispatchers.IO).launch {
-            _state.emit(State.Busy("Erasing data..."))
+            _state.emit(State.Busy(app.getString(R.string.saver_erasing)))
             val timer = ActionTimer()
             try {
                 Database.deleteALL()
                 timer.pauseIfNeed(1000)
                 // Success state
-                _state.emit(State.Success("Data erased successfully."))
+                _state.emit(State.Success(app.getString(R.string.saver_erased)))
             } catch (e: Exception) {
                 _state.emit(State.Error(e.toString()))
             }
@@ -63,7 +63,7 @@ class SaverRepository {
     fun saveAll(uri: Uri){
         Log.d(TAG,"saveAll $uri")
         CoroutineScope(Dispatchers.IO).launch {
-            _state.emit(State.Busy("Saving data..."))
+            _state.emit(State.Busy(app.getString(R.string.saver_writing_file)))
             val timer = ActionTimer()
             try {
                 // Fill data
@@ -80,7 +80,9 @@ class SaverRepository {
                 timer.pauseIfNeed(1000)
 
                 // Success state
-                _state.emit(State.Success("Data saved successfully.\n${saveResult.nItems} elements saved\n$nBytes bytes written"))
+                _state.emit(State.Success(app.getString(R.string.saver_written)+"\n"+
+                        saveResult.nItems+" "+app.getString(R.string.saver_written_total)+"\n"+
+                        nBytes+" "+app.getString(R.string.saver_written_bytes)))
             }catch (e:Exception){
                 _state.emit(State.Error(e.toString()))
             }
@@ -92,7 +94,7 @@ class SaverRepository {
     fun loadAll(uri: Uri) {
         Log.d(TAG, "loadAll $uri")
         CoroutineScope(Dispatchers.IO).launch {
-            _state.emit(State.Busy("Reading file data..."))
+            _state.emit(State.Busy(app.getString(R.string.saver_reading_file)))
             val timer = ActionTimer()
             try {
                 // Read file
@@ -135,7 +137,7 @@ class SaverRepository {
     fun loadAllFinish(dataFile: DataFile){
         Log.d(TAG, "loadAllFinish")
         CoroutineScope(Dispatchers.IO).launch {
-            _state.emit(State.Busy("Restoring data..."))
+            _state.emit(State.Busy(app.getString(R.string.saver_writing_database)))
             val timer = ActionTimer()
             try {
                 // Empty database
@@ -147,7 +149,10 @@ class SaverRepository {
 
                 timer.pauseIfNeed(1000)
                 // Success state
-                _state.emit(State.Success("Data restored successfully.\n${dataFile.items.size} elements added"))
+                _state.emit(State.Success(
+                    app.getString(R.string.saver_restored)+"\n"+
+                    dataFile.items.size+" "+
+                    app.getString(R.string.saver_restored_total)))
             } catch (e: Exception) {
                 _state.emit(State.Error(e.toString()))
             }

@@ -57,6 +57,16 @@
     <string name="saver_file_size">размер файла, байт:</string>
     <string name="saver_elements_number">число элементов:</string>
     <string name="saver_confirm_restore">Дальнейшее продолжение операции удалит все текущие данные!</string>
+    <string name="saver_restored">Данные успешно загружены.</string>
+    <string name="saver_restored_total">элементов добавлено.</string>
+    <string name="saver_reading_file">Чтение файла...</string>
+    <string name="saver_writing_file">Запись файла...</string>
+    <string name="saver_writing_database">Запись в базу...</string>
+    <string name="saver_erasing">Удаление данных...</string>
+    <string name="saver_erased">Данные удалены.</string>
+    <string name="saver_written">Данные успешно записаны.</string>
+    <string name="saver_written_total">элементов</string>
+    <string name="saver_written_bytes">байт</string>
 
     <string name="news_title">Изменения в новой версии:</string>
     <string-array name="news">
