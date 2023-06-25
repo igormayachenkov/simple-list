@@ -135,7 +135,7 @@ fun ItemRow(
                             else R.drawable.baseline_check_box_outline_blank_24
                         ),
                         contentDescription = "",
-                        tint = MaterialTheme.colors.onSurface
+                        tint = color
                     )
                 }
             }
