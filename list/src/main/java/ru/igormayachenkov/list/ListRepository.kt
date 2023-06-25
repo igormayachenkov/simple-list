@@ -21,7 +21,8 @@ class ListRepository(
         id=0, parent_id = 0,
         DataItem.Type(true,false),
         DataItem.State(false),
-        name="Simple List", description = null
+        name = app.getString(R.string.app_name),
+        description = null
     )
 
     private val stack:Stack<OpenList> = restoreStack()
