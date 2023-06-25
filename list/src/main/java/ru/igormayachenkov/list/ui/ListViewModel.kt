@@ -133,11 +133,11 @@ class ListViewModel(
                 if (isNew) {
                     if(newItem!=null) {
                         // INSERT
-                        if (oldItem===openList.value.list) {
-                            // It is the open list
+                        if (newItem.type.hasChildren) {
+                            // It is a list
                             listRepository.insertAndOpenList(newItem)
                         } else {
-                            // It is the list item
+                            // It is an item
                             itemsRepository.insertItem(newItem)
                         }
                     }else{
