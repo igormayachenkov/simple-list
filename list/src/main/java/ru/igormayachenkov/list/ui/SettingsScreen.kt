@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import ru.igormayachenkov.list.R
 import ru.igormayachenkov.list.app
+import ru.igormayachenkov.list.ui.theme.onSurfaceDisabled
 
 
 @Composable
@@ -123,7 +124,7 @@ fun SettingsScreen(
                 Text(text = stringResource(R.string.settings_help_label),
                     Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
                     fontStyle = FontStyle.Italic,
-                    color = MaterialTheme.colors.onPrimary.copy(alpha = 0.5f),
+                    color = MaterialTheme.colors.onSurfaceDisabled,
                     style = MaterialTheme.typography.subtitle2
 
                 )
@@ -146,7 +147,7 @@ private fun SectionTitle(text:String){
     Text(
         text = text,
         fontStyle = FontStyle.Italic,
-        color = MaterialTheme.colors.onPrimary.copy(alpha = 0.6f),
+        color = MaterialTheme.colors.onSurfaceDisabled,
         modifier = Modifier.padding(top = 16.dp)
     )
 }

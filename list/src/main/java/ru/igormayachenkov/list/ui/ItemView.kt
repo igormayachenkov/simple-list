@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import ru.igormayachenkov.list.R
 import ru.igormayachenkov.list.data.*
 import ru.igormayachenkov.list.ui.theme.ListTheme
+import ru.igormayachenkov.list.ui.theme.onSurfaceDisabled
 
 private const val TAG = "myapp.ItemView"
 
@@ -55,7 +56,9 @@ fun Descr(text:String, color:Color){
 }
 
 @Composable
-fun getCheckedColor() = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+fun getItemColor(isChecked:Boolean):Color =
+    if(isChecked) MaterialTheme.colors.onSurfaceDisabled
+        else      MaterialTheme.colors.onSurface //Color.Unspecified
 
 @Composable
 fun ListRow(
@@ -95,10 +98,8 @@ fun ItemRow(
     onCheckItem:(DataItem)->Unit,
     settings: Settings
 ){
-    val color:Color =
-        if(item.type.isCheckable && item.state.isChecked && settings.useCheckedColor)
-            getCheckedColor()
-        else Color.Unspecified
+    val color:Color = getItemColor(
+        item.type.isCheckable && item.state.isChecked && settings.useCheckedColor)
 
     Card(
         modifier = Modifier
@@ -150,9 +151,7 @@ fun ItemRowV1(
     onCheckItem:(DataItem)->Unit,
     settings: Settings
 ){
-    val color:Color =
-        if(item.state.isChecked) getCheckedColor()
-        else Color.Unspecified
+    val color:Color = getItemColor(item.state.isChecked)
 
     Card(
         modifier = Modifier

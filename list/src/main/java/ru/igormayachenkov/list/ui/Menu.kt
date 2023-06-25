@@ -16,6 +16,7 @@ import ru.igormayachenkov.list.R
 import ru.igormayachenkov.list.app
 import ru.igormayachenkov.list.data.Settings
 import ru.igormayachenkov.list.data.SortOrder
+import ru.igormayachenkov.list.ui.theme.onSurfaceDisabled
 
 @Composable
 fun Menu(
@@ -45,7 +46,7 @@ fun Menu(
             Text(text = stringResource(R.string.menu_sorting),
                 Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.body2,
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+                color = MaterialTheme.colors.onSurfaceDisabled
             )
             // Sort Order NameAsc
             val enabledAsc = settings.sortOrder != SortOrder.NameAsc
@@ -116,7 +117,7 @@ fun Menu(
 }
 @Composable
 private fun MenuDivider(){
-    Divider(color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),)
+    Divider(color = MaterialTheme.colors.onSurfaceDisabled,)
 }
 @Composable
 private fun CheckedIcon(){

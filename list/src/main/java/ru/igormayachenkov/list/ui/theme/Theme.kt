@@ -1,6 +1,7 @@
 package ru.igormayachenkov.list.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
@@ -27,12 +28,12 @@ private val LightColorPalette = lightColors(
     onPrimary       = Color.White,
     onSurface       = Color.Black,
     error           = Color(0xFFB00020)
-
-    /* Other default colors to override
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    */
 )
+
+// Use with MaterialTheme.colors.snackbarAction
+val Colors.onSurfaceDisabled: Color
+    get() = if (isLight) Color(0xFF888888)
+            else         Color(0xFFAAAAAA)
 
 
 @Composable
