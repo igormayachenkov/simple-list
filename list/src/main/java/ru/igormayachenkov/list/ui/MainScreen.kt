@@ -10,11 +10,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.igormayachenkov.list.app
 import ru.igormayachenkov.list.data.*
 
 private const val TAG = "myapp.MainScreen"
+
+const val FAB_SIZE = 56
 
 @Composable
 fun MainScreen(
@@ -57,12 +60,16 @@ fun MainScreen(
         floatingActionButton = {
             if(settings.useFab){
                 IconButton(
-                    modifier = Modifier.background(color =MaterialTheme.colors.secondary, shape = CircleShape ),
-                    onClick = viewModel::createItem
+                    onClick = viewModel::createItem,
+                    modifier = Modifier
+                        .padding(end = (FAB_SIZE*0.7).dp, bottom = (FAB_SIZE*0.2).dp)
+                        .background(color = MaterialTheme.colors.secondary, shape = CircleShape)
+                        .defaultMinSize(FAB_SIZE.dp, FAB_SIZE.dp)
                 ) {
                     Icon(
                         Icons.Default.AddCircle, "",
-                        tint = MaterialTheme.colors.onSecondary
+                        tint = MaterialTheme.colors.onSecondary,
+                        modifier = Modifier.defaultMinSize((FAB_SIZE/2).dp, (FAB_SIZE/2).dp)
                     )
                 }
             }
