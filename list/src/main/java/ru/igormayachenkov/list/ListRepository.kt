@@ -36,12 +36,21 @@ class ListRepository(
         )
     }
     private fun restoreStack():Stack<OpenList> = Stack<OpenList>().apply {
-        stackDataSource.restoreStack().forEach {
-            Log.d(TAG,"restored stack item $it")
-            push(OpenList(
-                if(it.id.compareTo(0)==0) fakeRootList else Database.loadItem(it.id)!!,
-                LazyListState(it.firstVisibleItemIndex)
-            ))
+        try {
+            stackDataSource.restoreStack().forEach {
+                Log.d(TAG, "restored stack item $it")
+                push(
+                    OpenList(
+                        if (it.id.compareTo(0) == 0) fakeRootList
+                        else Database.loadItem(it.id)?:
+                        throw Exception("Saved stack is incorrect, item with id=${it.id} not found in the database"),
+                        LazyListState(it.firstVisibleItemIndex)
+                    )
+                )
+            }
+        }catch (e:Exception){
+            Log.e(TAG,"restoreStack: ${e.message}")
+            this.empty()
         }
         // Push fake root if not restored
         if(isEmpty())
