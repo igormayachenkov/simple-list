@@ -22,6 +22,8 @@ import ru.igormayachenkov.list.ui.theme.onSurfaceDisabled
 
 private const val TAG = "myapp.ItemView"
 
+private val MIN_HEIGHT = 48.dp
+
 @Composable
 fun ItemView(
     item:DataItem,
@@ -70,6 +72,7 @@ fun ListRow(
     Card(
         modifier = Modifier
             .clickable(onClick = {onOpenItem(item)})
+            .defaultMinSize(minHeight = MIN_HEIGHT)
         //    .background(color = MaterialTheme.colors.surface)
     ) {
         Row(
@@ -81,7 +84,7 @@ fun ListRow(
             // Icon
             Icon(
                 painter = painterResource(id = R.drawable.outline_featured_play_list_24),
-                contentDescription = "list icon",
+                contentDescription = null, //no associated action
                 tint = MaterialTheme.colors.onSurface
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -104,6 +107,7 @@ fun ItemRow(
     Card(
         modifier = Modifier
             .clickable(onClick = {onOpenItem(item)})
+            .defaultMinSize(minHeight = MIN_HEIGHT)
     ) {
         Row(
             Modifier
@@ -134,7 +138,7 @@ fun ItemRow(
                             if (item.state.isChecked) R.drawable.baseline_check_box_24
                             else R.drawable.baseline_check_box_outline_blank_24
                         ),
-                        contentDescription = "",
+                        contentDescription = "completed state switcher",
                         tint = color
                     )
                 }
@@ -159,6 +163,7 @@ fun ItemRowV1(
                 onClick     = {onCheckItem(item)},
                 onLongClick = {onOpenItem(item)}
             )
+            .defaultMinSize(minHeight = MIN_HEIGHT)
     ) {
         Row(
             Modifier

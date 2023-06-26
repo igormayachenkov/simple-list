@@ -49,7 +49,8 @@ fun AppBar(
 
         // Add (Create) Button
         if(settings.useAdd) IconButton(onClick = onCreate) {
-            Icon(Icons.Default.AddCircle,contentDescription = "add",
+            Icon(Icons.Default.AddCircle,
+                contentDescription = "add a new element",
                 tint = MaterialTheme.colors.onPrimary)
         }
 

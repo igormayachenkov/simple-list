@@ -32,7 +32,7 @@ fun Menu(
 
     IconButton(onClick = { showMenu=true }) {
         Icon(
-            Icons.Default.MoreVert, contentDescription = "menu",
+            Icons.Default.MoreVert, contentDescription = "the main menu",
             tint = MaterialTheme.colors.onPrimary
         )
         // Menu
