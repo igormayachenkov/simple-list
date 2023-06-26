@@ -28,7 +28,7 @@ class InfoViewModel : ViewModel() {
 
     fun onLoadAll() {
         MainActivity.resultAPI?.let {
-            it.loadAll.launch(arrayOf("application/json"))
+            it.loadAll.launch(arrayOf("*/*")) // "application/json" blocks input on old devices
         }
     }
 }
