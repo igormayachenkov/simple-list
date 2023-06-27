@@ -24,7 +24,7 @@ fun SaverScreen() {
         SaverRepository.State.Ready -> return
         is SaverRepository.State.Busy    -> Busy(message = state.message)
         is SaverRepository.State.Error   -> Error(message = state.message)
-        is SaverRepository.State.ConfirmLoad   -> ConfirmLoad(dataFile=state.dataFile)
+        is SaverRepository.State.ConfirmLoad   -> ConfirmLoad(isEmpty = state.isEmpty, dataFile=state.dataFile)
         is SaverRepository.State.Success -> Success(message = state.message)
     }
     BackHandler(enabled = true, onBack = app.saverRepository::reset)
@@ -70,7 +70,7 @@ private fun Error(message:String){
     }
 }
 @Composable
-private fun ConfirmLoad(dataFile: DataFile){
+private fun ConfirmLoad(isEmpty:Boolean, dataFile: DataFile){
     Frame{
         Text(text = stringResource(R.string.saver_restore_title),
             Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
@@ -89,7 +89,7 @@ private fun ConfirmLoad(dataFile: DataFile){
             Text("${dataFile.items.size}")
         }
         Spacer(modifier = Modifier.height(20.dp))
-        Text(
+        if(!isEmpty) Text(
             text = stringResource(R.string.saver_confirm_restore),
             modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
             color = MaterialTheme.colors.error

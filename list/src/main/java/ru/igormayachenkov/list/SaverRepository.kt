@@ -25,7 +25,7 @@ class SaverRepository {
         object Ready : State
         data class Busy   (val message:String) : State
         data class Error  (val message:String) : State
-        data class ConfirmLoad(val dataFile: DataFile) : State
+        data class ConfirmLoad(val isEmpty:Boolean, val dataFile: DataFile) : State
         data class Success(val message:String) : State
     }
 
@@ -128,7 +128,10 @@ class SaverRepository {
                 timer.pauseIfNeed(1000)
 
                 // Confirm state
-                _state.emit(State.ConfirmLoad(DataFile(version.toString(), text.length, items)))
+                _state.emit(State.ConfirmLoad(
+                    (app.infoRepository.state.value as InfoRepository.State.Success).info.isEmpty,
+                    DataFile(version.toString(), text.length, items))
+                )
             } catch (e: Exception) {
                 _state.emit(State.Error(e.message.toString()))
             }
