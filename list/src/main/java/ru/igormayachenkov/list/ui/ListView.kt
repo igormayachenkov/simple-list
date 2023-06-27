@@ -8,9 +8,13 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import ru.igormayachenkov.list.R
 import ru.igormayachenkov.list.data.*
+import ru.igormayachenkov.list.ui.theme.onSurfaceDisabled
 
 private const val TAG = "myapp.ListView"
 
@@ -25,6 +29,15 @@ fun ListView(
 ){
 
     Log.d(TAG,"=> ") // DO NOT print lazyListState here! it causes rerendering
+
+    if(theItems.isEmpty()){
+        Box(modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(stringResource(id = R.string.empty_list), color=MaterialTheme.colors.onSurfaceDisabled)
+        }
+        return
+    }
 
     val sortedItems = theItems.sortedWith(getDataItemComparator(settings))
 

@@ -11,6 +11,8 @@
     <string name="common_title_error">Ошибка</string>
     <string name="common_version">версия приложения:</string>
 
+    <string name="empty_list">пустой список</string>
+
     <string name="menu_sorting">сортировка:</string>
     <string name="menu_sorting_name_asc">по названию А -> Я</string>
     <string name="menu_sorting_name_desc">по названию Я -> А</string>

@@ -11,6 +11,8 @@
     <string name="common_title_error">Error</string>
     <string name="common_version">app version:</string>
 
+    <string name="empty_list">empty list</string>
+
     <string name="menu_sorting">sorting:</string>
     <string name="menu_sorting_name_asc">by name A -> Z</string>
     <string name="menu_sorting_name_desc">by name Z -> A</string>
