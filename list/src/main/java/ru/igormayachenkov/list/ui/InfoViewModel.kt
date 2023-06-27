@@ -1,7 +1,9 @@
 package ru.igormayachenkov.list.ui
 
+import android.icu.text.SimpleDateFormat
 import androidx.lifecycle.*
 import ru.igormayachenkov.list.app
+import java.util.Date
 
 class InfoViewModel : ViewModel() {
     private val infoRepository = app.infoRepository
@@ -18,7 +20,8 @@ class InfoViewModel : ViewModel() {
 
     fun onSaveAll() {
         MainActivity.resultAPI?.let {
-            it.saveAll.launch("Simple list.json")
+            val f = SimpleDateFormat("yy-MM-dd")
+            it.saveAll.launch("List ${f.format(Date())}.json")
         }
     }
 
