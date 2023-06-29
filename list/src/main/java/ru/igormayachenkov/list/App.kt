@@ -38,7 +38,8 @@ class App : Application() {
         super.onCreate()
         instance = this
 
-        try {
+        //try {
+
             // Read and remember Version info
             version = getAppVersion()
             prevVersion = prefs.readWriteVersion(version)
@@ -49,11 +50,12 @@ class App : Application() {
             Database.open(this)
             if (Database.isCreated)
                 fillMockData()
-        }catch (e:Exception){
-            fatalError = e
-            Log.e(TAG, "FATAL ERROR: ${e.message}")
-            e.printStackTrace()
-        }
+
+//        }catch (e:Exception){
+//            fatalError = e
+//            Log.e(TAG, "FATAL ERROR: ${e.message}")
+//            e.printStackTrace()
+//        }
     }
 
     override fun onTerminate() { // will never call!
