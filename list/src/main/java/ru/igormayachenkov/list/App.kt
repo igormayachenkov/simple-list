@@ -31,21 +31,29 @@ class App : Application() {
         private set
     var prevVersion:Version?=null
         private set
+    var fatalError:Exception?=null
+        private set
 
     override fun onCreate() {
         super.onCreate()
         instance = this
 
-        // Read and remember Version info
-        version = getAppVersion()
-        prevVersion = prefs.readWriteVersion(version)
+        try {
+            // Read and remember Version info
+            version = getAppVersion()
+            prevVersion = prefs.readWriteVersion(version)
 
-        Log.d(TAG, "onCreate version: $version  prevVersion: $prevVersion")
+            Log.d(TAG, "onCreate version: $version  prevVersion: $prevVersion")
 
-        // Open database
-        Database.open(this)
-        if(Database.isCreated)
-            fillMockData()
+            // Open database
+            Database.open(this)
+            if (Database.isCreated)
+                fillMockData()
+        }catch (e:Exception){
+            fatalError = e
+            Log.e(TAG, "FATAL ERROR: ${e.message}")
+            e.printStackTrace()
+        }
     }
 
     override fun onTerminate() { // will never call!

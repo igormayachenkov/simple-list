@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import ru.igormayachenkov.list.App
 import ru.igormayachenkov.list.Database
 import ru.igormayachenkov.list.ResultAPI
+import ru.igormayachenkov.list.app
 import ru.igormayachenkov.list.ui.theme.ListTheme
 
 private const val TAG = "myapp.MainActivity"
@@ -25,17 +26,14 @@ class MainActivity : ComponentActivity() {
         resultAPI = ResultAPI(this)
         setContent {
             ListTheme {
+                if(app.fatalError==null){
                     val settingsViewModel: SettingsViewModel = viewModel()
 
                     // Main screen
-                    MainScreen(settingsViewModel=settingsViewModel)
+                    MainScreen(settingsViewModel = settingsViewModel)
 
                     // Settings screen
                     SettingsScreen(settingsViewModel)
-
-                    // Statistics screen
-//                    if(mainViewModel.isDataVisible)
-//                        DataScreen(onHide = mainViewModel::hideData)
 
                     // Data Info screen
                     InfoScreen()
@@ -44,8 +42,12 @@ class MainActivity : ComponentActivity() {
                     SaverScreen()
 
                     // Version upgraded screen
-                    if(Database.isUpgraded)
+                    if (Database.isUpgraded)
                         VersionUpgraded()
+
+                }else {
+                    FatalError(app.fatalError!!)
+                }
             }
         }
     }
