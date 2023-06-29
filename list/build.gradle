@@ -11,7 +11,7 @@ android {
         myKeys {
             keyAlias 'igormayachenkov'
             keyPassword '161bs193'
-            storeFile file('../../KEYs/keystore')
+            storeFile file('../../../KEYs/keystore')
             storePassword '161bs193'
         }
     }
