@@ -1,7 +1,9 @@
 package ru.igormayachenkov.list.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -51,17 +53,18 @@ fun Editor(
 
     Surface(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
         color = Color(0x80000040)
     ){
         Card(
             Modifier
-                .padding(top = 52.dp, start = 10.dp, end = 10.dp)
+                .padding(top = 52.dp, bottom = 10.dp, start = 8.dp, end = 8.dp)
                 .wrapContentHeight(align = Alignment.Top)
         ) {
             Column(
                 Modifier
-                    .padding(all = 16.dp)
+                    .padding(all = 8.dp)
                     .fillMaxWidth()
                 //.padding(all = 16.dp)
             ) {
