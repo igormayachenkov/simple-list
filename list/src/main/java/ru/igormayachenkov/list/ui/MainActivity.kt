@@ -1,5 +1,7 @@
 package ru.igormayachenkov.list.ui
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -78,5 +80,15 @@ class MainActivity : ComponentActivity() {
 //        Log.d(TAG, "onRestoreInstanceState")
 //    }
 
+}
+
+fun Context.shareText(text:String){
+    val sendIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, text)
+        type = "text/plain"
+    }
+    val shareIntent = Intent.createChooser(sendIntent, null)
+    startActivity(shareIntent,null)
 }
 
