@@ -1,5 +1,6 @@
 package ru.igormayachenkov.list.ui
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
@@ -178,6 +179,28 @@ class ListViewModel(
         // Return no-error
         return null
     }
+
+    //----------------------------------------------------------------------------------------------
+    // SHARING TODO move sorting items here
+    fun shareOpenList(context: Context){
+        viewModelScope.launch {
+            StringBuilder().apply {
+                // list title
+                append(openList.value.list.toSharedText())
+                append(":")
+                // list items
+                if(itemsState.value is ItemsState.Success) {
+                    (itemsState.value as ItemsState.Success).items.forEach{
+                        append("\n    ")
+                        append(it.toSharedText())
+                    }
+                }
+                // SHARE
+                context.shareText(toString())
+            }
+        }
+    }
+
 
     //----------------------------------------------------------------------------------------------
     // FACTORY

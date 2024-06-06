@@ -53,6 +53,7 @@ fun MainScreen(
                     showInfoScreen      = app.infoRepository::calculate ,
                     showSettingsScreen  = settingsViewModel::showSettings,
                     editOpenList        = viewModel::editOpenList,
+                    shareOpenList       = viewModel::shareOpenList,
                     setSortOrder        = app.settingsRepository::setSortOrder,
                 )
             }

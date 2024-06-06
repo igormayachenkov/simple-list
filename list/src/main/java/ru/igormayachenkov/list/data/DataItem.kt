@@ -100,8 +100,7 @@ data class DataItem(
             append(name)
             // Description
             description?.let {
-                append("\n")
-                append(it)
+                append(" ($it)")
             }
             return toString()
         }

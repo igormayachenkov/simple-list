@@ -1,5 +1,6 @@
 package ru.igormayachenkov.list.ui
 
+import android.content.Context
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
@@ -8,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
@@ -25,6 +27,7 @@ fun Menu(
     showInfoScreen:()->Unit,
     showSettingsScreen:()->Unit,
     editOpenList:()->Unit,
+    shareOpenList:(Context)->Unit,
     setSortOrder:(SortOrder)->Unit,
 ){
     var showMenu by remember { mutableStateOf(false) }
@@ -41,6 +44,7 @@ fun Menu(
             offset = DpOffset.Zero,
             onDismissRequest = ::hideMenu
         ) {
+            val context = LocalContext.current
 
             // SORTING
             Text(text = stringResource(R.string.menu_sorting),
@@ -82,20 +86,21 @@ fun Menu(
             }
 
             // OPEN LIST ACTIONS
-            if (!isRoot) {
-                MenuDivider()
-                // Edit Open List
-                DropdownMenuItem(onClick = { hideMenu();  editOpenList() }) {
-                    Icon(Icons.Default.Edit, "")
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(stringResource(R.string.menu_list))
-                }
-                // Delete open list
-//                DropdownMenuItem(onClick = { hideMenu() }) {
-//                    Icon(Icons.Default.Delete, "")
-//                    Spacer(modifier = Modifier.width(8.dp))
-//                    Text("Delete list")
-//                }
+            MenuDivider()
+            // Edit Open List
+            DropdownMenuItem(onClick = { hideMenu();  editOpenList() },
+                enabled = !isRoot
+            ) {
+                Icon(Icons.Default.Edit, "")
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.menu_list))
+
+            }
+            // Share Open List
+            DropdownMenuItem(onClick = { hideMenu(); shareOpenList(context) }) {
+                Icon(Icons.Default.Share, "")
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Share")
             }
 
             // DIALOGS
