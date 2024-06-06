@@ -90,4 +90,22 @@ data class DataItem(
             UtilsJSON.getStringOrNull(json,"description")
     )
 
+    // Sharing
+    fun toSharedText():String{
+        StringBuilder().apply {
+            // Checked status
+            if(type.isCheckable)
+                append(if(state.isChecked) "+ " else "- ")
+            // Name
+            append(name)
+            // Description
+            description?.let {
+                append("\n")
+                append(it)
+            }
+            return toString()
+        }
+    }
+
+
 }

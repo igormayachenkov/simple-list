@@ -132,7 +132,7 @@ fun Editor(
                 // BUTTONS
                 val context = LocalContext.current
                 Button(onClick = {
-                    context.shareText(newItem.toString())
+                    context.shareText(newItem.toSharedText())
                 }) {
                     Text("Share")
                 }
