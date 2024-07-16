@@ -39,8 +39,6 @@ fun ListView(
         return
     }
 
-    val sortedItems = theItems.sortedWith(getDataItemComparator(settings))
-
     LazyColumn(
         state = lazyListState,
 //        contentPadding = PaddingValues(vertical = 5.dp),
@@ -48,7 +46,7 @@ fun ListView(
         contentPadding = PaddingValues(vertical = 6.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        items(items = sortedItems, key = { it.id }) { item ->
+        items(items = theItems, key = { it.id }) { item ->
             Box(Modifier.animateItemPlacement()) {
                 ItemView(
                     item = item,
