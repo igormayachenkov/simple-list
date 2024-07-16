@@ -130,12 +130,12 @@ fun Editor(
                 }
 
                 // BUTTONS
-                val context = LocalContext.current
-                Button(onClick = {
-                    context.shareText(newItem.toSharedText())
-                }) {
-                    Text("Share")
-                }
+//                val context = LocalContext.current
+//                Button(onClick = {
+//                    context.shareText(newItem.toSharedText())
+//                }) {
+//                    Text("Share")
+//                }
                 Row(
                     Modifier
                         .fillMaxWidth()
