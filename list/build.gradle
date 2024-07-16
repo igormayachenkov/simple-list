@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace 'ru.igormayachenkov.list'
-    compileSdk 33
+    compileSdk 34
 
     signingConfigs {
         myKeys {
@@ -18,7 +18,7 @@ android {
     defaultConfig {
         applicationId "ru.igormayachenkov.list"
         minSdkVersion 24
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode 20010
         versionName "2.1.0"
         signingConfig signingConfigs.myKeys
@@ -57,18 +57,18 @@ dependencies {
     def lifecycle_version = "2.6.0-beta01"
 
     //implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "androidx.core:core-ktx:1.10.1"
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
-    implementation 'androidx.activity:activity-compose:1.7.2'
+    implementation "androidx.core:core-ktx:1.13.1"
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.3'
+    implementation 'androidx.activity:activity-compose:1.9.0'
     implementation "androidx.compose.ui:ui:$compose_ui_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
-    implementation 'androidx.compose.material:material:1.4.3'
+    implementation 'androidx.compose.material:material:1.6.8'
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
     //implementation "androidx.compose.material:material-icons-extended:1.3.1" // all icons
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     //implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_ui_version"
