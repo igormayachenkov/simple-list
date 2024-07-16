@@ -91,16 +91,19 @@ data class DataItem(
     )
 
     // Sharing
-    fun toSharedText():String{
+    fun toSharedText(itemsCount:Int?=null):String{
         StringBuilder().apply {
             // Checked status
-            if(type.isCheckable)
+            if(type.isCheckable && !type.hasChildren)
                 append(if(state.isChecked) "+ " else "- ")
             // Name
             append(name)
+            // List flag
+            if(type.hasChildren)
+                append(" [${itemsCount?:"*"}]")
             // Description
             description?.let {
-                append(" ($it)")
+                append("\n$it")
             }
             return toString()
         }

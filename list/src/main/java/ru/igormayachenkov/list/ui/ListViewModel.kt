@@ -184,16 +184,18 @@ class ListViewModel(
     // SHARING TODO move sorting items here
     fun shareOpenList(context: Context){
         viewModelScope.launch {
+            val items = if(itemsState.value is ItemsState.Success)
+                (itemsState.value as ItemsState.Success).items else null
+
             StringBuilder().apply {
                 // list title
-                append(openList.value.list.toSharedText())
-                append(":")
+                append(openList.value.list.toSharedText(items?.size))
+                append("\n-------------------------------")
                 // list items
-                if(itemsState.value is ItemsState.Success) {
-                    (itemsState.value as ItemsState.Success).items.forEach{
-                        append("\n    ")
-                        append(it.toSharedText())
-                    }
+                items?.forEach{
+                    append("\n")
+                    append(it.toSharedText())
+                    append("\n")
                 }
                 // SHARE
                 context.shareText(toString())
