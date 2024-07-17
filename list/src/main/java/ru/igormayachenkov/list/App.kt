@@ -9,7 +9,12 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ru.igormayachenkov.list.data.Version
 
@@ -21,6 +26,8 @@ private lateinit var instance:App
 val app:App get() = instance
 
 class App : Application() {
+
+    private val appScope = MainScope()
 
     private val prefs       by lazy { Prefs(prefsDataStore) }
     val settingsRepository  by lazy { SettingsRepository(prefs) }
@@ -49,10 +56,23 @@ class App : Application() {
             Log.d(TAG, "onCreate version: $version  prevVersion: $prevVersion")
 
             // Subscribe on settings changes
-            GlobalScope.launch {
-                app.settingsRepository.settings.collect {
-                    Log.d(TAG, "onSettings changed $it")
+            appScope.launch {
+                settingsRepository.settings.collect {
+                    Log.w(TAG, "settings changed $it")
                     itemsRepository.updateSortOrder(it)
+                }
+            }
+
+            // Subscribe on list changes
+            var loadItemsJob: Job?=null
+            appScope.launch {
+                listRepository.openList.collect{openList->
+                    Log.w(TAG, "openList changed ${openList.list.logString}")
+                    // RELOAD ITEMS
+                    loadItemsJob?.cancel()
+                    loadItemsJob = appScope.launch {
+                        itemsRepository.loadItems(listId = openList.list.id)
+                    }
                 }
             }
 

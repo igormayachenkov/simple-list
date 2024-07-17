@@ -27,25 +27,8 @@ class ListViewModel(
 
     val itemsState = itemsRepository.itemsState
 
-    var loadItemsJob: Job?=null
-
-    private fun onListChanged(openList: OpenList){
-        Log.d(TAG, "onListChanged ${openList.list.logString}")
-        // RELOAD ITEMS
-        loadItemsJob?.cancel()
-        loadItemsJob = viewModelScope.launch {
-            itemsRepository.loadItems(listId = openList.list.id)
-        }
-    }
-
     init {
         Log.d(TAG, "init")
-        //loadPage(PageStackData(0, LazyListState()))
-        viewModelScope.launch {
-            listRepository.openList.collect{
-                onListChanged(it)
-            }
-        }
     }
 
     //----------------------------------------------------------------------------------------------
