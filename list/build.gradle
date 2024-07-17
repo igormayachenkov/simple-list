@@ -19,8 +19,8 @@ android {
         applicationId "ru.igormayachenkov.list"
         minSdkVersion 24
         targetSdkVersion 34
-        versionCode 20010
-        versionName "2.1.0"
+        versionCode 20011
+        versionName "2.1.1"
         signingConfig signingConfigs.myKeys
         vectorDrawables.useSupportLibrary = true
     }

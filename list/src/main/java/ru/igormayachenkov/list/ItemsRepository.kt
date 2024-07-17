@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import ru.igormayachenkov.list.data.DataItem
 import ru.igormayachenkov.list.data.ItemsState
+import ru.igormayachenkov.list.data.Settings
 
 private const val TAG = "myapp.ItemsRepository"
 
@@ -34,6 +35,14 @@ class ItemsRepository() {
                 _itemsState.emit(ItemsState.Error(ex.stackTraceToString()))
             }
             Log.d(TAG, "openList finished")
+        }
+    }
+    fun updateSortOrder(settings:Settings){
+        itemsState.value.let {
+            if(it is ItemsState.Success){
+                Log.d(TAG,"updateSortOrder")
+                _itemsState.value = ItemsState.Success(it.items) // sorting is here
+            }
         }
     }
 

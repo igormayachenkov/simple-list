@@ -9,6 +9,8 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import ru.igormayachenkov.list.data.Version
 
 private const val TAG = "myapp.App"
@@ -45,6 +47,14 @@ class App : Application() {
             prevVersion = prefs.readWriteVersion(version)
 
             Log.d(TAG, "onCreate version: $version  prevVersion: $prevVersion")
+
+            // Subscribe on settings changes
+            GlobalScope.launch {
+                app.settingsRepository.settings.collect {
+                    Log.d(TAG, "onSettings changed $it")
+                    itemsRepository.updateSortOrder(it)
+                }
+            }
 
             // Open database
             Database.open(this)
