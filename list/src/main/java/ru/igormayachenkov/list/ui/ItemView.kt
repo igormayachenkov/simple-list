@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -160,7 +161,9 @@ fun ItemRow(
 @Composable
 fun MediaRow(itemId:Long){
     // Start item's media loading
-    val media = app.mediaRepository.getMediaForItem(itemId)
+    val context = LocalContext.current
+    val media = app.mediaRepository.getMediaForItem(itemId, context)
+    if(media==null) return
     val mediaState by media.state
     //var media by remember { mutableStateOf(0) }
 
@@ -178,7 +181,7 @@ fun MediaRow(itemId:Long){
 //        delay((Math.random()*3000).roundToLong())
 //        media++
         //mediaFlow.emit(13)
-        media.load()
+        media.load(context)
     }
 
 }
