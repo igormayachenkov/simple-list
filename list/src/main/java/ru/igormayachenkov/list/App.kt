@@ -17,6 +17,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ru.igormayachenkov.list.data.Version
+import ru.igormayachenkov.list.media.MediaRepository
 
 private const val TAG = "myapp.App"
 
@@ -35,6 +36,7 @@ class App : Application() {
     val itemsRepository     by lazy { ItemsRepository() }
     val infoRepository      by lazy { InfoRepository() }
     val saverRepository     by lazy { SaverRepository() }
+    val mediaRepository     = MediaRepository()
 
     lateinit var version:Version
         private set

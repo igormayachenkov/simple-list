@@ -16,7 +16,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 import ru.igormayachenkov.list.R
+import ru.igormayachenkov.list.app
 import ru.igormayachenkov.list.data.*
+import ru.igormayachenkov.list.media.MediaState
 import ru.igormayachenkov.list.ui.theme.ListTheme
 import ru.igormayachenkov.list.ui.theme.onSurfaceDisabled
 
@@ -71,7 +73,7 @@ fun ListRow(
 ){
     Card(
         modifier = Modifier
-            .clickable(onClick = {onOpenItem(item)})
+            .clickable(onClick = { onOpenItem(item) })
             .defaultMinSize(minHeight = MIN_HEIGHT)
         //    .background(color = MaterialTheme.colors.surface)
     ) {
@@ -106,45 +108,79 @@ fun ItemRow(
 
     Card(
         modifier = Modifier
-            .clickable(onClick = {onOpenItem(item)})
+            .clickable(onClick = { onOpenItem(item) })
             .defaultMinSize(minHeight = MIN_HEIGHT)
     ) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(start = 5.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Column(Modifier
+            .fillMaxWidth()
         ) {
-            Column(
+            // ---------  BASIC (text) ROW ------------
+            Row(
                 Modifier
                     .fillMaxWidth()
-                    .weight(1f)
-                    .padding(vertical = 8.dp)
+                    .padding(start = 5.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Name
-                Name(text = item.name, color = color)
-                // Description
-                item.description?.let {
-                    Descr(text = it, color = color)
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(vertical = 8.dp)
+                ) {
+                    // Name
+                    Name(text = item.name, color = color)
+                    // Description
+                    item.description?.let {
+                        Descr(text = it, color = color)
+                    }
+                }
+
+                // Checkbox
+                if (item.type.isCheckable) {
+                    IconButton(onClick = { onCheckItem(item) }) {
+                        Icon(
+                            painter = painterResource(
+                                id =
+                                if (item.state.isChecked) R.drawable.baseline_check_box_24
+                                else R.drawable.baseline_check_box_outline_blank_24
+                            ),
+                            contentDescription = "completed state switcher",
+                            tint = color
+                        )
+                    }
                 }
             }
 
-            // Checkbox
-            if (item.type.isCheckable) {
-                IconButton(onClick = { onCheckItem(item) }) {
-                    Icon(
-                        painter = painterResource(
-                            id =
-                            if (item.state.isChecked) R.drawable.baseline_check_box_24
-                            else R.drawable.baseline_check_box_outline_blank_24
-                        ),
-                        contentDescription = "completed state switcher",
-                        tint = color
-                    )
-                }
-            }
+            // ---------  MEDIA ROW ------------
+            MediaRow(itemId = item.id)
         }
     }
+}
+
+@Composable
+fun MediaRow(itemId:Long){
+    // Start item's media loading
+    val media = app.mediaRepository.getMediaForItem(itemId)
+    val mediaState by media.state
+    //var media by remember { mutableStateOf(0) }
+
+//    val mediaFlow = remember { MutableStateFlow(0) }
+//    val media by mediaFlow.collectAsState()
+    // TODO instead of remember use getMediaForItem(item.id)
+    Text(text = "M: ${when(mediaState){
+        MediaState.Empty -> ""
+        is MediaState.Error -> (mediaState as MediaState.Error).error
+        MediaState.Loading -> "Loading..."
+        is MediaState.Success -> (mediaState as MediaState.Success).content
+    }}")
+    LaunchedEffect(itemId) {
+//        Log.w(TAG, "load item's media #${item.id}")
+//        delay((Math.random()*3000).roundToLong())
+//        media++
+        //mediaFlow.emit(13)
+        media.load()
+    }
+
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -159,9 +195,9 @@ fun ItemRowV1(
 
     Card(
         modifier = Modifier
-            .combinedClickable (
-                onClick     = {onCheckItem(item)},
-                onLongClick = {onOpenItem(item)}
+            .combinedClickable(
+                onClick = { onCheckItem(item) },
+                onLongClick = { onOpenItem(item) }
             )
             .defaultMinSize(minHeight = MIN_HEIGHT)
     ) {
