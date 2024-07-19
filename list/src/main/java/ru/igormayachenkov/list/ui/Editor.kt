@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -177,6 +178,20 @@ fun Editor(
                                     else stringResource(R.string.common_button_save)))
                     }
                 }
+
+                // MEDIA
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(text = "Media")
+                Row(Modifier.fillMaxWidth()) {
+                    MediaRow(itemId = newItem.id)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Button(onClick = {
+                        MainActivity.resultAPI?.showLoadMediaDialog(newItem.id)
+                    }) {
+                        Icon(Icons.Default.Add,"")
+                    }
+                }
+                
             }
         }
     }

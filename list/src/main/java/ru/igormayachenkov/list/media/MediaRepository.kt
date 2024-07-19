@@ -1,6 +1,7 @@
 package ru.igormayachenkov.list.media
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import java.io.File
 
@@ -31,6 +32,10 @@ class MediaRepository {
                 }
             } else null
         }
+    }
+
+    fun addMedia(itemId: Long, uri:Uri){
+        Log.w(TAG, "addMedia $uri")
     }
 
     private fun writeMedia(context: Context, itemId:Long, bytes : ByteArray){
