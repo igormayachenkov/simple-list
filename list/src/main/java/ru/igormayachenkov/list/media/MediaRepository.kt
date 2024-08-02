@@ -8,29 +8,42 @@ import java.io.File
 private const val TAG = "myapp.MediaRepository"
 
 class MediaRepository {
-    private val store = HashMap<Long,MediaFile>()
+    private val store = HashMap<Long,List<MediaFile>>()
 
     companion object{
-        fun filenameForItem(itemId:Long):String { return itemId.toString(16) }
-        fun getDir(context: Context):File {return context.getExternalFilesDir(null)!!}
+        private fun getItemMediaDir(itemId:Long):String    { return itemId.toString(16) }
+        private fun getRootMediaDir(context: Context):File { return context.getExternalFilesDir(null)!! }
     }
 
     // 190c244e6be
-    fun getMediaForItem(itemId:Long, context: Context):MediaFile? {
-        return store.get(itemId) ?: run{
+    fun getItemMedia(itemId:Long, context: Context):List<MediaFile>? {
+        store.get(itemId)?.let {
+            return it
+        }?:run{
             // Check the file existance
-            val filename = filenameForItem(itemId)
-            val file = File(getDir(context), filename)
+            val dirname = getItemMediaDir(itemId)
+            Log.w(TAG,"   --- itemId=$itemId dirname=$dirname")
+            val dir = File(getRootMediaDir(context), dirname)
 
             val fileContents = "Hello world!"
             //writeMedia(context, itemId, fileContents.toByteArray())
 
-            if(file.exists()){
-                // Create new item
-                MediaFile(file).apply {
-                    store.put(itemId, this)
+            if(dir.exists()){
+                dir.list()?.let { filelist->
+                    Log.w(TAG, "      filelist=${filelist.size}")
+                    if (filelist.isNotEmpty()) {
+                        // Create list of medial files
+                        return ArrayList<MediaFile>().apply {
+                            filelist.forEach{
+                                add( MediaFile(File(dir,it)) )
+                            }
+                            // Remember in the store
+                            store.put(itemId, this)
+                        }
+                    }
                 }
-            } else null
+            }
+            return null
         }
     }
 
@@ -39,10 +52,10 @@ class MediaRepository {
     }
 
     private fun writeMedia(context: Context, itemId:Long, bytes : ByteArray){
-        val filename = filenameForItem(itemId)
+        val filename = getItemMediaDir(itemId)
         Log.w(TAG, "writeMedia $filename")
         try {
-            val file = File(getDir(context), filename)
+            val file = File(getRootMediaDir(context), filename)
             file.writeBytes(bytes)
         }catch (e:Exception){
             Log.e(TAG, "write file", e)

@@ -1,5 +1,6 @@
 package ru.igormayachenkov.list.ui
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import ru.igormayachenkov.list.R
 import ru.igormayachenkov.list.app
 import ru.igormayachenkov.list.data.*
+import ru.igormayachenkov.list.media.MediaFile
 import ru.igormayachenkov.list.media.MediaState
 import ru.igormayachenkov.list.ui.theme.ListTheme
 import ru.igormayachenkov.list.ui.theme.onSurfaceDisabled
@@ -159,31 +161,39 @@ fun ItemRow(
 }
 
 @Composable
-fun MediaRow(itemId:Long){
+fun MediaRow(itemId:Long) {
     // Start item's media loading
     val context = LocalContext.current
-    val media = app.mediaRepository.getMediaForItem(itemId, context)
-    if(media==null) return
+    app.mediaRepository.getItemMedia(itemId, context)?.apply {
+        Row {
+            forEach {
+                MediaFilePreview(media = it, context = context)
+            }
+        }
+    }
+}
+
+@Composable
+fun MediaFilePreview(media:MediaFile, context: Context){
     val mediaState by media.state
     //var media by remember { mutableStateOf(0) }
 
 //    val mediaFlow = remember { MutableStateFlow(0) }
 //    val media by mediaFlow.collectAsState()
     // TODO instead of remember use getMediaForItem(item.id)
-    Text(text = "M: ${when(mediaState){
+    Text(text = "M:${when(mediaState){
         MediaState.Empty -> ""
         is MediaState.Error -> (mediaState as MediaState.Error).error
         MediaState.Loading -> "Loading..."
         is MediaState.Success -> (mediaState as MediaState.Success).content
-    }}")
-    LaunchedEffect(itemId) {
+    }} ")
+    LaunchedEffect(media) {
 //        Log.w(TAG, "load item's media #${item.id}")
 //        delay((Math.random()*3000).roundToLong())
 //        media++
         //mediaFlow.emit(13)
         media.load(context)
     }
-
 }
 
 @OptIn(ExperimentalFoundationApi::class)

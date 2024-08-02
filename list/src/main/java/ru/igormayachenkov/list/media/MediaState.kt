@@ -1,5 +1,8 @@
 package ru.igormayachenkov.list.media
 
+/**
+ * A STATE OF A SINGLE MEDIA FILE
+ */
 sealed interface MediaState {
     object Empty   : MediaState
     object Loading : MediaState
