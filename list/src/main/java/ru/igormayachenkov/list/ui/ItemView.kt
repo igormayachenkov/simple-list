@@ -166,8 +166,9 @@ fun MediaRow(itemId:Long) {
     val context = LocalContext.current
     app.mediaRepository.getItemMedia(itemId, context)?.apply {
         Row {
-            forEach {
-                MediaFilePreview(media = it, context = context)
+            forEachIndexed { index, mediaFile ->
+                if(index>0) Spacer(modifier = Modifier.width(5.dp))
+                MediaFilePreview(media = mediaFile, context = context)
             }
         }
     }
@@ -181,12 +182,12 @@ fun MediaFilePreview(media:MediaFile, context: Context){
 //    val mediaFlow = remember { MutableStateFlow(0) }
 //    val media by mediaFlow.collectAsState()
     // TODO instead of remember use getMediaForItem(item.id)
-    Text(text = "M:${when(mediaState){
+    Text(text = "${when(mediaState){
         MediaState.Empty -> ""
         is MediaState.Error -> (mediaState as MediaState.Error).error
         MediaState.Loading -> "Loading..."
         is MediaState.Success -> (mediaState as MediaState.Success).content
-    }} ")
+    }}")
     LaunchedEffect(media) {
 //        Log.w(TAG, "load item's media #${item.id}")
 //        delay((Math.random()*3000).roundToLong())

@@ -8,7 +8,7 @@ import java.io.File
 private const val TAG = "myapp.MediaRepository"
 
 class MediaRepository {
-    private val store = HashMap<Long,List<MediaFile>>()
+    private val cache = HashMap<Long,List<MediaFile>>()
 
     companion object{
         private fun getItemMediaDir(itemId:Long):String    { return itemId.toString(16) }
@@ -17,7 +17,7 @@ class MediaRepository {
 
     // 190c244e6be
     fun getItemMedia(itemId:Long, context: Context):List<MediaFile>? {
-        store.get(itemId)?.let {
+        cache.get(itemId)?.let {
             return it
         }?:run{
             // Check the file existance
@@ -38,7 +38,7 @@ class MediaRepository {
                                 add( MediaFile(File(dir,it)) )
                             }
                             // Remember in the store
-                            store.put(itemId, this)
+                            cache.put(itemId, this)
                         }
                     }
                 }
@@ -61,8 +61,4 @@ class MediaRepository {
             Log.e(TAG, "write file", e)
         }
     }
-
-
-
-
 }
