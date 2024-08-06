@@ -8,7 +8,7 @@ import java.io.File
 private const val TAG = "myapp.MediaRepository"
 
 class MediaRepository {
-    private val cache = HashMap<Long,List<MediaFile>>()
+    private val cache = Cache<List<MediaFile>>(50)
 
     companion object{
         private fun getItemMediaDir(itemId:Long):String    { return itemId.toString(16) }
