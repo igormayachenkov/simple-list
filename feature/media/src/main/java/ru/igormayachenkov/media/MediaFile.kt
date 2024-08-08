@@ -1,11 +1,10 @@
-package ru.igormayachenkov.list.media
+package ru.igormayachenkov.media
 
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.delay
 import java.io.File
-import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
 private const val TAG = "myapp.MediaItem"

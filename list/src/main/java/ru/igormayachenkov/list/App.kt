@@ -9,15 +9,11 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ru.igormayachenkov.list.data.Version
-import ru.igormayachenkov.list.media.MediaRepository
+import ru.igormayachenkov.media.MediaRepository
 
 private const val TAG = "myapp.App"
 

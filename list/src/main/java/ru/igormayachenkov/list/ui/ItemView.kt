@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import ru.igormayachenkov.list.R
 import ru.igormayachenkov.list.app
 import ru.igormayachenkov.list.data.*
-import ru.igormayachenkov.list.media.MediaFile
-import ru.igormayachenkov.list.media.MediaState
+import ru.igormayachenkov.media.MediaFile
+import ru.igormayachenkov.media.MediaState
 import ru.igormayachenkov.list.ui.theme.ListTheme
 import ru.igormayachenkov.list.ui.theme.onSurfaceDisabled
 
@@ -175,7 +175,7 @@ fun MediaRow(itemId:Long) {
 }
 
 @Composable
-fun MediaFilePreview(media:MediaFile, context: Context){
+fun MediaFilePreview(media: MediaFile, context: Context){
     val mediaState by media.state
     //var media by remember { mutableStateOf(0) }
 

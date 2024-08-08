@@ -1,4 +1,4 @@
-package ru.igormayachenkov.list.media
+package ru.igormayachenkov.media
 
 import android.content.Context
 import android.net.Uri

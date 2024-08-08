@@ -1,4 +1,4 @@
-package ru.igormayachenkov.list.media
+package ru.igormayachenkov.media
 
 /**
  * A STATE OF A SINGLE MEDIA FILE

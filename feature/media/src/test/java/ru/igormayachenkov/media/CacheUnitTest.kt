@@ -2,6 +2,7 @@ package ru.igormayachenkov.list.media
 
 import org.junit.Test
 import org.junit.Assert.*
+import ru.igormayachenkov.media.Cache
 
 /**
  * Example local unit test, which will execute on the development machine (host).
