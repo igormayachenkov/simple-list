@@ -11,10 +11,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import java.io.File
 
 @Composable
 fun MediaRow(context: Context, mediaList:List<MediaFile>) {
-    Text("MediaRow")
     mediaList.apply {
         Row {
             forEachIndexed { index, mediaFile ->
@@ -35,7 +36,7 @@ fun MediaFilePreview(context: Context, media: MediaFile){
 //    val media by mediaFlow.collectAsState()
     // TODO instead of remember use getMediaForItem(item.id)
     Text(text = "${when(mediaState){
-        MediaState.Empty -> ""
+        MediaState.Empty -> "e"
         is MediaState.Error -> (mediaState as MediaState.Error).error
         MediaState.Loading -> "Loading..."
         is MediaState.Success -> (mediaState as MediaState.Success).content
@@ -45,6 +46,28 @@ fun MediaFilePreview(context: Context, media: MediaFile){
 //        delay((Math.random()*3000).roundToLong())
 //        media++
         //mediaFlow.emit(13)
-        media.load(context)
+       media.load(context)
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun MediaRow_Preview() {
+    val context = LocalContext.current
+    MediaRow(
+        context = context,
+        mediaList = listOf(
+            MediaFile(File("One")),
+            MediaFile(File("Two")),
+            MediaFile(File("Three")),
+        )
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun MediaFilePreview_Preview() {
+    val context = LocalContext.current
+    MediaFilePreview(context = context,
+        media = MediaFile(File("filename")))
 }
