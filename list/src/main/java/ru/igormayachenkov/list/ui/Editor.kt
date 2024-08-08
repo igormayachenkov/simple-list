@@ -183,7 +183,7 @@ fun Editor(
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(text = "Media")
                 Row(Modifier.fillMaxWidth()) {
-                    MediaRow(itemId = newItem.id)
+                    //MediaRow(itemId = newItem.id)
                     Spacer(modifier = Modifier.weight(1f))
                     Button(onClick = {
                         MainActivity.resultAPI?.showLoadMediaDialog(newItem.id)
