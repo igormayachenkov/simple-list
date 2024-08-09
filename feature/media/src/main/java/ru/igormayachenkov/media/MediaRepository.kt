@@ -8,7 +8,7 @@ import java.io.File
 private const val TAG = "myapp.MediaRepository"
 
 class MediaRepository {
-    private val cache = Cache<List<MediaFile>>(50)
+    private val cache = Cache<List<IFile>>(50)
 
     companion object{
         private fun getItemMediaDir(itemId:Long):String    { return itemId.toString(16) }
@@ -16,7 +16,7 @@ class MediaRepository {
     }
 
     // 190c244e6be
-    fun getItemMedia(itemId:Long, context: Context):List<MediaFile>? {
+    fun getItemMedia(itemId:Long, context: Context):List<IFile>? {
         cache.get(itemId)?.let {
             return it
         }?:run{
@@ -33,7 +33,7 @@ class MediaRepository {
                     Log.w(TAG, "      filelist=${filelist.size}")
                     if (filelist.isNotEmpty()) {
                         // Create list of medial files
-                        return ArrayList<MediaFile>().apply {
+                        return ArrayList<IFile>().apply {
                             filelist.forEach{
                                 add( MediaFile(File(dir,it)) )
                             }

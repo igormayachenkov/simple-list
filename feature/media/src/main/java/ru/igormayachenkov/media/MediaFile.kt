@@ -1,40 +1,43 @@
 package ru.igormayachenkov.media
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.io.File
 import kotlin.math.roundToLong
 
-private const val TAG = "myapp.MediaItem"
+private const val TAG = "myapp.MediaFile"
 
 class MediaFile(
     val file:File
-) {
-    val state = mutableStateOf<MediaState>(MediaState.Empty)
+) : IFile {
+    private val _loadingState = MutableStateFlow<LoadingState>(LoadingState.Unloaded)
+    override val loadingState = _loadingState.asStateFlow()
 
-    suspend fun load(context: Context){
-        if(state.value is MediaState.Empty) {
+    override suspend fun load(context: Context){
+        if(_loadingState.value is LoadingState.Unloaded) {
             Log.w(TAG, "load media file=${file.name}")
-            state.value = MediaState.Loading
+            _loadingState.emit( LoadingState.Loading )
             // Do load
             try {
                 delay((Math.random() * 3000).roundToLong())
                 //if(Math.random()<0.2) throw Exception("load error")
-                doLoad(context)
-                val bytes = file.readBytes()
-                //state.value = MediaState.Success((Math.random() * 100).roundToInt())
-                //state.value = MediaState.Success(file.length().toInt())
-                state.value = MediaState.Success(bytes.size)
+                val content = doLoad(context)
+                //state.value = LoadingState.Success((Math.random() * 100).roundToInt())
+                //state.value = LoadingState.Success(file.length().toInt())
+                _loadingState.emit( LoadingState.Success(content) )
             }catch (e:Exception){
-                state.value = MediaState.Error(e.message ?: e.toString())
+                _loadingState.emit( LoadingState.Error(e.message ?: e.toString()) )
             }
         }
     }
 
-    private fun doLoad(context: Context){
-        //file.readBytes()
-        //file.length()
+    private fun doLoad(context: Context):FileContent{
+        val bytes = file.readBytes()
+        //return  FileContent.Binary(bytes.size)
+        return  FileContent.Image(BitmapFactory.decodeFile(file.path))
     }
 }
