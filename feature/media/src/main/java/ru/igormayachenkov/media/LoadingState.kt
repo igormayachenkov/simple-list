@@ -6,6 +6,6 @@ package ru.igormayachenkov.media
 sealed interface LoadingState {
     object Unloaded                     : LoadingState
     object Loading                      : LoadingState
-    data class Success(val content:FileContent) : LoadingState
+    object Loaded                       : LoadingState
     data class Error(val error:String)  : LoadingState
 }
