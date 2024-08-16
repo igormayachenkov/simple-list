@@ -9,7 +9,7 @@ object FileFactory{
     fun createFile(file: File):AbstractFile{
         val ext = file.name.substringAfterLast('.')
         return when(ext){
-            in setOf("png") -> ImageFile(file)
+            in setOf("png","webp") -> ImageFile(file)
             else  -> BinaryFile(file)
         }
     }

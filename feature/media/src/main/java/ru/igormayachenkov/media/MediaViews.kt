@@ -8,19 +8,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.delay
@@ -28,6 +27,8 @@ import java.io.File
 import kotlin.math.roundToLong
 
 private const val TAG = "myapp.MediaViews"
+
+private val ICON_SIZE = 70.dp
 
 @Composable
 fun MediaRow(context: Context, mediaList:List<AbstractFile>) {
@@ -52,52 +53,89 @@ fun FileThumb(context: Context, file: AbstractFile){
     }
 
     when(loadingState){
-        LoadingState.Unloaded -> Text(text = "u")
-        is LoadingState.Error -> Text((loadingState as LoadingState.Error).error )
-        LoadingState.Loading  -> Text("Loading...")
+        LoadingState.Unloaded -> Unloaded()
+        is LoadingState.Error -> Error()//Text((loadingState as LoadingState.Error).error )
+        LoadingState.Loading  -> Loading()
         is LoadingState.Loaded -> when(file){
-            is BinaryFile -> ThumbBinary (file)
-            is ImageFile  -> ThumbImage  (file)
+            is BinaryFile -> LoadedBinary (file)
+            is ImageFile  -> LoadedImage  (file)
         }
     }
     LaunchedEffect("once") {
-        if(loadingState==LoadingState.Unloaded) {
-            Log.w(TAG, "load media file=${file.file.name}")
-            loadingState = LoadingState.Loading
-            // Do load
-            try {
-                delay((Math.random() * 3000).roundToLong())
-                //if(Math.random()<0.2) throw Exception("load error")
+        if(file is ImageFile) {
+            if (loadingState == LoadingState.Unloaded) {
+                Log.w(TAG, "load media file=${file.file.name}")
+                loadingState = LoadingState.Loading
+                // Do load
+                try {
+                    delay((Math.random() * 3000).roundToLong())
+                    //if(Math.random()<0.2) throw Exception("load error")
 
-                FileFactory.loadFile(file)
+                    FileFactory.loadFile(file)
 
-                loadingState = LoadingState.Loaded
-            } catch (e: Exception) {
-                loadingState = LoadingState.Error(e.message ?: e.toString())
+                    loadingState = LoadingState.Loaded
+                } catch (e: Exception) {
+                    loadingState = LoadingState.Error(e.message ?: e.toString())
+                }
             }
         }
     }
-
-
 }
 
-
-
+//--------------------------------------------------------------------------------------------------
+// UNLOADED
 @Composable
-fun ThumbBinary(file: BinaryFile){
+private fun Unloaded(){
+    Card {
+       Image(
+           painter = painterResource(id = R.drawable.file_unloaded),
+           contentDescription = "loading",
+           modifier = Modifier.size(ICON_SIZE)
+        )
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+// LOADING / ERROR
+@Composable
+private fun Loading(){
+    Card {
+        Image(
+            painter = painterResource(id = R.drawable.file_loading),
+            contentDescription = "loading",
+            modifier = Modifier.size(ICON_SIZE)
+        )
+    }
+}
+@Composable
+private fun Error(){
+    Card {
+        Image(
+            painter = painterResource(id = R.drawable.file_error),
+            contentDescription = "error",
+            modifier = Modifier.size(ICON_SIZE)
+        )
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+// LOADED
+@Composable
+private fun LoadedBinary(file: BinaryFile){
     Text(file.buffer!!.size.toString())
 }
 
 @Composable
-fun ThumbImage(file: ImageFile){
+private fun LoadedImage(file: ImageFile){
     //Image(painter = painterResource(id = R.drawable.cat), contentDescription = "", Modifier.size(50.dp))
     Image(
         bitmap = file.bitmap!!.asImageBitmap(),
         contentDescription = "",
-        modifier = Modifier.size(50.dp)
+        modifier = Modifier.size(ICON_SIZE)
     )
 }
 
+//--------------------------------------------------------------------------------------------------
 @Preview(showBackground = true)
 @Composable
 private fun MediaRow_Preview() {
@@ -105,8 +143,8 @@ private fun MediaRow_Preview() {
     MediaRow(
         context = context,
         mediaList = listOf(
-//            MediaFile(File("One")),
-//            MediaFile(File("Two")),
+            ImageFile(File("example")).apply { bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.cat) },
+            BinaryFile(File("Two")),
 //            MediaFile(File("Three")),
         )
     )
@@ -121,4 +159,9 @@ private fun MediaFilePreview_Preview() {
         file = ImageFile(File("example")).apply { bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.cat) }
     )
 
+}
+@Preview(showBackground = true)
+@Composable
+private fun Loading_Preview() {
+    Loading()
 }
